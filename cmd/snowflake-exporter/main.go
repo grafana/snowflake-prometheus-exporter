@@ -15,9 +15,11 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 
+	"github.com/go-kit/log"
 	"github.com/go-kit/log/level"
 	"github.com/grafana/snowflake-prometheus-exporter/collector"
 	"github.com/prometheus/client_golang/prometheus"
@@ -42,7 +44,14 @@ var (
 
 const (
 	// The name of the exporter.
-	exporterName = "snowflake_exporter"
+	exporterName    = "snowflake_exporter"
+	landingPageHtml = `<html>
+<head><title>Snowflake exporter</title></head>
+	<body>
+		<h1>Snowflake exporter</h1>
+		<p><a href='%s'>Metrics</a></p>
+	</body>
+</html>`
 )
 
 func main() {
@@ -55,15 +64,6 @@ func main() {
 	kingpin.Parse()
 
 	logger := promlog.New(promlogConfig)
-
-	landingPage := []byte(`<html>
-	<head><title>Snowflake exporter</title></head>
-	<body>
-	<h1>Snowflake exporter</h1>
-	<p><a href='` + *metricPath + `'>Metrics</a></p>
-	</body>
-	</html>
-	`)
 
 	// Construct the collector, using the flags for configuration
 	c := &collector.Config{
@@ -85,7 +85,12 @@ func main() {
 	prometheus.MustRegister(version.NewCollector(exporterName))
 	prometheus.MustRegister(col)
 
-	// Setup HTTP server
+	serveMetrics(logger)
+}
+
+func serveMetrics(logger log.Logger) {
+	landingPage := []byte(fmt.Sprintf(landingPageHtml, *metricPath))
+
 	http.Handle(*metricPath, promhttp.Handler())
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/html; charset=UTF-8") // nolint: errcheck

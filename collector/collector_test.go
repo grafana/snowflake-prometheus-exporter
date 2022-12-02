@@ -43,10 +43,6 @@ func TestCollector_Collect(t *testing.T) {
 		require.NoError(t, err)
 		defer f.Close()
 
-		// reg := prometheus.NewRegistry()
-		// reg.MustRegister(col)
-		// prometheus.WriteToTextfile(filepath.Join("testdata", "metrics.prom"), reg)
-
 		require.NoError(t, testutil.CollectAndCompare(col, f))
 
 		require.NoError(t, mock.ExpectationsWereMet())

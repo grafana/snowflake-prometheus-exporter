@@ -42,10 +42,12 @@ const (
 	labelSize          = "size"
 )
 
+// openSnowflakeDatabase opens a connection to a Snowflake database using the given connection string.
 func openSnowflakeDatabase(connStr string) (*sql.DB, error) {
 	return sql.Open("snowflake", connStr)
 }
 
+// Collector is a prometheus.Collector that retrieves metrics for a Snowflake account.
 type Collector struct {
 	config *Config
 	logger log.Logger
@@ -80,6 +82,8 @@ type Collector struct {
 	warehouseInfo                     *prometheus.Desc
 }
 
+// NewCollector creates a new collector from a given config.
+// The config is assumed to be valid.
 func NewCollector(logger log.Logger, c *Config) *Collector {
 	return &Collector{
 		config:       c,
@@ -244,6 +248,8 @@ func NewCollector(logger log.Logger, c *Config) *Collector {
 	}
 }
 
+// Describe returns all metric descriptions of the collector by emitting them down the provided channel.
+// It implements prometheus.Collector.
 func (c *Collector) Describe(descs chan<- *prometheus.Desc) {
 	descs <- c.storageBytes
 	descs <- c.stageBytes
@@ -273,6 +279,8 @@ func (c *Collector) Describe(descs chan<- *prometheus.Desc) {
 	descs <- c.warehouseInfo
 }
 
+// Collect collects all metrics for this collector, and emits them through the provided channel.
+// It implements prometheus.Collector.
 func (c *Collector) Collect(metrics chan<- prometheus.Metric) {
 	level.Debug(c.logger).Log("msg", "Collecting metrics.")
 
@@ -319,10 +327,6 @@ func (c *Collector) Collect(metrics chan<- prometheus.Metric) {
 	if err := c.collectReplicationMetrics(db, metrics); err != nil {
 		level.Error(c.logger).Log("msg", "Failed to collect replication metrics.", "err", err)
 	}
-
-	// if err := c.collectWarehouseInfoMetrics(db, metrics); err != nil {
-	// 	level.Error(c.logger).Log("msg", "Failed to collect warehouse info metrics.", "err", err)
-	// }
 }
 
 func (c *Collector) collectStorageMetrics(db *sql.DB, metrics chan<- prometheus.Metric) error {
