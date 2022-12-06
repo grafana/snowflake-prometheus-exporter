@@ -79,7 +79,6 @@ type Collector struct {
 	tableCloneBytes                   *prometheus.Desc
 	replicationUsedCredits            *prometheus.Desc
 	replicationTransferredBytes       *prometheus.Desc
-	warehouseInfo                     *prometheus.Desc
 }
 
 // NewCollector creates a new collector from a given config.
@@ -239,12 +238,6 @@ func NewCollector(logger log.Logger, c *Config) *Collector {
 			[]string{labelDatabaseName, labelDatabaseID},
 			nil,
 		),
-		warehouseInfo: prometheus.NewDesc(
-			prometheus.BuildFQName(namespace, "warehouse", "info"),
-			"Metric that always emits 1 with labels giving information about each warehouse.",
-			[]string{labelName, labelSize},
-			nil,
-		),
 	}
 }
 
@@ -276,7 +269,6 @@ func (c *Collector) Describe(descs chan<- *prometheus.Desc) {
 	descs <- c.tableCloneBytes
 	descs <- c.replicationUsedCredits
 	descs <- c.replicationTransferredBytes
-	descs <- c.warehouseInfo
 }
 
 // Collect collects all metrics for this collector, and emits them through the provided channel.
