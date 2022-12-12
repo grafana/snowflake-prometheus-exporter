@@ -15,7 +15,6 @@
 package collector
 
 import (
-	"bytes"
 	"database/sql"
 	"database/sql/driver"
 	"errors"
@@ -67,9 +66,13 @@ func TestCollector_Collect(t *testing.T) {
 		col := NewCollector(log.NewJSONLogger(os.Stdout), &Config{})
 		col.openDatabase = func(_ string) (*sql.DB, error) { return db, nil }
 
+		f, err := os.Open(filepath.Join("testdata", "query_failure.prom"))
+		require.NoError(t, err)
+		defer f.Close()
+
 		// No metrics should be collected; An empty buffer should match the output
 		// of the scraped metrics
-		err := testutil.CollectAndCompare(col, &bytes.Buffer{})
+		err = testutil.CollectAndCompare(col, f)
 		require.NoError(t, err)
 
 		// Checks that db is closed and all queries are called
@@ -82,8 +85,12 @@ func TestCollector_Collect(t *testing.T) {
 		openErr := errors.New("failed to open database")
 		col.openDatabase = func(_ string) (*sql.DB, error) { return nil, openErr }
 
+		f, err := os.Open(filepath.Join("testdata", "query_failure.prom"))
+		require.NoError(t, err)
+		defer f.Close()
+
 		// No metrics should be scraped if the database fails to open
-		err := testutil.CollectAndCompare(col, &bytes.Buffer{})
+		err = testutil.CollectAndCompare(col, f)
 		require.NoError(t, err)
 	})
 }

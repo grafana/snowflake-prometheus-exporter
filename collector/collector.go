@@ -79,6 +79,7 @@ type Collector struct {
 	tableCloneBytes                   *prometheus.Desc
 	replicationUsedCredits            *prometheus.Desc
 	replicationTransferredBytes       *prometheus.Desc
+	up                                *prometheus.Desc
 }
 
 // NewCollector creates a new collector from a given config.
@@ -238,6 +239,13 @@ func NewCollector(logger log.Logger, c *Config) *Collector {
 			[]string{labelDatabaseName, labelDatabaseID},
 			nil,
 		),
+		up: prometheus.NewDesc(
+			prometheus.BuildFQName(namespace, "", "up"),
+			"Metric indicating the status of the exporter collection. 1 indicates that the connection Snowflake was successful, and all available metrics were collected."+
+				"0 indicates that the exporter failed to collect 1 or more metrics, due to an inability to connect to Snowflake.",
+			nil,
+			nil,
+		),
 	}
 }
 
@@ -269,6 +277,7 @@ func (c *Collector) Describe(descs chan<- *prometheus.Desc) {
 	descs <- c.tableCloneBytes
 	descs <- c.replicationUsedCredits
 	descs <- c.replicationTransferredBytes
+	descs <- c.up
 }
 
 // Collect collects all metrics for this collector, and emits them through the provided channel.
@@ -276,49 +285,63 @@ func (c *Collector) Describe(descs chan<- *prometheus.Desc) {
 func (c *Collector) Collect(metrics chan<- prometheus.Metric) {
 	level.Debug(c.logger).Log("msg", "Collecting metrics.")
 
+	var up float64 = 1
 	// Open a new connection to the database each time; This makes the connection more robust to transient failures
 	db, err := c.openDatabase(c.config.snowflakeConnectionString())
 	if err != nil {
 		level.Error(c.logger).Log("msg", "Failed to connect to Snowflake.", "err", err)
+		// Emit up metric here, to indicate connection failed.
+		metrics <- prometheus.MustNewConstMetric(c.up, prometheus.GaugeValue, 0)
 		return
 	}
 	defer db.Close()
 
 	if err := c.collectStorageMetrics(db, metrics); err != nil {
 		level.Error(c.logger).Log("msg", "Failed to collect storage metrics.", "err", err)
+		up = 0
 	}
 
 	if err := c.collectDatabaseStorageMetrics(db, metrics); err != nil {
 		level.Error(c.logger).Log("msg", "Failed to collect database storage metrics.", "err", err)
+		up = 0
 	}
 
 	if err := c.collectCreditMetrics(db, metrics); err != nil {
 		level.Error(c.logger).Log("msg", "Failed to collect credit metrics.", "err", err)
+		up = 0
 	}
 
 	if err := c.collectWarehouseCreditMetrics(db, metrics); err != nil {
 		level.Error(c.logger).Log("msg", "Failed to collect warehouse credit metrics.", "err", err)
+		up = 0
 	}
 
 	if err := c.collectLoginMetrics(db, metrics); err != nil {
 		level.Error(c.logger).Log("msg", "Failed to collect login metrics.", "err", err)
+		up = 0
 	}
 
 	if err := c.collectWarehouseLoadMetrics(db, metrics); err != nil {
 		level.Error(c.logger).Log("msg", "Failed to collect warehouse load metrics.", "err", err)
+		up = 0
 	}
 
 	if err := c.collectAutoClusteringMetrics(db, metrics); err != nil {
 		level.Error(c.logger).Log("msg", "Failed to collect autoclustering metrics.", "err", err)
+		up = 0
 	}
 
 	if err := c.collectTableStorageMetrics(db, metrics); err != nil {
 		level.Error(c.logger).Log("msg", "Failed to collect table storage metrics.", "err", err)
+		up = 0
 	}
 
 	if err := c.collectReplicationMetrics(db, metrics); err != nil {
 		level.Error(c.logger).Log("msg", "Failed to collect replication metrics.", "err", err)
+		up = 0
 	}
+
+	metrics <- prometheus.MustNewConstMetric(c.up, prometheus.GaugeValue, up)
 }
 
 func (c *Collector) collectStorageMetrics(db *sql.DB, metrics chan<- prometheus.Metric) error {

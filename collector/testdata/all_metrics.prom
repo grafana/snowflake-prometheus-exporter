@@ -95,3 +95,6 @@ snowflake_warehouse_used_cloud_service_credits{id="11",name="another_mock_wareho
 # TYPE snowflake_warehouse_used_compute_credits gauge
 snowflake_warehouse_used_compute_credits{id="10",name="mock_warehouse"} 56
 snowflake_warehouse_used_compute_credits{id="11",name="another_mock_warehouse"} 89
+# HELP snowflake_up Metric indicating the status of the exporter collection. 1 indicates that the connection Snowflake was successful, and all available metrics were collected.0 indicates that the exporter failed to collect 1 or more metrics, due to an inability to connect to Snowflake.
+# TYPE snowflake_up gauge
+snowflake_up 1
