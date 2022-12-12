@@ -39,7 +39,7 @@ var (
 	username   = kingpin.Flag("username", "The username for the user used when querying metrics.").Envar("SNOWFLAKE_EXPORTER_USERNAME").Required().String()
 	password   = kingpin.Flag("password", "The password for the user used when querying metrics.").Envar("SNOWFLAKE_EXPORTER_PASSWORD").Required().String()
 	role       = kingpin.Flag("role", "The role to use when querying metrics.").Default("ACCOUNTADMIN").Envar("SNOWFLAKE_EXPORTER_ROLE").String()
-	warehouse  = kingpin.Flag("warehouse", "The warehouse to use when querying metrics. If none is specified, the default warehouse for the user will be used.").Envar("SNOWFLAKE_EXPORTER_WAREHOUSE").String()
+	warehouse  = kingpin.Flag("warehouse", "The warehouse to use when querying metrics.").Envar("SNOWFLAKE_EXPORTER_WAREHOUSE").Required().String()
 )
 
 const (

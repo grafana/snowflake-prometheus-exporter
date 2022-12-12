@@ -29,9 +29,10 @@ func TestConfig_Validate(t *testing.T) {
 		{
 			name: "No account name",
 			inputConfig: Config{
-				Username: "some_user",
-				Password: "some_pass",
-				Role:     DefaultConfig.Role,
+				Username:  "some_user",
+				Password:  "some_pass",
+				Role:      "ACCOUNTADMIN",
+				Warehouse: "ACCOUNT_WH",
 			},
 			expectedErr: errNoAccountName,
 		},
@@ -40,7 +41,8 @@ func TestConfig_Validate(t *testing.T) {
 			inputConfig: Config{
 				AccountName: "some_account",
 				Password:    "some_pass",
-				Role:        DefaultConfig.Role,
+				Role:        "ACCOUNTADMIN",
+				Warehouse:   "ACCOUNT_WH",
 			},
 			expectedErr: errNoUsername,
 		},
@@ -49,7 +51,8 @@ func TestConfig_Validate(t *testing.T) {
 			inputConfig: Config{
 				AccountName: "some_account",
 				Username:    "some_user",
-				Role:        DefaultConfig.Role,
+				Role:        "ACCOUNTADMIN",
+				Warehouse:   "ACCOUNT_WH",
 			},
 			expectedErr: errNoPassword,
 		},
@@ -59,8 +62,19 @@ func TestConfig_Validate(t *testing.T) {
 				AccountName: "some_account",
 				Username:    "some_user",
 				Password:    "some_pass",
+				Warehouse:   "ACCOUNT_WH",
 			},
 			expectedErr: errNoRole,
+		},
+		{
+			name: "No Warehouse",
+			inputConfig: Config{
+				AccountName: "some_account",
+				Username:    "some_user",
+				Password:    "some_pass",
+				Role:        "ACCOUNTADMIN",
+			},
+			expectedErr: errNoWarehouse,
 		},
 		{
 			name: "Valid config",
@@ -68,7 +82,8 @@ func TestConfig_Validate(t *testing.T) {
 				AccountName: "some_account",
 				Username:    "some_user",
 				Password:    "some_pass",
-				Role:        DefaultConfig.Role,
+				Role:        "ACCOUNTADMIN",
+				Warehouse:   "ACCOUNT_WH",
 			},
 		},
 	}
@@ -92,22 +107,12 @@ func TestConfig_snowflakeConnectionString(t *testing.T) {
 		expectedString string
 	}{
 		{
-			name: "No warehouse",
+			name: "Valid config",
 			inputConfig: Config{
 				AccountName: "some-account",
 				Username:    "some-user",
 				Password:    "some-pass",
-				Role:        DefaultConfig.Role,
-			},
-			expectedString: "some-user:some-pass@some-account/SNOWFLAKE?role=ACCOUNTADMIN",
-		},
-		{
-			name: "With warehouse",
-			inputConfig: Config{
-				AccountName: "some-account",
-				Username:    "some-user",
-				Password:    "some-pass",
-				Role:        DefaultConfig.Role,
+				Role:        "ACCOUNTADMIN",
 				Warehouse:   "some-warehouse",
 			},
 			expectedString: "some-user:some-pass@some-account/SNOWFLAKE?role=ACCOUNTADMIN&warehouse=some-warehouse",
@@ -118,7 +123,7 @@ func TestConfig_snowflakeConnectionString(t *testing.T) {
 				AccountName: "some%account",
 				Username:    "some%user",
 				Password:    "some pass",
-				Role:        DefaultConfig.Role + "!",
+				Role:        "ACCOUNTADMIN!",
 				Warehouse:   "some!warehouse",
 			},
 			expectedString: `some%25user:some+pass@some%25account/SNOWFLAKE?role=ACCOUNTADMIN%21&warehouse=some%21warehouse`,

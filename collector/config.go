@@ -20,10 +20,6 @@ import (
 	"net/url"
 )
 
-var DefaultConfig = Config{
-	Role: "ACCOUNTADMIN",
-}
-
 type Config struct {
 	AccountName string
 	Username    string
@@ -37,6 +33,7 @@ var (
 	errNoUsername    = errors.New("username must be specified")
 	errNoPassword    = errors.New("password must be specified")
 	errNoRole        = errors.New("role must be specified")
+	errNoWarehouse   = errors.New("warehouse must be specified")
 )
 
 func (c Config) Validate() error {
@@ -56,22 +53,22 @@ func (c Config) Validate() error {
 		return errNoRole
 	}
 
+	if c.Warehouse == "" {
+		return errNoWarehouse
+	}
+
 	return nil
 }
 
 // snowflakeConnectionString returns a connection string to connect to the SNOWFLAKE database using the
-// options specified in the config
+// options specified in the config.
+// Assumes the config is valid according to Validate().
 func (c Config) snowflakeConnectionString() string {
 	accountNameEscaped := url.QueryEscape(c.AccountName)
 	usernameEscaped := url.QueryEscape(c.Username)
 	passwordEscaped := url.QueryEscape(c.Password)
 	roleEscaped := url.QueryEscape(c.Role)
+	warehouseEscaped := url.QueryEscape(c.Warehouse)
 
-	if c.Warehouse != "" {
-		// No warehouse specified; Default for user will be used, or will error on connection if
-		// the user has no default.
-		warehouseEscaped := url.QueryEscape(c.Warehouse)
-		return fmt.Sprintf("%s:%s@%s/SNOWFLAKE?role=%s&warehouse=%s", usernameEscaped, passwordEscaped, accountNameEscaped, roleEscaped, warehouseEscaped)
-	}
-	return fmt.Sprintf("%s:%s@%s/SNOWFLAKE?role=%s", usernameEscaped, passwordEscaped, accountNameEscaped, roleEscaped)
+	return fmt.Sprintf("%s:%s@%s/SNOWFLAKE?role=%s&warehouse=%s", usernameEscaped, passwordEscaped, accountNameEscaped, roleEscaped, warehouseEscaped)
 }
