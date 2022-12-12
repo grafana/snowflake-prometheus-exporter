@@ -241,7 +241,7 @@ func NewCollector(logger log.Logger, c *Config) *Collector {
 		),
 		up: prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, "", "up"),
-			"Metric indicating the status of the exporter collection. 1 indicates that the connection Snowflake was successful, and all available metrics were collected."+
+			"Metric indicating the status of the exporter collection. 1 indicates that the connection Snowflake was successful, and all available metrics were collected. "+
 				"0 indicates that the exporter failed to collect 1 or more metrics, due to an inability to connect to Snowflake.",
 			nil,
 			nil,
