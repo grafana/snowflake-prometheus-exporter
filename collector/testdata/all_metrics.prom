@@ -1,0 +1,100 @@
+# HELP snowflake_auto_clustering_bytes Sum of the number of bytes reclustered during automatic reclustering over the last 24 hours.
+# TYPE snowflake_auto_clustering_bytes gauge
+snowflake_auto_clustering_bytes{database_id="1",database_name="mock_db",schema_id="4",schema_name="mock_schema",table_id="3",table_name="mock_table"} 2048
+snowflake_auto_clustering_bytes{database_id="2",database_name="another_mock_db",schema_id="4",schema_name="mock_schema",table_id="3",table_name="mock_table"} 8192
+# HELP snowflake_auto_clustering_credits Sum of the number of credits billed for automatic reclustering over the last 24 hours.
+# TYPE snowflake_auto_clustering_credits gauge
+snowflake_auto_clustering_credits{database_id="1",database_name="mock_db",schema_id="4",schema_name="mock_schema",table_id="3",table_name="mock_table"} 1.5
+snowflake_auto_clustering_credits{database_id="2",database_name="another_mock_db",schema_id="4",schema_name="mock_schema",table_id="3",table_name="mock_table"} 1.5
+# HELP snowflake_auto_clustering_rows Sum of the number of rows clustered during automatic reclustering over the last 24 hours.
+# TYPE snowflake_auto_clustering_rows gauge
+snowflake_auto_clustering_rows{database_id="1",database_name="mock_db",schema_id="4",schema_name="mock_schema",table_id="3",table_name="mock_table"} 4096
+snowflake_auto_clustering_rows{database_id="2",database_name="another_mock_db",schema_id="4",schema_name="mock_schema",table_id="3",table_name="mock_table"} 16384
+# HELP snowflake_database_bytes Average number of bytes of database storage used, including data in Time Travel.
+# TYPE snowflake_database_bytes gauge
+snowflake_database_bytes{id="1",name="mock_db"} 1028
+snowflake_database_bytes{id="2",name="another_mock_db"} 1028
+# HELP snowflake_database_failsafe_bytes Average number of bytes of Fail-safe storage used.
+# TYPE snowflake_database_failsafe_bytes gauge
+snowflake_database_failsafe_bytes{id="1",name="mock_db"} 2048
+snowflake_database_failsafe_bytes{id="2",name="another_mock_db"} 2048
+# HELP snowflake_db_replication_transferred_bytes Sum of the number of transferred bytes for database replication over the last 24 hours.
+# TYPE snowflake_db_replication_transferred_bytes gauge
+snowflake_db_replication_transferred_bytes{database_id="1",database_name="mock_db"} 2048
+snowflake_db_replication_transferred_bytes{database_id="2",database_name="another_mock_db"} 32768
+# HELP snowflake_db_replication_used_credits Sum of the number of credits used for database replication over the last 24 hours.
+# TYPE snowflake_db_replication_used_credits gauge
+snowflake_db_replication_used_credits{database_id="1",database_name="mock_db"} 1028
+snowflake_db_replication_used_credits{database_id="2",database_name="another_mock_db"} 16384
+# HELP snowflake_failed_login_rate Rate of failed logins per-hour over the last 24 hours.
+# TYPE snowflake_failed_login_rate gauge
+snowflake_failed_login_rate{client_type="another_mock_client_type",client_version="v1.0.0"} 10
+snowflake_failed_login_rate{client_type="mock_client_type",client_version="v0.1.0"} 1
+# HELP snowflake_failsafe_bytes Number of bytes of data in Fail-safe.
+# TYPE snowflake_failsafe_bytes gauge
+snowflake_failsafe_bytes 4096
+# HELP snowflake_login_rate Rate of logins per-hour over the last 24 hours.
+# TYPE snowflake_login_rate gauge
+snowflake_login_rate{client_type="another_mock_client_type",client_version="v1.0.0"} 100
+snowflake_login_rate{client_type="mock_client_type",client_version="v0.1.0"} 10
+# HELP snowflake_stage_bytes Number of bytes of stage storage used by files in all internal stages (named, table, and user).
+# TYPE snowflake_stage_bytes gauge
+snowflake_stage_bytes 2048
+# HELP snowflake_storage_bytes Number of bytes of table storage used, including bytes for data currently in Time Travel.
+# TYPE snowflake_storage_bytes gauge
+snowflake_storage_bytes 1028
+# HELP snowflake_successful_login_rate Rate of successful logins per-hour over the last 24 hours.
+# TYPE snowflake_successful_login_rate gauge
+snowflake_successful_login_rate{client_type="another_mock_client_type",client_version="v1.0.0"} 90
+snowflake_successful_login_rate{client_type="mock_client_type",client_version="v0.1.0"} 9
+# HELP snowflake_table_active_bytes Sum of active bytes owned by the table.
+# TYPE snowflake_table_active_bytes gauge
+snowflake_table_active_bytes{database_id="1",database_name="mock_db",schema_id="4",schema_name="mock_schema",table_id="3",table_name="mock_table"} 1028
+snowflake_table_active_bytes{database_id="2",database_name="another_mock_db",schema_id="4",schema_name="mock_schema",table_id="3",table_name="mock_table"} 16384
+# HELP snowflake_table_clone_bytes Sum of bytes owned by the table that are retained after deletion because they are referenced by one or more clones.
+# TYPE snowflake_table_clone_bytes gauge
+snowflake_table_clone_bytes{database_id="1",database_name="mock_db",schema_id="4",schema_name="mock_schema",table_id="3",table_name="mock_table"} 8192
+snowflake_table_clone_bytes{database_id="2",database_name="another_mock_db",schema_id="4",schema_name="mock_schema",table_id="3",table_name="mock_table"} 131072
+# HELP snowflake_table_failsafe_bytes Sum of bytes in Fail-Safe state owned by the table.
+# TYPE snowflake_table_failsafe_bytes gauge
+snowflake_table_failsafe_bytes{database_id="1",database_name="mock_db",schema_id="4",schema_name="mock_schema",table_id="3",table_name="mock_table"} 4096
+snowflake_table_failsafe_bytes{database_id="2",database_name="another_mock_db",schema_id="4",schema_name="mock_schema",table_id="3",table_name="mock_table"} 65536
+# HELP snowflake_table_time_travel_bytes Sum of bytes in Time Travel state owned by the table.
+# TYPE snowflake_table_time_travel_bytes gauge
+snowflake_table_time_travel_bytes{database_id="1",database_name="mock_db",schema_id="4",schema_name="mock_schema",table_id="3",table_name="mock_table"} 2048
+snowflake_table_time_travel_bytes{database_id="2",database_name="another_mock_db",schema_id="4",schema_name="mock_schema",table_id="3",table_name="mock_table"} 32768
+# HELP snowflake_used_cloud_services_credits Average overall credits billed per hour for cloud services over the last 24 hours.
+# TYPE snowflake_used_cloud_services_credits gauge
+snowflake_used_cloud_services_credits{service="another_mock_service_type",service_type="another_mock_service"} 0.125
+snowflake_used_cloud_services_credits{service="mock_service_type",service_type="mock_service"} 0.5
+# HELP snowflake_used_compute_credits Average overall credits billed per hour for virtual warehouses over the last 24 hours.
+# TYPE snowflake_used_compute_credits gauge
+snowflake_used_compute_credits{service="another_mock_service_type",service_type="another_mock_service"} 0.25
+snowflake_used_compute_credits{service="mock_service_type",service_type="mock_service"} 0.5
+# HELP snowflake_warehouse_blocked_queries Average number of queries blocked by a transaction lock.
+# TYPE snowflake_warehouse_blocked_queries gauge
+snowflake_warehouse_blocked_queries{id="10",name="mock_warehouse"} 10
+snowflake_warehouse_blocked_queries{id="11",name="another_mock_warehouse"} 534
+# HELP snowflake_warehouse_executed_queries Average number of queries executed.
+# TYPE snowflake_warehouse_executed_queries gauge
+snowflake_warehouse_executed_queries{id="10",name="mock_warehouse"} 80
+snowflake_warehouse_executed_queries{id="11",name="another_mock_warehouse"} 1234
+# HELP snowflake_warehouse_overloaded_queue_size Average number of queries queued because the warehouse was overloaded.
+# TYPE snowflake_warehouse_overloaded_queue_size gauge
+snowflake_warehouse_overloaded_queue_size{id="10",name="mock_warehouse"} 40
+snowflake_warehouse_overloaded_queue_size{id="11",name="another_mock_warehouse"} 123
+# HELP snowflake_warehouse_provisioning_queue_size Average number of queries queued because the warehouse was being provisioned.
+# TYPE snowflake_warehouse_provisioning_queue_size gauge
+snowflake_warehouse_provisioning_queue_size{id="10",name="mock_warehouse"} 20
+snowflake_warehouse_provisioning_queue_size{id="11",name="another_mock_warehouse"} 234
+# HELP snowflake_warehouse_used_cloud_service_credits Average overall credits billed per hour for cloud services for the warehouse over the last 24 hours.
+# TYPE snowflake_warehouse_used_cloud_service_credits gauge
+snowflake_warehouse_used_cloud_service_credits{id="10",name="mock_warehouse"} 12
+snowflake_warehouse_used_cloud_service_credits{id="11",name="another_mock_warehouse"} 45
+# HELP snowflake_warehouse_used_compute_credits Average overall credits billed per hour for the warehouse over the last 24 hours.
+# TYPE snowflake_warehouse_used_compute_credits gauge
+snowflake_warehouse_used_compute_credits{id="10",name="mock_warehouse"} 56
+snowflake_warehouse_used_compute_credits{id="11",name="another_mock_warehouse"} 89
+# HELP snowflake_up Metric indicating the status of the exporter collection. 1 indicates that the connection Snowflake was successful, and all available metrics were collected. 0 indicates that the exporter failed to collect 1 or more metrics, due to an inability to connect to Snowflake.
+# TYPE snowflake_up gauge
+snowflake_up 1

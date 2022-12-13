@@ -1,0 +1,22 @@
+---
+run:
+  deadline: 5m
+
+output:
+  sort-results: true
+
+linters:
+  enable:
+    - depguard
+    - gofumpt
+    - goimports
+    - revive
+    - misspell
+
+linters-settings:
+  errcheck:
+    exclude: errcheck_excludes.txt
+  goimports:
+    local-prefixes: github.com/prometheus/prometheus
+  gofumpt:
+    extra-rules: true
