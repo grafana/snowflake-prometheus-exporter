@@ -555,7 +555,7 @@ local top5ServiceCloudServiceCreditsUsedPanel = {
   ],
   type: 'table',
   title: 'Top 5 service cloud service credits used',
-  description: 'The top 5 Services that have the highest compute credit usages.',
+  description: 'The top 5 services that have the highest compute credit usages.',
   fieldConfig: {
     defaults: {
       color: {
