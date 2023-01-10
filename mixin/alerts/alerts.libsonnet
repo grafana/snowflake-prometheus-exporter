@@ -7,7 +7,7 @@
           {
             alert: 'SnowflakeWarnHighLoginFailures',
             expr: |||
-              100 * sum by (job, instance) (snowflake_failed_login_rate{}) / sum by (job, instance) (snowflake_login_rate{})
+              100 * sum by (job, instance) (last_over_time(snowflake_failed_login_rate{}[1h])) / sum by (job, instance) (last_over_time(snowflake_login_rate{}[30m]))
               > %(alertsWarningLoginFailures)s
             ||| % $._config,
             'for': '5m',
@@ -24,7 +24,7 @@
           {
             alert: 'SnowflakeWarnHighComputeCreditUsage',
             expr: |||
-              sum by (job, instance) (snowflake_used_compute_credits{})
+              sum by (job, instance) (last_over_time(snowflake_used_compute_credits{}[1h]))
               > 0.8 * %(alertsComputeCreditUsageLimit)s
             ||| % $._config,
             'for': '5m',
@@ -41,7 +41,7 @@
           {
             alert: 'SnowflakeCriticalHighComputeCreditUsage',
             expr: |||
-              sum by (job, instance) (snowflake_used_compute_credits{})
+              sum by (job, instance) (last_over_time(snowflake_used_compute_credits{}[1h]))
               > %(alertsComputeCreditUsageLimit)s
             ||| % $._config,
             'for': '5m',
@@ -58,7 +58,7 @@
           {
             alert: 'SnowflakeWarnHighServiceCreditUsage',
             expr: |||
-              sum by (job, instance) (snowflake_used_cloud_services_credits{})
+              sum by (job, instance) (last_over_time(snowflake_used_cloud_services_credits{}[1h]))
               > 0.8 * %(alertsServiceCreditUsageLimit)s
             ||| % $._config,
             'for': '5m',
@@ -75,7 +75,7 @@
           {
             alert: 'SnowflakeCriticalHighServiceCreditUsage',
             expr: |||
-              sum by (job, instance) (snowflake_used_cloud_services_credits{})
+              sum by (job, instance) (last_over_time(snowflake_used_cloud_services_credits{}[1h]))
               > %(alertsServiceCreditUsageLimit)s
             ||| % $._config,
             'for': '5m',
@@ -91,7 +91,7 @@
           },
           {
             alert: 'SnowflakeDown',
-            expr: 'snowflake_up{} == 0',
+            expr: 'last_over_time(snowflake_up{}[1h]) == 0',
             'for': '5m',
             labels: {
               severity: 'warning',
