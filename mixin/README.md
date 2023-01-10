@@ -12,14 +12,12 @@ The Snowflake overview dashboard provides details on warehouse activity, login a
 ![First screenshot of the overview dashboard](https://storage.googleapis.com/grafanalabs-integration-assets/snowflake/screenshots/snowflake_overview_1.png)
 ![Second screenshot of the overview dashboard](https://storage.googleapis.com/grafanalabs-integration-assets/snowflake/screenshots/snowflake_overview_2.png)
 ![Third screenshot of the overview dashboard](https://storage.googleapis.com/grafanalabs-integration-assets/snowflake/screenshots/snowflake_overview_3.png)
-![Fourth screenshot of the overview dashboard](https://storage.googleapis.com/grafanalabs-integration-assets/snowflake/screenshots/snowflake_overview_4.png)
 
 ## Snowflake data ownership
 The Snowflake data ownership dashboard provides details on used storage for schemas and tables.
 
 ![First screenshot of the data ownership dashboard](https://storage.googleapis.com/grafanalabs-integration-assets/snowflake/screenshots/snowflake_data_ownership_1.png)
 ![Second screenshot of the data ownership dashboard](https://storage.googleapis.com/grafanalabs-integration-assets/snowflake/screenshots/snowflake_data_ownership_2.png)
-![Third screenshot of the data ownership dashboard](https://storage.googleapis.com/grafanalabs-integration-assets/snowflake/screenshots/snowflake_data_ownership_3.png)
 
 ## Install tools
 

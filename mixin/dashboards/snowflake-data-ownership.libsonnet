@@ -746,16 +746,16 @@ local cloneTableOwnedDataPanel = {
       )
       .addPanels(
         [
-          activeSchemaOwnedDataPanel { gridPos: { h: 9, w: 24, x: 0, y: 0 } },
-          timeTravelSchemaOwnedDataPanel { gridPos: { h: 8, w: 8, x: 0, y: 9 } },
-          failsafeSchemaOwnedDataPanel { gridPos: { h: 8, w: 8, x: 8, y: 9 } },
-          cloneSchemaOwnedDataPanel { gridPos: { h: 8, w: 8, x: 16, y: 9 } },
-          top5LargestTablesPanel { gridPos: { h: 8, w: 24, x: 0, y: 17 } },
-          tableDataRow { gridPos: { h: 1, w: 24, x: 0, y: 25 } },
-          activeTableOwnedDataPanel { gridPos: { h: 8, w: 24, x: 0, y: 26 } },
-          timeTravelTableOwnedDataPanel { gridPos: { h: 8, w: 8, x: 0, y: 34 } },
-          failsafeTableOwnedDataPanel { gridPos: { h: 8, w: 8, x: 8, y: 34 } },
-          cloneTableOwnedDataPanel { gridPos: { h: 8, w: 8, x: 16, y: 34 } },
+          activeSchemaOwnedDataPanel { gridPos: { h: 8, w: 6, x: 0, y: 0 } },
+          failsafeSchemaOwnedDataPanel { gridPos: { h: 8, w: 6, x: 6, y: 0 } },
+          cloneSchemaOwnedDataPanel { gridPos: { h: 8, w: 6, x: 12, y: 0 } },
+          timeTravelSchemaOwnedDataPanel { gridPos: { h: 8, w: 6, x: 18, y: 0 } },
+          top5LargestTablesPanel { gridPos: { h: 7, w: 24, x: 0, y: 8 } },
+          tableDataRow { gridPos: { h: 1, w: 24, x: 0, y: 15 } },
+          activeTableOwnedDataPanel { gridPos: { h: 8, w: 12, x: 0, y: 16 } },
+          failsafeTableOwnedDataPanel { gridPos: { h: 8, w: 12, x: 12, y: 16 } },
+          timeTravelTableOwnedDataPanel { gridPos: { h: 8, w: 12, x: 0, y: 24 } },
+          cloneTableOwnedDataPanel { gridPos: { h: 8, w: 12, x: 12, y: 24 } },
         ]
       ),
 
