@@ -66,10 +66,10 @@ type Collector struct {
 	logins                            *prometheus.Desc
 	successfulLogins                  *prometheus.Desc
 	failedLogins                      *prometheus.Desc
-	warehouseExecutedQueries          *prometheus.Desc
-	warehouseOverloadedQueueSize      *prometheus.Desc
-	warehouseProvisioningQueueSize    *prometheus.Desc
-	warehouseBlockedQueries           *prometheus.Desc
+	warehouseExecutedQueryLoad        *prometheus.Desc
+	warehouseOverloadedQueueLoad      *prometheus.Desc
+	warehouseProvisioningQueueLoad    *prometheus.Desc
+	warehouseBlockedQueryLoad         *prometheus.Desc
 	autoClusteringCredits             *prometheus.Desc
 	autoClusteringBytes               *prometheus.Desc
 	autoClusteringRows                *prometheus.Desc
@@ -161,27 +161,27 @@ func NewCollector(logger log.Logger, c *Config) *Collector {
 			[]string{labelClientType, labelClientVersion},
 			nil,
 		),
-		warehouseExecutedQueries: prometheus.NewDesc(
+		warehouseExecutedQueryLoad: prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, "warehouse", "executed_queries"),
-			"Average number of queries executed.",
+			"Average query load for queries executed over the last 24 hours.",
 			[]string{labelName, labelID},
 			nil,
 		),
-		warehouseOverloadedQueueSize: prometheus.NewDesc(
+		warehouseOverloadedQueueLoad: prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, "warehouse", "overloaded_queue_size"),
-			"Average number of queries queued because the warehouse was overloaded.",
+			"Average load value for queries queued because the warehouse was being overloaded over the last 24 hours.",
 			[]string{labelName, labelID},
 			nil,
 		),
-		warehouseProvisioningQueueSize: prometheus.NewDesc(
+		warehouseProvisioningQueueLoad: prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, "warehouse", "provisioning_queue_size"),
-			"Average number of queries queued because the warehouse was being provisioned.",
+			"Average load value for queries queued because the warehouse was being provisioned over the last 24 hours.",
 			[]string{labelName, labelID},
 			nil,
 		),
-		warehouseBlockedQueries: prometheus.NewDesc(
+		warehouseBlockedQueryLoad: prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, "warehouse", "blocked_queries"),
-			"Average number of queries blocked by a transaction lock.",
+			"Average load value for queries blocked by a transaction lock over the last 24 hours.",
 			[]string{labelName, labelID},
 			nil,
 		),
@@ -264,10 +264,10 @@ func (c *Collector) Describe(descs chan<- *prometheus.Desc) {
 	descs <- c.logins
 	descs <- c.successfulLogins
 	descs <- c.failedLogins
-	descs <- c.warehouseExecutedQueries
-	descs <- c.warehouseOverloadedQueueSize
-	descs <- c.warehouseProvisioningQueueSize
-	descs <- c.warehouseBlockedQueries
+	descs <- c.warehouseExecutedQueryLoad
+	descs <- c.warehouseOverloadedQueueLoad
+	descs <- c.warehouseProvisioningQueueLoad
+	descs <- c.warehouseBlockedQueryLoad
 	descs <- c.autoClusteringCredits
 	descs <- c.autoClusteringBytes
 	descs <- c.autoClusteringRows
@@ -470,10 +470,10 @@ func (c *Collector) collectWarehouseLoadMetrics(db *sql.DB, metrics chan<- prome
 			return fmt.Errorf("failed to scan row: %w", err)
 		}
 
-		metrics <- prometheus.MustNewConstMetric(c.warehouseExecutedQueries, prometheus.GaugeValue, avgRunning, warehouseName, warehouseID)
-		metrics <- prometheus.MustNewConstMetric(c.warehouseOverloadedQueueSize, prometheus.GaugeValue, avgQueued, warehouseName, warehouseID)
-		metrics <- prometheus.MustNewConstMetric(c.warehouseProvisioningQueueSize, prometheus.GaugeValue, avgQueuedProvisioning, warehouseName, warehouseID)
-		metrics <- prometheus.MustNewConstMetric(c.warehouseBlockedQueries, prometheus.GaugeValue, avgBlocked, warehouseName, warehouseID)
+		metrics <- prometheus.MustNewConstMetric(c.warehouseExecutedQueryLoad, prometheus.GaugeValue, avgRunning, warehouseName, warehouseID)
+		metrics <- prometheus.MustNewConstMetric(c.warehouseOverloadedQueueLoad, prometheus.GaugeValue, avgQueued, warehouseName, warehouseID)
+		metrics <- prometheus.MustNewConstMetric(c.warehouseProvisioningQueueLoad, prometheus.GaugeValue, avgQueuedProvisioning, warehouseName, warehouseID)
+		metrics <- prometheus.MustNewConstMetric(c.warehouseBlockedQueryLoad, prometheus.GaugeValue, avgBlocked, warehouseName, warehouseID)
 	}
 
 	return rows.Err()

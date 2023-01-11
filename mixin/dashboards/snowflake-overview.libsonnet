@@ -18,22 +18,22 @@ local warehouseActivityPanel = {
     prometheus.target(
       'snowflake_warehouse_executed_queries{instance=~"$instance", job=~"$job", name=~"$warehouse"}',
       datasource=promDatasource,
-      legendFormat='{{instance}} - {{name}} - Executed queries'
+      legendFormat='{{instance}} - {{name}} - Executed query load'
     ),
     prometheus.target(
       'snowflake_warehouse_overloaded_queue_size{instance=~"$instance", job=~"$job", name=~"$warehouse"}',
       datasource=promDatasource,
-      legendFormat='{{instance}} - {{name}} - Overloaded queue size'
+      legendFormat='{{instance}} - {{name}} - Overloaded queue load'
     ),
     prometheus.target(
       'snowflake_warehouse_provisioning_queue_size{instance=~"$instance", job=~"$job", name=~"$warehouse"}',
       datasource=promDatasource,
-      legendFormat='{{instance}} - {{name}} - Provisioning queue size'
+      legendFormat='{{instance}} - {{name}} - Provisioning queue load'
     ),
     prometheus.target(
       'snowflake_warehouse_blocked_queries{instance=~"$instance", job=~"$job", name=~"$warehouse"}',
       datasource=promDatasource,
-      legendFormat='{{instance}} - {{name}} - Blocked queries'
+      legendFormat='{{instance}} - {{name}} - Blocked query load'
     ),
   ],
   type: 'timeseries',
@@ -78,7 +78,7 @@ local warehouseActivityPanel = {
         },
       },
       mappings: [],
-      unit: 'queries / hr',
+      unit: 'percentunit',
     },
     overrides: [],
   },
