@@ -10,7 +10,6 @@ exclusions:
   panel-units-rule:
     reason: "Custom units are used for better user experience in some panels"
     entries:
-    - panel: "Warehouse activity"
     - panel: "Login attempts"    
     - panel: "Autoclustering credits used"
     - panel: "Top 5 service compute credits used"
