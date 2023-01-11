@@ -78,7 +78,7 @@ local warehouseActivityPanel = {
         },
       },
       mappings: [],
-      unit: 'load',
+      unit: 'percentunit',
     },
     overrides: [],
   },
