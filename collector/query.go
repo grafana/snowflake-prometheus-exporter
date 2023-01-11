@@ -47,7 +47,7 @@ const (
 	// https://docs.snowflake.com/en/sql-reference/account-usage/warehouse_load_history.html
 	warehouseLoadMetricQuery = `SELECT WAREHOUSE_NAME, WAREHOUSE_ID, avg(AVG_RUNNING), avg(AVG_QUEUED_LOAD), avg(AVG_QUEUED_PROVISIONING),  avg(AVG_BLOCKED)
 	FROM ACCOUNT_USAGE.WAREHOUSE_LOAD_HISTORY
-	WHERE START_TIME >= dateadd(hour, -24, current_timestamp()) 
+	WHERE START_TIME >= dateadd(hour, -1, current_timestamp()) 
 	GROUP BY WAREHOUSE_NAME, WAREHOUSE_ID;`
 
 	// https://docs.snowflake.com/en/sql-reference/account-usage/automatic_clustering_history.html
