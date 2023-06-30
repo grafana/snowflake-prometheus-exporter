@@ -28,7 +28,7 @@ const (
 	// https://docs.snowflake.com/en/sql-reference/account-usage/metering_history.html
 	creditMetricQuery = `SELECT SERVICE_TYPE, NAME, avg(CREDITS_USED_COMPUTE), avg(CREDITS_USED_CLOUD_SERVICES)
 	FROM ACCOUNT_USAGE.METERING_HISTORY
-	WHERE START_TIME >= dateadd(hour, -24, current_timestamp())
+	WHERE NAME IS NOT NULL AND START_TIME >= dateadd(hour, -24, current_timestamp())
 	GROUP BY SERVICE_TYPE, NAME;`
 
 	// https://docs.snowflake.com/en/sql-reference/account-usage/warehouse_metering_history.html
