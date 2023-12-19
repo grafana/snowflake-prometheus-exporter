@@ -71,19 +71,19 @@ snowflake_used_cloud_services_credits{service="mock_service_type",service_type="
 # TYPE snowflake_used_compute_credits gauge
 snowflake_used_compute_credits{service="another_mock_service_type",service_type="another_mock_service"} 0.25
 snowflake_used_compute_credits{service="mock_service_type",service_type="mock_service"} 0.5
-# HELP snowflake_warehouse_blocked_queries Average number of queries blocked by a transaction lock.
+# HELP snowflake_warehouse_blocked_queries Average load value for queries blocked by a transaction lock over the last 24 hours.
 # TYPE snowflake_warehouse_blocked_queries gauge
 snowflake_warehouse_blocked_queries{id="10",name="mock_warehouse"} 10
 snowflake_warehouse_blocked_queries{id="11",name="another_mock_warehouse"} 534
-# HELP snowflake_warehouse_executed_queries Average number of queries executed.
+# HELP snowflake_warehouse_executed_queries Average query load for queries executed over the last 24 hours.
 # TYPE snowflake_warehouse_executed_queries gauge
 snowflake_warehouse_executed_queries{id="10",name="mock_warehouse"} 80
 snowflake_warehouse_executed_queries{id="11",name="another_mock_warehouse"} 1234
-# HELP snowflake_warehouse_overloaded_queue_size Average number of queries queued because the warehouse was overloaded.
+# HELP snowflake_warehouse_overloaded_queue_size Average load value for queries queued because the warehouse was being overloaded over the last 24 hours.
 # TYPE snowflake_warehouse_overloaded_queue_size gauge
 snowflake_warehouse_overloaded_queue_size{id="10",name="mock_warehouse"} 40
 snowflake_warehouse_overloaded_queue_size{id="11",name="another_mock_warehouse"} 123
-# HELP snowflake_warehouse_provisioning_queue_size Average number of queries queued because the warehouse was being provisioned.
+# HELP snowflake_warehouse_provisioning_queue_size Average load value for queries queued because the warehouse was being provisioned over the last 24 hours.
 # TYPE snowflake_warehouse_provisioning_queue_size gauge
 snowflake_warehouse_provisioning_queue_size{id="10",name="mock_warehouse"} 20
 snowflake_warehouse_provisioning_queue_size{id="11",name="another_mock_warehouse"} 234
