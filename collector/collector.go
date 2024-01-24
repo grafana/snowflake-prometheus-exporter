@@ -399,14 +399,14 @@ func (c *Collector) collectCreditMetrics(db *sql.DB, metrics chan<- prometheus.M
 	defer rows.Close()
 
 	for rows.Next() {
-		var serviceType, serviceName string
+		var serviceType, serviceName sql.NullString
 		var computeCreditsUsedAvg, cloudServiceCreditsUsedAvg float64
 		if err := rows.Scan(&serviceType, &serviceName, &computeCreditsUsedAvg, &cloudServiceCreditsUsedAvg); err != nil {
 			return fmt.Errorf("failed to scan row: %w", err)
 		}
 
-		metrics <- prometheus.MustNewConstMetric(c.usedComputeCredits, prometheus.GaugeValue, computeCreditsUsedAvg, serviceType, serviceName)
-		metrics <- prometheus.MustNewConstMetric(c.usedCloudServicesCredits, prometheus.GaugeValue, cloudServiceCreditsUsedAvg, serviceType, serviceName)
+		metrics <- prometheus.MustNewConstMetric(c.usedComputeCredits, prometheus.GaugeValue, computeCreditsUsedAvg, serviceType.String, serviceName.String)
+		metrics <- prometheus.MustNewConstMetric(c.usedCloudServicesCredits, prometheus.GaugeValue, cloudServiceCreditsUsedAvg, serviceType.String, serviceName.String)
 	}
 
 	return rows.Err()
@@ -487,7 +487,7 @@ func (c *Collector) collectAutoClusteringMetrics(db *sql.DB, metrics chan<- prom
 	defer rows.Close()
 
 	for rows.Next() {
-		var tableName, tableID, databaseName, databaseID, schemaName, schemaID string
+		var tableName, tableID, databaseName, databaseID, schemaName, schemaID sql.NullString
 		var creditsUsed, bytesReclustered, rowsReclustered float64
 		if err := rows.Scan(&tableName, &tableID, &schemaName, &schemaID, &databaseName, &databaseID,
 			&creditsUsed, &bytesReclustered, &rowsReclustered); err != nil {
@@ -495,11 +495,11 @@ func (c *Collector) collectAutoClusteringMetrics(db *sql.DB, metrics chan<- prom
 		}
 
 		metrics <- prometheus.MustNewConstMetric(c.autoClusteringCredits, prometheus.GaugeValue, creditsUsed,
-			tableName, tableID, schemaName, schemaID, databaseName, databaseID)
+			tableName.String, tableID.String, schemaName.String, schemaID.String, databaseName.String, databaseID.String)
 		metrics <- prometheus.MustNewConstMetric(c.autoClusteringBytes, prometheus.GaugeValue, bytesReclustered,
-			tableName, tableID, schemaName, schemaID, databaseName, databaseID)
+			tableName.String, tableID.String, schemaName.String, schemaID.String, databaseName.String, databaseID.String)
 		metrics <- prometheus.MustNewConstMetric(c.autoClusteringRows, prometheus.GaugeValue, rowsReclustered,
-			tableName, tableID, schemaName, schemaID, databaseName, databaseID)
+			tableName.String, tableID.String, schemaName.String, schemaID.String, databaseName.String, databaseID.String)
 	}
 
 	return rows.Err()
@@ -513,7 +513,7 @@ func (c *Collector) collectTableStorageMetrics(db *sql.DB, metrics chan<- promet
 	defer rows.Close()
 
 	for rows.Next() {
-		var tableName, tableID, databaseName, databaseID, schemaName, schemaID string
+		var tableName, tableID, databaseName, databaseID, schemaName, schemaID sql.NullString
 		var activeBytes, timeTravelBytes, failsafeBytes, cloneBytes float64
 		if err := rows.Scan(&tableName, &tableID, &schemaName, &schemaID, &databaseName, &databaseID,
 			&activeBytes, &timeTravelBytes, &failsafeBytes, &cloneBytes); err != nil {
@@ -521,13 +521,13 @@ func (c *Collector) collectTableStorageMetrics(db *sql.DB, metrics chan<- promet
 		}
 
 		metrics <- prometheus.MustNewConstMetric(c.tableActiveBytes, prometheus.GaugeValue, activeBytes,
-			tableName, tableID, schemaName, schemaID, databaseName, databaseID)
+			tableName.String, tableID.String, schemaName.String, schemaID.String, databaseName.String, databaseID.String)
 		metrics <- prometheus.MustNewConstMetric(c.tableTimeTravelBytes, prometheus.GaugeValue, timeTravelBytes,
-			tableName, tableID, schemaName, schemaID, databaseName, databaseID)
+			tableName.String, tableID.String, schemaName.String, schemaID.String, databaseName.String, databaseID.String)
 		metrics <- prometheus.MustNewConstMetric(c.tableFailsafeBytes, prometheus.GaugeValue, failsafeBytes,
-			tableName, tableID, schemaName, schemaID, databaseName, databaseID)
+			tableName.String, tableID.String, schemaName.String, schemaID.String, databaseName.String, databaseID.String)
 		metrics <- prometheus.MustNewConstMetric(c.tableCloneBytes, prometheus.GaugeValue, cloneBytes,
-			tableName, tableID, schemaName, schemaID, databaseName, databaseID)
+			tableName.String, tableID.String, schemaName.String, schemaID.String, databaseName.String, databaseID.String)
 	}
 
 	return rows.Err()
