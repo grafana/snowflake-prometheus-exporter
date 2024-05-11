@@ -15,25 +15,35 @@
 package collector
 
 import (
+	"crypto/rsa"
+	"crypto/x509"
+	"encoding/pem"
 	"errors"
 	"fmt"
-	"net/url"
+	"os"
+
+	"github.com/go-kit/log/level"
+	"github.com/prometheus/common/promlog"
+	sf "github.com/snowflakedb/gosnowflake"
 )
 
 type Config struct {
-	AccountName string
-	Username    string
-	Password    string
-	Role        string
-	Warehouse   string
+	AccountName        string
+	Username           string
+	Password           string
+	Role               string
+	Warehouse          string
+	PrivateKeyFilePath string
 }
 
 var (
-	errNoAccountName = errors.New("account_name must be specified")
-	errNoUsername    = errors.New("username must be specified")
-	errNoPassword    = errors.New("password must be specified")
-	errNoRole        = errors.New("role must be specified")
-	errNoWarehouse   = errors.New("warehouse must be specified")
+	errNoAccountName             = errors.New("account_name must be specified")
+	errNoUsername                = errors.New("username must be specified")
+	errNoPasswordAndNoPrivateKey = errors.New("password OR private key path must be specified")
+	errNoRole                    = errors.New("role must be specified")
+	errNoWarehouse               = errors.New("warehouse must be specified")
+	errParsingPEM                = errors.New("failed to parse PEM block containing the private key")
+	errFileNotRSAType            = errors.New("type assertion failed, expected type *rsa.PrivateKey")
 )
 
 func (c Config) Validate() error {
@@ -45,8 +55,9 @@ func (c Config) Validate() error {
 		return errNoUsername
 	}
 
-	if c.Password == "" {
-		return errNoPassword
+	// raise err if both password AND private key are not provided
+	if c.Password == "" && c.PrivateKeyFilePath == "" {
+		return errNoPasswordAndNoPrivateKey
 	}
 
 	if c.Role == "" {
@@ -64,11 +75,61 @@ func (c Config) Validate() error {
 // options specified in the config.
 // Assumes the config is valid according to Validate().
 func (c Config) snowflakeConnectionString() string {
-	accountNameEscaped := url.QueryEscape(c.AccountName)
-	usernameEscaped := url.QueryEscape(c.Username)
-	passwordEscaped := url.QueryEscape(c.Password)
-	roleEscaped := url.QueryEscape(c.Role)
-	warehouseEscaped := url.QueryEscape(c.Warehouse)
+	snowflakeConfig := &sf.Config{
+		Account:   c.AccountName,
+		User:      c.Username,
+		Password:  c.Password,
+		Role:      c.Role,
+		Warehouse: c.Warehouse,
+		Database:  "SNOWFLAKE",
+	}
 
-	return fmt.Sprintf("%s:%s@%s/SNOWFLAKE?role=%s&warehouse=%s", usernameEscaped, passwordEscaped, accountNameEscaped, roleEscaped, warehouseEscaped)
+	var err error
+	logger := promlog.New(&promlog.Config{})
+
+	// if private key path is provided, try parsing it
+	if pkPath := c.PrivateKeyFilePath; pkPath != "" {
+		snowflakeConfig.PrivateKey, err = parsePrivateKeyFromFile(pkPath)
+		if err != nil {
+			level.Error(logger).Log(
+				"msg", fmt.Sprintf("error parsing private key file at path %s: %v", pkPath, err),
+				"err", err,
+			)
+			os.Exit(1)
+		}
+		// if private key is valid, use `AuthTypeJwt` authenticator
+		// https://github.com/snowflakedb/gosnowflake/blob/c355711dbd1f9ab10dfbfdcdd194656c23abb45d/doc.go#L793
+		snowflakeConfig.Authenticator = sf.AuthTypeJwt
+	}
+
+	dsn, _ := sf.DSN(snowflakeConfig)
+
+	return dsn
+}
+
+// parse private key given its file path
+// https://github.com/snowflakedb/gosnowflake/blob/c355711dbd1f9ab10dfbfdcdd194656c23abb45d/dsn.go#L875
+func parsePrivateKeyFromFile(path string) (*rsa.PrivateKey, error) {
+	bytes, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+
+	block, _ := pem.Decode(bytes)
+	if block == nil {
+		return nil, errParsingPEM
+	}
+
+	privateKey, err := x509.ParsePKCS8PrivateKey(block.Bytes)
+	if err != nil {
+		return nil, err
+	}
+
+	// assert type from `any` to `*rsa.PrivateKey`
+	pk, ok := privateKey.(*rsa.PrivateKey)
+	if !ok {
+		return nil, fmt.Errorf("%v but got %T", errFileNotRSAType, privateKey)
+	}
+
+	return pk, nil
 }

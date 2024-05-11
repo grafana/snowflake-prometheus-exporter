@@ -6,26 +6,35 @@ Exports [Snowflake](www.snowflake.com) warehouse, database, table, and replicati
 ### Command line flags
 The exporter may be configured through its command line flags:
 ```
-  -h, --help                 Show context-sensitive help (also try --help-long and --help-man).
+  -h, --help                                 Show context-sensitive help (also try --help-long and --help-man).
       --web.listen-address=:9975 ...  
-                             Addresses on which to expose metrics and web interface. Repeatable for multiple addresses.
-      --web.config.file=""   [EXPERIMENTAL] Path to configuration file that can enable TLS or authentication.
+                                             Addresses on which to expose metrics and web interface. Repeatable for multiple addresses.
+      --web.config.file=""                   [EXPERIMENTAL] Path to configuration file that can enable TLS or authentication.
       --web.telemetry-path="/metrics"  
-                             Path under which to expose metrics.
-      --account=ACCOUNT      The account to collect metrics for.
-      --username=USERNAME    The username for the user used when querying metrics.
-      --password=PASSWORD    The password for the user used when querying metrics.
-      --role="ACCOUNTADMIN"  The role to use when querying metrics.
-      --warehouse=WAREHOUSE  The warehouse to use when querying metrics.
-      --version              Show application version.
-      --log.level=info       Only log messages with the given severity or above. One of: [debug, info, warn, error]
-      --log.format=logfmt    Output format of log messages. One of: [logfmt, json]
+                                             Path under which to expose metrics.
+      --account=ACCOUNT                      The account to collect metrics for.
+      --username=USERNAME                    The username for the user used when querying metrics.
+      --password=PASSWORD                    The password for the user used when querying metrics.
+      --private-key-path=./PRIVATE_KEY.p8  
+                                             The path to the private key (PKCS #8 syntax).
+      --role="ACCOUNTADMIN"                  The role to use when querying metrics.
+      --warehouse=WAREHOUSE                  The warehouse to use when querying metrics.
+      --version                              Show application version.
+      --log.level=info                       Only log messages with the given severity or above. One of: [debug, info, warn, error]
+      --log.format=logfmt                    Output format of log messages. One of: [logfmt, json]
 ```
 
-Example usage: 
+Example usage (with password): 
 ```sh
 ./snowflake-exporter --account=XXXXXXX-YYYYYYY --username=USERNAME --password=PASSWORD --warehouse=WAREHOUSE --role=ACCOUNTADMIN
 ```
+
+Example usage (with private key): 
+```sh
+./snowflake-exporter --account=XXXXXXX-YYYYYYY --username=USERNAME --private-key-path=./PRIVATE_KEY.p8 --warehouse=WAREHOUSE --role=ACCOUNTADMIN
+```
+
+_If both password and private key file are specified, the private key takes precedence._
 
 ### Environment Variables
 Alternatively, the exporter may be configured using environment variables:
@@ -35,15 +44,26 @@ Alternatively, the exporter may be configured using environment variables:
 | SNOWFLAKE_EXPORTER_ACCOUNT            | The account to collect metrics for.                   |
 | SNOWFLAKE_EXPORTER_USERNAME           | The username for the user used when querying metrics. |
 | SNOWFLAKE_EXPORTER_PASSWORD           | The password for the user used when querying metrics. |
+| SNOWFLAKE_EXPORTER_PRIVATE_KEY_PATH   | The path to the private key (PKCS #8 syntax).         |
 | SNOWFLAKE_EXPORTER_ROLE               | The role to use when querying metrics.                |
 | SNOWFLAKE_EXPORTER_WAREHOUSE          | The warehouse to use when querying metrics.           |
 | SNOWFLAKE_EXPORTER_WEB_TELEMETRY_PATH | Path under which to expose metrics.                   |
 
-Example usage:
+Example usage (with password):
 ```sh
 SNOWFLAKE_EXPORTER_ACCOUNT=XXXXXXX-YYYYYYY \
 SNOWFLAKE_EXPORTER_USERNAME=USERNAME \
 SNOWFLAKE_EXPORTER_PASSWORD=PASSWORD \
+SNOWFLAKE_EXPORTER_ROLE=ACCOUNTADMIN \
+SNOWFLAKE_EXPORTER_WAREHOUSE=WAREHOUSE \
+./snowflake-exporter
+```
+
+Example usage (with private key):
+```sh
+SNOWFLAKE_EXPORTER_ACCOUNT=XXXXXXX-YYYYYYY \
+SNOWFLAKE_EXPORTER_USERNAME=USERNAME \
+SNOWFLAKE_EXPORTER_PRIVATE_KEY_PATH=./PRIVATE_KEY.p8 \
 SNOWFLAKE_EXPORTER_ROLE=ACCOUNTADMIN \
 SNOWFLAKE_EXPORTER_WAREHOUSE=WAREHOUSE \
 ./snowflake-exporter
