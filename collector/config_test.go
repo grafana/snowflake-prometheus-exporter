@@ -47,14 +47,38 @@ func TestConfig_Validate(t *testing.T) {
 			expectedErr: errNoUsername,
 		},
 		{
-			name: "No password and no private key",
+			name: "No password or private key path",
 			inputConfig: Config{
 				AccountName: "some_account",
 				Username:    "some_user",
 				Role:        "ACCOUNTADMIN",
 				Warehouse:   "ACCOUNT_WH",
 			},
-			expectedErr: errNoPasswordAndNoPrivateKey,
+			expectedErr: errNoAuth,
+		},
+		{
+			name: "Both password and private key path",
+			inputConfig: Config{
+				AccountName:        "some_account",
+				Username:           "some_user",
+				Password:           "some_password",
+				Role:               "ACCOUNTADMIN",
+				Warehouse:          "ACCOUNT_WH",
+				PrivateKeyPath:     "/some/path/rsa_key.p8",
+				PrivateKeyPassword: "some_key_pwd",
+			},
+			expectedErr: errExclusiveAuth,
+		},
+		{
+			name: "No private key password",
+			inputConfig: Config{
+				AccountName:    "some_account",
+				Username:       "some_user",
+				Role:           "ACCOUNTADMIN",
+				Warehouse:      "ACCOUNT_WH",
+				PrivateKeyPath: "/some/path/rsa_key.p8",
+			},
+			expectedErr: errNoPrivKeyPwd,
 		},
 		{
 			name: "No Role",
@@ -117,7 +141,7 @@ func TestConfig_snowflakeConnectionString(t *testing.T) {
 		expectedString string
 	}{
 		{
-			name: "Valid config",
+			name: "Valid config - password",
 			inputConfig: Config{
 				AccountName: "some-account",
 				Username:    "some-user",
@@ -126,6 +150,30 @@ func TestConfig_snowflakeConnectionString(t *testing.T) {
 				Warehouse:   "some-warehouse",
 			},
 			expectedString: "some-user:some-pass@some-account.snowflakecomputing.com:443?database=SNOWFLAKE&ocspFailOpen=true&role=ACCOUNTADMIN&validateDefaultParameters=true&warehouse=some-warehouse",
+		},
+		{
+			name: "Valid config - RSA",
+			inputConfig: Config{
+				AccountName:        "some-account",
+				Username:           "some-user",
+				Role:               "ACCOUNTADMIN",
+				Warehouse:          "some-warehouse",
+				PrivateKeyPath:     "/some/path/rsa_key.p8",
+				PrivateKeyPassword: "some-password",
+			},
+			expectedString: "some-user@some-account/SNOWFLAKE?role=ACCOUNTADMIN&warehouse=some-warehouse&AUTHENTICATOR=SNOWFLAKE_JWT&PRIV_KEY_FILE=%2Fsome%2Fpath%2Frsa_key.p8&PRIV_KEY_PWD=some-password",
+		},
+		{
+			name: "Valid config - RSA",
+			inputConfig: Config{
+				AccountName:        "some-account",
+				Username:           "some-user",
+				Role:               "ACCOUNTADMIN",
+				Warehouse:          "some-warehouse",
+				PrivateKeyPath:     "/some/path/rsa_key.p8",
+				PrivateKeyPassword: "some-password",
+			},
+			expectedString: "some-user@some-account/SNOWFLAKE?role=ACCOUNTADMIN&warehouse=some-warehouse&AUTHENTICATOR=SNOWFLAKE_JWT&PRIV_KEY_FILE=%2Fsome%2Fpath%2Frsa_key.p8&PRIV_KEY_PWD=some-password",
 		},
 		{
 			name: "Connection string parts are escaped",
