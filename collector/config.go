@@ -16,6 +16,7 @@ package collector
 
 import (
 	"crypto/rsa"
+	"crypto/x509"
 	"encoding/pem"
 	"errors"
 	"fmt"
@@ -44,6 +45,7 @@ var (
 	errNoAuth        = errors.New("password or private_key must be specified")
 	errExclusiveAuth = errors.New("password and private_key are mutually exclusive and should not both be specified")
 	errNoPrivKeyPwd  = errors.New("private_key needs a private_key_password to be specified")
+	errDecodingPEM   = errors.New("error occurred while decoding private key PEM block")
 )
 
 func (c Config) Validate() error {
@@ -63,9 +65,9 @@ func (c Config) Validate() error {
 		return errExclusiveAuth
 	}
 
-	if c.PrivateKeyPath != "" && c.PrivateKeyPassword == "" {
-		return errNoPrivKeyPwd
-	}
+	// if c.PrivateKeyPath != "" && c.PrivateKeyPassword == "" {
+	// 	return errNoPrivKeyPwd
+	// }
 
 	if c.Role == "" {
 		return errNoRole
@@ -82,31 +84,47 @@ func (c Config) Validate() error {
 // of the config.
 // Assumes that the private key is encrypted in PKCS #8 syntax, as is recommended by Snowflake
 func (c Config) decryptPrivateKey() (*rsa.PrivateKey, error) {
+	var parsedPrivateKey *rsa.PrivateKey
 	pk, err := os.ReadFile(c.PrivateKeyPath)
 	if err != nil {
 		fmt.Printf("Error opening file: %s", err)
 		return nil, err
 	}
 	block, _ := pem.Decode(pk)
-
-	parsedPk, err := pkcs8.ParsePKCS8PrivateKeyRSA(block.Bytes, []byte(c.PrivateKeyPassword))
-	if err != nil {
-		return nil, errors.New("Error occurred while parsing private key, private_key_password may be incorrect")
+	if block == nil {
+		return nil, errDecodingPEM
 	}
-	return parsedPk, err
+
+	if c.PrivateKeyPassword != "" {
+		// encrypted private key
+		decryptedKey, err := pkcs8.ParsePKCS8PrivateKeyRSA(block.Bytes, []byte(c.PrivateKeyPassword))
+		if err != nil {
+			return nil, err
+		}
+		parsedPrivateKey = decryptedKey
+	} else {
+		// unencrypted private key
+		unencryptedKey, err := x509.ParsePKCS8PrivateKey(block.Bytes)
+		if err != nil {
+			return nil, err
+		}
+		parsedPrivateKey = unencryptedKey.(*rsa.PrivateKey)
+	}
+
+	return parsedPrivateKey, nil
 }
 
 // snowflakeConnectionString returns a connection string to connect to the SNOWFLAKE database using the
 // options specified in the config.
 // Assumes the config is valid according to Validate().
 func (c Config) snowflakeConnectionString() (string, error) {
-	sf := gosnowflake.Config{}
-
-	sf.Account = c.AccountName
-	sf.User = c.Username
-	sf.Role = c.Role
-	sf.Warehouse = c.Warehouse
-	sf.Database = "SNOWFLAKE"
+	sf := &gosnowflake.Config{
+		Account:   c.AccountName,
+		User:      c.Username,
+		Role:      c.Role,
+		Warehouse: c.Warehouse,
+		Database:  "SNOWFLAKE",
+	}
 
 	if c.PrivateKeyPath != "" {
 		// key-pair authentication
@@ -116,12 +134,12 @@ func (c Config) snowflakeConnectionString() (string, error) {
 		}
 		sf.Authenticator = gosnowflake.AuthTypeJwt
 		sf.PrivateKey = pk
-		dsn, err := gosnowflake.DSN(&sf)
+		dsn, err := gosnowflake.DSN(sf)
 		return dsn, err
 	} else {
 		// password authentication
 		sf.Password = c.Password
-		dsn, err := gosnowflake.DSN(&sf)
+		dsn, err := gosnowflake.DSN(sf)
 		return dsn, err
 	}
 

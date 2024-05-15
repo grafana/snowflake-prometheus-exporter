@@ -70,17 +70,6 @@ func TestConfig_Validate(t *testing.T) {
 			expectedErr: errExclusiveAuth,
 		},
 		{
-			name: "No private key password",
-			inputConfig: Config{
-				AccountName:    "some_account",
-				Username:       "some_user",
-				Role:           "ACCOUNTADMIN",
-				Warehouse:      "ACCOUNT_WH",
-				PrivateKeyPath: "/some/path/rsa_key.p8",
-			},
-			expectedErr: errNoPrivKeyPwd,
-		},
-		{
 			name: "No Role",
 			inputConfig: Config{
 				AccountName: "some_account",
