@@ -15,9 +15,14 @@
 package collector
 
 import (
+	"crypto/rsa"
+	"encoding/pem"
 	"errors"
 	"fmt"
-	"net/url"
+	"os"
+
+	"github.com/snowflakedb/gosnowflake"
+	"github.com/youmark/pkcs8"
 )
 
 type Config struct {
@@ -28,6 +33,7 @@ type Config struct {
 	Warehouse          string
 	PrivateKeyPath     string
 	PrivateKeyPassword string
+	PrivateKey         *rsa.PrivateKey
 }
 
 var (
@@ -35,10 +41,10 @@ var (
 	errNoRole        = errors.New("role must be specified")
 	errNoWarehouse   = errors.New("warehouse must be specified")
 	errNoUsername    = errors.New("username must be specified")
-	errNoAuth        = errors.New("password or private_key_path must be specified")
-	errExclusiveAuth = errors.New("password and private_key_path are mutually exclusive and should not both be specified")
-	errNoPrivKeyPwd  = errors.New("private_key_path needs a private_key_password to be specified")
-	// errNoPassword = errors.New("password must be specified")
+	errNoAuth        = errors.New("password or private_key must be specified")
+	errExclusiveAuth = errors.New("password and private_key are mutually exclusive and should not both be specified")
+	errNoPrivKeyPwd  = errors.New("private_key needs a private_key_password to be specified")
+	// errNoPassword    = errors.New("password must be specified")
 )
 
 func (c Config) Validate() error {
@@ -77,21 +83,60 @@ func (c Config) Validate() error {
 	return nil
 }
 
+func (c Config) decryptPrivateKey() (*rsa.PrivateKey, error) {
+	// Get key from file as string
+	pk, err := os.ReadFile(c.PrivateKeyPath)
+	if err != nil {
+		fmt.Printf("Error opening file: %s", err)
+		return nil, err
+	}
+	block, _ := pem.Decode(pk)
+
+	parsedPk, err := pkcs8.ParsePKCS8PrivateKeyRSA(block.Bytes, []byte(c.PrivateKeyPassword))
+	if err != nil {
+		return nil, errors.New("Error occurred while parsing private key, private_key_password may be incorrect")
+	}
+	return parsedPk, err
+}
+
 // snowflakeConnectionString returns a connection string to connect to the SNOWFLAKE database using the
 // options specified in the config.
 // Assumes the config is valid according to Validate().
-func (c Config) snowflakeConnectionString() string {
-	accountNameEscaped := url.QueryEscape(c.AccountName)
-	usernameEscaped := url.QueryEscape(c.Username)
-	roleEscaped := url.QueryEscape(c.Role)
-	warehouseEscaped := url.QueryEscape(c.Warehouse)
+func (c Config) snowflakeConnectionString() (string, error) {
+	// accountNameEscaped := url.QueryEscape(c.AccountName)
+	// usernameEscaped := url.QueryEscape(c.Username)
+	// roleEscaped := url.QueryEscape(c.Role)
+	// warehouseEscaped := url.QueryEscape(c.Warehouse)
+
+	// if c.Password != "" {
+	// 	passwordEscaped := url.QueryEscape(c.Password)
+	// 	return fmt.Sprintf("%s:%s@%s/SNOWFLAKE?role=%s&warehouse=%s", usernameEscaped, passwordEscaped, accountNameEscaped, roleEscaped, warehouseEscaped)
+	// } else {
+	// 	privateKeyPathEscaped := url.QueryEscape(c.PrivateKeyPath)
+	// 	return fmt.Sprintf("%s:@%s/SNOWFLAKE?role=%s&warehouse=%s&authenticator=SNOWFLAKE_JWT&privateKey=%s", usernameEscaped, accountNameEscaped, roleEscaped, warehouseEscaped, privateKeyPathEscaped)
+	// }
+
+	sf := gosnowflake.Config{}
+
+	sf.Account = c.AccountName
+	sf.User = c.Username
+	sf.Role = c.Role
+	sf.Warehouse = c.Warehouse
+	sf.Database = "SNOWFLAKE"
 
 	if c.Password != "" {
-		passwordEscaped := url.QueryEscape(c.Password)
-		return fmt.Sprintf("%s:%s@%s/SNOWFLAKE?role=%s&warehouse=%s", usernameEscaped, passwordEscaped, accountNameEscaped, roleEscaped, warehouseEscaped)
+		sf.Password = c.Password
+		dsn, err := gosnowflake.DSN(&sf)
+		return dsn, err
 	} else {
-		privateKeyPathEscaped := url.QueryEscape(c.PrivateKeyPath)
-		privateKeyPasswordEscaped := url.QueryEscape(c.PrivateKeyPassword)
-		return fmt.Sprintf("%s@%s/SNOWFLAKE?role=%s&warehouse=%s&AUTHENTICATOR=SNOWFLAKE_JWT&PRIV_KEY_FILE=%s&PRIV_KEY_PWD=%s", usernameEscaped, accountNameEscaped, roleEscaped, warehouseEscaped, privateKeyPathEscaped, privateKeyPasswordEscaped)
+		var pk, err = c.decryptPrivateKey()
+		if err != nil {
+			return "", err
+		}
+		sf.Authenticator = gosnowflake.AuthTypeJwt
+		sf.PrivateKey = pk
+		dsn, err := gosnowflake.DSN(&sf)
+		return dsn, err
 	}
+
 }

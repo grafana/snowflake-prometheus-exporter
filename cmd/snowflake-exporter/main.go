@@ -38,9 +38,10 @@ var (
 	account            = kingpin.Flag("account", "The account to collect metrics for.").Envar("SNOWFLAKE_EXPORTER_ACCOUNT").Required().String()
 	username           = kingpin.Flag("username", "The username for the user used when querying metrics.").Envar("SNOWFLAKE_EXPORTER_USERNAME").Required().String()
 	password           = kingpin.Flag("password", "The password for the user used when querying metrics.").Envar("SNOWFLAKE_EXPORTER_PASSWORD").String()
+	privateKeyPath     = kingpin.Flag("private-key-path", "The path to the user's RSA private key").Envar("SNOWFLAKE_EXPORTER_PRIVATE_KEY_PATH").String()
+	privateKeyPassword = kingpin.Flag("private-key-password", "The password for the user's RSA private key.").Envar("SNOWFLAKE_EXPORTER_PRIVATE_KEY_PASSWORD").String()
 	role               = kingpin.Flag("role", "The role to use when querying metrics.").Default("ACCOUNTADMIN").Envar("SNOWFLAKE_EXPORTER_ROLE").String()
 	warehouse          = kingpin.Flag("warehouse", "The warehouse to use when querying metrics.").Envar("SNOWFLAKE_EXPORTER_WAREHOUSE").Required().String()
-	privateKeyFilePath = kingpin.Flag("private-key-path", "The path to the private key (PKCS #8 syntax).").Envar("SNOWFLAKE_EXPORTER_PRIVATE_KEY_PATH").String()
 )
 
 const (
@@ -71,9 +72,10 @@ func main() {
 		AccountName:        *account,
 		Username:           *username,
 		Password:           *password,
+		PrivateKeyPath:     *privateKeyPath,
+		PrivateKeyPassword: *privateKeyPassword,
 		Role:               *role,
 		Warehouse:          *warehouse,
-		PrivateKeyFilePath: *privateKeyFilePath,
 	}
 
 	if err := c.Validate(); err != nil {
