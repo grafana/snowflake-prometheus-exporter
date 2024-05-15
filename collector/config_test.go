@@ -150,7 +150,7 @@ func TestConfig_snowflakeConnectionString(t *testing.T) {
 				Role:        "ACCOUNTADMIN",
 				Warehouse:   "some-warehouse",
 			},
-			expectedString: "some-user:some-pass@some-account.snowflakecomputing.com:443?ocspFailOpen=true&role=ACCOUNTADMIN&validateDefaultParameters=true&warehouse=some-warehouse",
+			expectedString: "some-user:some-pass@some-account.snowflakecomputing.com:443?database=SNOWFLAKE&ocspFailOpen=true&role=ACCOUNTADMIN&validateDefaultParameters=true&warehouse=some-warehouse",
 		},
 		{
 			name: "Connection string parts are escaped",
@@ -161,7 +161,7 @@ func TestConfig_snowflakeConnectionString(t *testing.T) {
 				Role:        "ACCOUNTADMIN!",
 				Warehouse:   "some!warehouse",
 			},
-			expectedString: `some%25user:some+pass@some%account.snowflakecomputing.com:443?ocspFailOpen=true&role=ACCOUNTADMIN%21&validateDefaultParameters=true&warehouse=some%21warehouse`,
+			expectedString: `some%25user:some+pass@some%account.snowflakecomputing.com:443?database=SNOWFLAKE&ocspFailOpen=true&role=ACCOUNTADMIN%21&validateDefaultParameters=true&warehouse=some%21warehouse`,
 		},
 	}
 

@@ -44,7 +44,6 @@ var (
 	errNoAuth        = errors.New("password or private_key must be specified")
 	errExclusiveAuth = errors.New("password and private_key are mutually exclusive and should not both be specified")
 	errNoPrivKeyPwd  = errors.New("private_key needs a private_key_password to be specified")
-	// errNoPassword    = errors.New("password must be specified")
 )
 
 func (c Config) Validate() error {
@@ -55,10 +54,6 @@ func (c Config) Validate() error {
 	if c.Username == "" {
 		return errNoUsername
 	}
-
-	// if c.Password == "" {
-	// 	return errNoPassword
-	// }
 
 	if c.Password == "" && c.PrivateKeyPath == "" {
 		return errNoAuth
@@ -83,8 +78,10 @@ func (c Config) Validate() error {
 	return nil
 }
 
+// decryptPrivateKey returns a RSA private key from the PrivateKeyPath and PrivateKeyPassword fields
+// of the config.
+// Assumes that the private key is encrypted in PKCS #8 syntax, as is recommended by Snowflake
 func (c Config) decryptPrivateKey() (*rsa.PrivateKey, error) {
-	// Get key from file as string
 	pk, err := os.ReadFile(c.PrivateKeyPath)
 	if err != nil {
 		fmt.Printf("Error opening file: %s", err)
@@ -103,19 +100,6 @@ func (c Config) decryptPrivateKey() (*rsa.PrivateKey, error) {
 // options specified in the config.
 // Assumes the config is valid according to Validate().
 func (c Config) snowflakeConnectionString() (string, error) {
-	// accountNameEscaped := url.QueryEscape(c.AccountName)
-	// usernameEscaped := url.QueryEscape(c.Username)
-	// roleEscaped := url.QueryEscape(c.Role)
-	// warehouseEscaped := url.QueryEscape(c.Warehouse)
-
-	// if c.Password != "" {
-	// 	passwordEscaped := url.QueryEscape(c.Password)
-	// 	return fmt.Sprintf("%s:%s@%s/SNOWFLAKE?role=%s&warehouse=%s", usernameEscaped, passwordEscaped, accountNameEscaped, roleEscaped, warehouseEscaped)
-	// } else {
-	// 	privateKeyPathEscaped := url.QueryEscape(c.PrivateKeyPath)
-	// 	return fmt.Sprintf("%s:@%s/SNOWFLAKE?role=%s&warehouse=%s&authenticator=SNOWFLAKE_JWT&privateKey=%s", usernameEscaped, accountNameEscaped, roleEscaped, warehouseEscaped, privateKeyPathEscaped)
-	// }
-
 	sf := gosnowflake.Config{}
 
 	sf.Account = c.AccountName
@@ -124,17 +108,19 @@ func (c Config) snowflakeConnectionString() (string, error) {
 	sf.Warehouse = c.Warehouse
 	sf.Database = "SNOWFLAKE"
 
-	if c.Password != "" {
-		sf.Password = c.Password
-		dsn, err := gosnowflake.DSN(&sf)
-		return dsn, err
-	} else {
+	if c.PrivateKeyPath != "" {
+		// key-pair authentication
 		var pk, err = c.decryptPrivateKey()
 		if err != nil {
 			return "", err
 		}
 		sf.Authenticator = gosnowflake.AuthTypeJwt
 		sf.PrivateKey = pk
+		dsn, err := gosnowflake.DSN(&sf)
+		return dsn, err
+	} else {
+		// password authentication
+		sf.Password = c.Password
 		dsn, err := gosnowflake.DSN(&sf)
 		return dsn, err
 	}
