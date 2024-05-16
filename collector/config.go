@@ -22,6 +22,8 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/go-kit/log/level"
+	"github.com/prometheus/common/promlog"
 	"github.com/snowflakedb/gosnowflake"
 	"github.com/youmark/pkcs8"
 )
@@ -43,9 +45,8 @@ var (
 	errNoWarehouse   = errors.New("warehouse must be specified")
 	errNoUsername    = errors.New("username must be specified")
 	errNoAuth        = errors.New("password or private_key must be specified")
-	errExclusiveAuth = errors.New("password and private_key are mutually exclusive and should not both be specified")
-	errNoPrivKeyPwd  = errors.New("private_key needs a private_key_password to be specified")
 	errDecodingPEM   = errors.New("error occurred while decoding private key PEM block")
+	logger           = promlog.New(&promlog.Config{})
 )
 
 func (c Config) Validate() error {
@@ -60,14 +61,6 @@ func (c Config) Validate() error {
 	if c.Password == "" && c.PrivateKeyPath == "" {
 		return errNoAuth
 	}
-
-	if c.Password != "" && c.PrivateKeyPath != "" {
-		return errExclusiveAuth
-	}
-
-	// if c.PrivateKeyPath != "" && c.PrivateKeyPassword == "" {
-	// 	return errNoPrivKeyPwd
-	// }
 
 	if c.Role == "" {
 		return errNoRole
@@ -87,7 +80,7 @@ func (c Config) decryptPrivateKey() (*rsa.PrivateKey, error) {
 	var parsedPrivateKey *rsa.PrivateKey
 	pk, err := os.ReadFile(c.PrivateKeyPath)
 	if err != nil {
-		fmt.Printf("Error opening file: %s", err)
+		level.Error(logger).Log("msg", fmt.Sprintf("Failed to open private key file at %s", c.PrivateKeyPath), "err", err)
 		return nil, err
 	}
 	block, _ := pem.Decode(pk)
@@ -99,6 +92,7 @@ func (c Config) decryptPrivateKey() (*rsa.PrivateKey, error) {
 		// encrypted private key
 		decryptedKey, err := pkcs8.ParsePKCS8PrivateKeyRSA(block.Bytes, []byte(c.PrivateKeyPassword))
 		if err != nil {
+			level.Error(logger).Log("msg", fmt.Sprintf("Failed to parse encrypted private key at %s using password %s", c.PrivateKeyPath, c.PrivateKeyPassword), "err", err)
 			return nil, err
 		}
 		parsedPrivateKey = decryptedKey
@@ -126,21 +120,21 @@ func (c Config) snowflakeConnectionString() (string, error) {
 		Database:  "SNOWFLAKE",
 	}
 
-	if c.PrivateKeyPath != "" {
-		// key-pair authentication
-		var pk, err = c.decryptPrivateKey()
-		if err != nil {
-			return "", err
-		}
-		sf.Authenticator = gosnowflake.AuthTypeJwt
-		sf.PrivateKey = pk
-		dsn, err := gosnowflake.DSN(sf)
-		return dsn, err
-	} else {
+	if c.Password != "" {
 		// password authentication
 		sf.Password = c.Password
 		dsn, err := gosnowflake.DSN(sf)
 		return dsn, err
 	}
+
+	// key-pair authentication
+	var pk, err = c.decryptPrivateKey()
+	if err != nil {
+		return "", err
+	}
+	sf.Authenticator = gosnowflake.AuthTypeJwt
+	sf.PrivateKey = pk
+	dsn, err := gosnowflake.DSN(sf)
+	return dsn, err
 
 }

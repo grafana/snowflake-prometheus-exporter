@@ -57,19 +57,6 @@ func TestConfig_Validate(t *testing.T) {
 			expectedErr: errNoAuth,
 		},
 		{
-			name: "Both password and private key path",
-			inputConfig: Config{
-				AccountName:        "some_account",
-				Username:           "some_user",
-				Password:           "some_password",
-				Role:               "ACCOUNTADMIN",
-				Warehouse:          "ACCOUNT_WH",
-				PrivateKeyPath:     "some-key",
-				PrivateKeyPassword: "some_key_pwd",
-			},
-			expectedErr: errExclusiveAuth,
-		},
-		{
 			name: "No Role",
 			inputConfig: Config{
 				AccountName: "some_account",
@@ -100,7 +87,7 @@ func TestConfig_Validate(t *testing.T) {
 			},
 		},
 		{
-			name: "Valid config - RSA",
+			name: "Valid config - encrypted RSA",
 			inputConfig: Config{
 				AccountName:        "some-account",
 				Username:           "some-user",
@@ -108,6 +95,16 @@ func TestConfig_Validate(t *testing.T) {
 				Warehouse:          "some-warehouse",
 				PrivateKeyPath:     "some/path/rsa_key.p8",
 				PrivateKeyPassword: "some-password",
+			},
+		},
+		{
+			name: "Valid config - unencrypted RSA",
+			inputConfig: Config{
+				AccountName:    "some-account",
+				Username:       "some-user",
+				Role:           "ACCOUNTADMIN",
+				Warehouse:      "some-warehouse",
+				PrivateKeyPath: "some/path/rsa_key.p8",
 			},
 		},
 	}
