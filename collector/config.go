@@ -22,8 +22,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/go-kit/log/level"
-	"github.com/prometheus/common/promlog"
 	"github.com/snowflakedb/gosnowflake"
 	"github.com/youmark/pkcs8"
 )
@@ -46,7 +44,6 @@ var (
 	errNoUsername    = errors.New("username must be specified")
 	errNoAuth        = errors.New("password or private_key must be specified")
 	errDecodingPEM   = errors.New("error occurred while decoding private key PEM block")
-	logger           = promlog.New(&promlog.Config{})
 )
 
 func (c Config) Validate() error {
@@ -80,27 +77,25 @@ func (c Config) decryptPrivateKey() (*rsa.PrivateKey, error) {
 	var parsedPrivateKey *rsa.PrivateKey
 	pk, err := os.ReadFile(c.PrivateKeyPath)
 	if err != nil {
-		level.Error(logger).Log("msg", fmt.Sprintf("Failed to open private key file at %s", c.PrivateKeyPath), "err", err)
-		return nil, err
+		return nil, fmt.Errorf("Failed to open private key file at %s: %s", c.PrivateKeyPath, err)
 	}
 	block, _ := pem.Decode(pk)
 	if block == nil {
-		return nil, errDecodingPEM
+		return nil, fmt.Errorf("Error reading PEM data from file %s: %s", c.PrivateKeyPath, errDecodingPEM)
 	}
 
 	if c.PrivateKeyPassword != "" {
 		// encrypted private key
 		decryptedKey, err := pkcs8.ParsePKCS8PrivateKeyRSA(block.Bytes, []byte(c.PrivateKeyPassword))
 		if err != nil {
-			level.Error(logger).Log("msg", fmt.Sprintf("Failed to parse encrypted private key at %s using password %s", c.PrivateKeyPath, c.PrivateKeyPassword), "err", err)
-			return nil, err
+			return nil, fmt.Errorf("Failed to parse encrypted private key at %s using password %s: %s", c.PrivateKeyPath, c.PrivateKeyPassword, err)
 		}
 		parsedPrivateKey = decryptedKey
 	} else {
 		// unencrypted private key
 		unencryptedKey, err := x509.ParsePKCS8PrivateKey(block.Bytes)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("Failed to parse unencrypted private key at %s: %s", c.PrivateKeyPath, err)
 		}
 		parsedPrivateKey = unencryptedKey.(*rsa.PrivateKey)
 	}
