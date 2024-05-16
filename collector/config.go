@@ -88,7 +88,7 @@ func (c Config) decryptPrivateKey() (*rsa.PrivateKey, error) {
 		// encrypted private key
 		decryptedKey, err := pkcs8.ParsePKCS8PrivateKeyRSA(block.Bytes, []byte(c.PrivateKeyPassword))
 		if err != nil {
-			return nil, fmt.Errorf("Failed to parse encrypted private key at %s using password %s: %s", c.PrivateKeyPath, c.PrivateKeyPassword, err)
+			return nil, fmt.Errorf("Failed to parse encrypted private key at %s: %s", c.PrivateKeyPath, err)
 		}
 		parsedPrivateKey = decryptedKey
 	} else {
