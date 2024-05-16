@@ -33,13 +33,14 @@ import (
 )
 
 var (
-	webConfig  = webflag.AddFlags(kingpin.CommandLine, ":9975")
-	metricPath = kingpin.Flag("web.telemetry-path", "Path under which to expose metrics.").Default("/metrics").Envar("SNOWFLAKE_EXPORTER_WEB_TELEMETRY_PATH").String()
-	account    = kingpin.Flag("account", "The account to collect metrics for.").Envar("SNOWFLAKE_EXPORTER_ACCOUNT").Required().String()
-	username   = kingpin.Flag("username", "The username for the user used when querying metrics.").Envar("SNOWFLAKE_EXPORTER_USERNAME").Required().String()
-	password   = kingpin.Flag("password", "The password for the user used when querying metrics.").Envar("SNOWFLAKE_EXPORTER_PASSWORD").Required().String()
-	role       = kingpin.Flag("role", "The role to use when querying metrics.").Default("ACCOUNTADMIN").Envar("SNOWFLAKE_EXPORTER_ROLE").String()
-	warehouse  = kingpin.Flag("warehouse", "The warehouse to use when querying metrics.").Envar("SNOWFLAKE_EXPORTER_WAREHOUSE").Required().String()
+	webConfig          = webflag.AddFlags(kingpin.CommandLine, ":9975")
+	metricPath         = kingpin.Flag("web.telemetry-path", "Path under which to expose metrics.").Default("/metrics").Envar("SNOWFLAKE_EXPORTER_WEB_TELEMETRY_PATH").String()
+	account            = kingpin.Flag("account", "The account to collect metrics for.").Envar("SNOWFLAKE_EXPORTER_ACCOUNT").Required().String()
+	username           = kingpin.Flag("username", "The username for the user used when querying metrics.").Envar("SNOWFLAKE_EXPORTER_USERNAME").Required().String()
+	password           = kingpin.Flag("password", "The password for the user used when querying metrics.").Envar("SNOWFLAKE_EXPORTER_PASSWORD").String()
+	role               = kingpin.Flag("role", "The role to use when querying metrics.").Default("ACCOUNTADMIN").Envar("SNOWFLAKE_EXPORTER_ROLE").String()
+	warehouse          = kingpin.Flag("warehouse", "The warehouse to use when querying metrics.").Envar("SNOWFLAKE_EXPORTER_WAREHOUSE").Required().String()
+	privateKeyFilePath = kingpin.Flag("private-key-path", "The path to the private key (PKCS #8 syntax).").Envar("SNOWFLAKE_EXPORTER_PRIVATE_KEY_PATH").String()
 )
 
 const (
@@ -67,11 +68,12 @@ func main() {
 
 	// Construct the collector, using the flags for configuration
 	c := &collector.Config{
-		AccountName: *account,
-		Username:    *username,
-		Password:    *password,
-		Role:        *role,
-		Warehouse:   *warehouse,
+		AccountName:        *account,
+		Username:           *username,
+		Password:           *password,
+		Role:               *role,
+		Warehouse:          *warehouse,
+		PrivateKeyFilePath: *privateKeyFilePath,
 	}
 
 	if err := c.Validate(); err != nil {

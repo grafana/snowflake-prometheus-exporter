@@ -47,14 +47,14 @@ func TestConfig_Validate(t *testing.T) {
 			expectedErr: errNoUsername,
 		},
 		{
-			name: "No password",
+			name: "No password and no private key",
 			inputConfig: Config{
 				AccountName: "some_account",
 				Username:    "some_user",
 				Role:        "ACCOUNTADMIN",
 				Warehouse:   "ACCOUNT_WH",
 			},
-			expectedErr: errNoPassword,
+			expectedErr: errNoPasswordAndNoPrivateKey,
 		},
 		{
 			name: "No Role",
@@ -77,13 +77,23 @@ func TestConfig_Validate(t *testing.T) {
 			expectedErr: errNoWarehouse,
 		},
 		{
-			name: "Valid config",
+			name: "Valid config with password",
 			inputConfig: Config{
 				AccountName: "some_account",
 				Username:    "some_user",
 				Password:    "some_pass",
 				Role:        "ACCOUNTADMIN",
 				Warehouse:   "ACCOUNT_WH",
+			},
+		},
+		{
+			name: "Valid config with private key",
+			inputConfig: Config{
+				AccountName:        "some_account",
+				Username:           "some_user",
+				PrivateKeyFilePath: "./some_private_key.p8",
+				Role:               "ACCOUNTADMIN",
+				Warehouse:          "ACCOUNT_WH",
 			},
 		},
 	}
@@ -115,7 +125,7 @@ func TestConfig_snowflakeConnectionString(t *testing.T) {
 				Role:        "ACCOUNTADMIN",
 				Warehouse:   "some-warehouse",
 			},
-			expectedString: "some-user:some-pass@some-account/SNOWFLAKE?role=ACCOUNTADMIN&warehouse=some-warehouse",
+			expectedString: "some-user:some-pass@some-account.snowflakecomputing.com:443?database=SNOWFLAKE&ocspFailOpen=true&role=ACCOUNTADMIN&validateDefaultParameters=true&warehouse=some-warehouse",
 		},
 		{
 			name: "Connection string parts are escaped",
@@ -126,7 +136,7 @@ func TestConfig_snowflakeConnectionString(t *testing.T) {
 				Role:        "ACCOUNTADMIN!",
 				Warehouse:   "some!warehouse",
 			},
-			expectedString: `some%25user:some+pass@some%25account/SNOWFLAKE?role=ACCOUNTADMIN%21&warehouse=some%21warehouse`,
+			expectedString: "some%25user:some+pass@some%account.snowflakecomputing.com:443?database=SNOWFLAKE&ocspFailOpen=true&role=ACCOUNTADMIN%21&validateDefaultParameters=true&warehouse=some%21warehouse",
 		},
 	}
 
