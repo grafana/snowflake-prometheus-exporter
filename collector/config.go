@@ -38,12 +38,13 @@ type Config struct {
 }
 
 var (
-	errNoAccountName = errors.New("account_name must be specified")
-	errNoRole        = errors.New("role must be specified")
-	errNoWarehouse   = errors.New("warehouse must be specified")
-	errNoUsername    = errors.New("username must be specified")
-	errNoAuth        = errors.New("password or private_key must be specified")
-	errDecodingPEM   = errors.New("error occurred while decoding private key PEM block")
+	errNoAccountName  = errors.New("account_name must be specified")
+	errNoRole         = errors.New("role must be specified")
+	errNoWarehouse    = errors.New("warehouse must be specified")
+	errNoUsername     = errors.New("username must be specified")
+	errNoAuth         = errors.New("password or private_key must be specified")
+	errDecodingPEM    = errors.New("error occurred while decoding private key PEM block")
+	errFileNotRSAType = errors.New("type assertion failed, expected type *rsa.PrivateKey")
 )
 
 func (c Config) Validate() error {
@@ -93,11 +94,15 @@ func (c Config) decryptPrivateKey() (*rsa.PrivateKey, error) {
 		parsedPrivateKey = decryptedKey
 	} else {
 		// unencrypted private key
+		var ok bool
 		unencryptedKey, err := x509.ParsePKCS8PrivateKey(block.Bytes)
 		if err != nil {
 			return nil, fmt.Errorf("Failed to parse unencrypted private key at %s: %s", c.PrivateKeyPath, err)
 		}
-		parsedPrivateKey = unencryptedKey.(*rsa.PrivateKey)
+		parsedPrivateKey, ok = unencryptedKey.(*rsa.PrivateKey)
+		if !ok {
+			return nil, fmt.Errorf("%v but got %T", errFileNotRSAType, unencryptedKey)
+		}
 	}
 
 	return parsedPrivateKey, nil
