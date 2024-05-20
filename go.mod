@@ -1,6 +1,8 @@
 module github.com/grafana/snowflake-prometheus-exporter
 
-go 1.19
+go 1.22
+
+toolchain go1.22.3
 
 require (
 	github.com/DATA-DOG/go-sqlmock v1.5.0
@@ -10,6 +12,7 @@ require (
 	github.com/prometheus/exporter-toolkit v0.8.2
 	github.com/snowflakedb/gosnowflake v1.6.15
 	github.com/stretchr/testify v1.8.1
+	github.com/youmark/pkcs8 v0.0.0-20240424034433-3c2c7870ae76
 	gopkg.in/alecthomas/kingpin.v2 v2.2.6
 )
 
@@ -61,13 +64,13 @@ require (
 	github.com/prometheus/client_model v0.3.0 // indirect
 	github.com/prometheus/procfs v0.8.0 // indirect
 	github.com/sirupsen/logrus v1.9.0 // indirect
-	golang.org/x/crypto v0.0.0-20221012134737-56aed061732a // indirect
-	golang.org/x/net v0.0.0-20221002022538-bcab6841153b // indirect
+	golang.org/x/crypto v0.22.0 // indirect
+	golang.org/x/net v0.21.0 // indirect
 	golang.org/x/oauth2 v0.0.0-20220909003341-f21342109be1 // indirect
 	golang.org/x/sync v0.1.0 // indirect
-	golang.org/x/sys v0.0.0-20220926163933-8cfa568d3c25 // indirect
-	golang.org/x/term v0.0.0-20210927222741-03fcf44c2211 // indirect
-	golang.org/x/text v0.3.7 // indirect
+	golang.org/x/sys v0.19.0 // indirect
+	golang.org/x/term v0.19.0 // indirect
+	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect

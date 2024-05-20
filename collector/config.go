@@ -22,9 +22,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/go-kit/log/level"
-	"github.com/prometheus/common/promlog"
-	sf "github.com/snowflakedb/gosnowflake"
+	"github.com/snowflakedb/gosnowflake"
+	"github.com/youmark/pkcs8"
 )
 
 type Config struct {
@@ -33,17 +32,19 @@ type Config struct {
 	Password           string
 	Role               string
 	Warehouse          string
-	PrivateKeyFilePath string
+	PrivateKeyPath     string
+	PrivateKeyPassword string
+	PrivateKey         *rsa.PrivateKey
 }
 
 var (
-	errNoAccountName             = errors.New("account_name must be specified")
-	errNoUsername                = errors.New("username must be specified")
-	errNoPasswordAndNoPrivateKey = errors.New("password OR private key path must be specified")
-	errNoRole                    = errors.New("role must be specified")
-	errNoWarehouse               = errors.New("warehouse must be specified")
-	errParsingPEM                = errors.New("failed to parse PEM block containing the private key")
-	errFileNotRSAType            = errors.New("type assertion failed, expected type *rsa.PrivateKey")
+	errNoAccountName  = errors.New("account_name must be specified")
+	errNoRole         = errors.New("role must be specified")
+	errNoWarehouse    = errors.New("warehouse must be specified")
+	errNoUsername     = errors.New("username must be specified")
+	errNoAuth         = errors.New("password or private_key must be specified")
+	errDecodingPEM    = errors.New("error occurred while decoding private key PEM block")
+	errFileNotRSAType = errors.New("type assertion failed, expected type *rsa.PrivateKey")
 )
 
 func (c Config) Validate() error {
@@ -55,9 +56,8 @@ func (c Config) Validate() error {
 		return errNoUsername
 	}
 
-	// raise err if both password AND private key are not provided
-	if c.Password == "" && c.PrivateKeyFilePath == "" {
-		return errNoPasswordAndNoPrivateKey
+	if c.Password == "" && c.PrivateKeyPath == "" {
+		return errNoAuth
 	}
 
 	if c.Role == "" {
@@ -71,65 +71,70 @@ func (c Config) Validate() error {
 	return nil
 }
 
+// decryptPrivateKey returns a RSA private key from the PrivateKeyPath and PrivateKeyPassword fields
+// of the config.
+// Assumes that the private key is encrypted in PKCS #8 syntax, as is recommended by Snowflake
+func (c Config) decryptPrivateKey() (*rsa.PrivateKey, error) {
+	var parsedPrivateKey *rsa.PrivateKey
+	pk, err := os.ReadFile(c.PrivateKeyPath)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to open private key file at %s: %s", c.PrivateKeyPath, err)
+	}
+	block, _ := pem.Decode(pk)
+	if block == nil {
+		return nil, fmt.Errorf("Error reading PEM data from file %s: %s", c.PrivateKeyPath, errDecodingPEM)
+	}
+
+	if c.PrivateKeyPassword != "" {
+		// encrypted private key
+		decryptedKey, err := pkcs8.ParsePKCS8PrivateKeyRSA(block.Bytes, []byte(c.PrivateKeyPassword))
+		if err != nil {
+			return nil, fmt.Errorf("Failed to parse encrypted private key at %s: %s", c.PrivateKeyPath, err)
+		}
+		parsedPrivateKey = decryptedKey
+	} else {
+		// unencrypted private key
+		var ok bool
+		unencryptedKey, err := x509.ParsePKCS8PrivateKey(block.Bytes)
+		if err != nil {
+			return nil, fmt.Errorf("Failed to parse unencrypted private key at %s: %s", c.PrivateKeyPath, err)
+		}
+		parsedPrivateKey, ok = unencryptedKey.(*rsa.PrivateKey)
+		if !ok {
+			return nil, fmt.Errorf("%v but got %T", errFileNotRSAType, unencryptedKey)
+		}
+	}
+
+	return parsedPrivateKey, nil
+}
+
 // snowflakeConnectionString returns a connection string to connect to the SNOWFLAKE database using the
 // options specified in the config.
 // Assumes the config is valid according to Validate().
-func (c Config) snowflakeConnectionString() string {
-	snowflakeConfig := &sf.Config{
+func (c Config) snowflakeConnectionString() (string, error) {
+	sf := &gosnowflake.Config{
 		Account:   c.AccountName,
 		User:      c.Username,
-		Password:  c.Password,
 		Role:      c.Role,
 		Warehouse: c.Warehouse,
 		Database:  "SNOWFLAKE",
 	}
 
-	var err error
-	logger := promlog.New(&promlog.Config{})
-
-	// if private key path is provided, try parsing it
-	if pkPath := c.PrivateKeyFilePath; pkPath != "" {
-		snowflakeConfig.PrivateKey, err = parsePrivateKeyFromFile(pkPath)
-		if err != nil {
-			level.Error(logger).Log(
-				"msg", fmt.Sprintf("error parsing private key file at path %s: %v", pkPath, err),
-				"err", err,
-			)
-			os.Exit(1)
-		}
-		// if private key is valid, use `AuthTypeJwt` authenticator
-		// https://github.com/snowflakedb/gosnowflake/blob/c355711dbd1f9ab10dfbfdcdd194656c23abb45d/doc.go#L793
-		snowflakeConfig.Authenticator = sf.AuthTypeJwt
+	if c.Password != "" {
+		// password authentication
+		sf.Password = c.Password
+		dsn, err := gosnowflake.DSN(sf)
+		return dsn, err
 	}
 
-	dsn, _ := sf.DSN(snowflakeConfig)
-
-	return dsn
-}
-
-// parse private key given its file path
-// https://github.com/snowflakedb/gosnowflake/blob/c355711dbd1f9ab10dfbfdcdd194656c23abb45d/dsn.go#L875
-func parsePrivateKeyFromFile(path string) (*rsa.PrivateKey, error) {
-	bytes, err := os.ReadFile(path)
+	// key-pair authentication
+	var pk, err = c.decryptPrivateKey()
 	if err != nil {
-		return nil, err
+		return "", err
 	}
+	sf.Authenticator = gosnowflake.AuthTypeJwt
+	sf.PrivateKey = pk
+	dsn, err := gosnowflake.DSN(sf)
+	return dsn, err
 
-	block, _ := pem.Decode(bytes)
-	if block == nil {
-		return nil, errParsingPEM
-	}
-
-	privateKey, err := x509.ParsePKCS8PrivateKey(block.Bytes)
-	if err != nil {
-		return nil, err
-	}
-
-	// assert type from `any` to `*rsa.PrivateKey`
-	pk, ok := privateKey.(*rsa.PrivateKey)
-	if !ok {
-		return nil, fmt.Errorf("%v but got %T", errFileNotRSAType, privateKey)
-	}
-
-	return pk, nil
 }

@@ -47,14 +47,14 @@ func TestConfig_Validate(t *testing.T) {
 			expectedErr: errNoUsername,
 		},
 		{
-			name: "No password and no private key",
+			name: "No password or private key path",
 			inputConfig: Config{
 				AccountName: "some_account",
 				Username:    "some_user",
 				Role:        "ACCOUNTADMIN",
 				Warehouse:   "ACCOUNT_WH",
 			},
-			expectedErr: errNoPasswordAndNoPrivateKey,
+			expectedErr: errNoAuth,
 		},
 		{
 			name: "No Role",
@@ -77,7 +77,7 @@ func TestConfig_Validate(t *testing.T) {
 			expectedErr: errNoWarehouse,
 		},
 		{
-			name: "Valid config with password",
+			name: "Valid config - password",
 			inputConfig: Config{
 				AccountName: "some_account",
 				Username:    "some_user",
@@ -87,13 +87,24 @@ func TestConfig_Validate(t *testing.T) {
 			},
 		},
 		{
-			name: "Valid config with private key",
+			name: "Valid config - encrypted RSA",
 			inputConfig: Config{
-				AccountName:        "some_account",
-				Username:           "some_user",
-				PrivateKeyFilePath: "./some_private_key.p8",
+				AccountName:        "some-account",
+				Username:           "some-user",
 				Role:               "ACCOUNTADMIN",
-				Warehouse:          "ACCOUNT_WH",
+				Warehouse:          "some-warehouse",
+				PrivateKeyPath:     "some/path/rsa_key.p8",
+				PrivateKeyPassword: "some-password",
+			},
+		},
+		{
+			name: "Valid config - unencrypted RSA",
+			inputConfig: Config{
+				AccountName:    "some-account",
+				Username:       "some-user",
+				Role:           "ACCOUNTADMIN",
+				Warehouse:      "some-warehouse",
+				PrivateKeyPath: "some/path/rsa_key.p8",
 			},
 		},
 	}
@@ -136,13 +147,14 @@ func TestConfig_snowflakeConnectionString(t *testing.T) {
 				Role:        "ACCOUNTADMIN!",
 				Warehouse:   "some!warehouse",
 			},
-			expectedString: "some%25user:some+pass@some%account.snowflakecomputing.com:443?database=SNOWFLAKE&ocspFailOpen=true&role=ACCOUNTADMIN%21&validateDefaultParameters=true&warehouse=some%21warehouse",
+			expectedString: `some%25user:some+pass@some%account.snowflakecomputing.com:443?database=SNOWFLAKE&ocspFailOpen=true&role=ACCOUNTADMIN%21&validateDefaultParameters=true&warehouse=some%21warehouse`,
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			connStr := tc.inputConfig.snowflakeConnectionString()
+			connStr, err := tc.inputConfig.snowflakeConnectionString()
+			require.Nil(t, err)
 			require.Equal(t, tc.expectedString, connStr)
 		})
 	}

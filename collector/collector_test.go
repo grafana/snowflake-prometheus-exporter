@@ -31,11 +31,19 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+var ExampleConfig = &Config{
+	AccountName: "defaultaccount",
+	Username:    "defaultuser",
+	Password:    "defaultpassword",
+	Warehouse:   "defaultwarehouse",
+	Role:        "ACCOUNTADMIN",
+}
+
 func TestCollector_Collect(t *testing.T) {
 	t.Run("Metrics match expected", func(t *testing.T) {
 		db, mock := createMockDB(t)
 
-		col := NewCollector(log.NewJSONLogger(os.Stdout), &Config{})
+		col := NewCollector(log.NewJSONLogger(os.Stdout), ExampleConfig)
 		col.openDatabase = func(_ string) (*sql.DB, error) { return db, nil }
 
 		f, err := os.Open(filepath.Join("testdata", "all_metrics.prom"))
@@ -50,7 +58,7 @@ func TestCollector_Collect(t *testing.T) {
 	t.Run("Metrics have no lint errors", func(t *testing.T) {
 		db, mock := createMockDB(t)
 
-		col := NewCollector(log.NewJSONLogger(os.Stdout), &Config{})
+		col := NewCollector(log.NewJSONLogger(os.Stdout), ExampleConfig)
 		col.openDatabase = func(_ string) (*sql.DB, error) { return db, nil }
 
 		p, err := testutil.CollectAndLint(col)
@@ -63,7 +71,7 @@ func TestCollector_Collect(t *testing.T) {
 	t.Run("All queries fail", func(t *testing.T) {
 		db, mock := createQueryErrMockDB(t)
 
-		col := NewCollector(log.NewJSONLogger(os.Stdout), &Config{})
+		col := NewCollector(log.NewJSONLogger(os.Stdout), ExampleConfig)
 		col.openDatabase = func(_ string) (*sql.DB, error) { return db, nil }
 
 		f, err := os.Open(filepath.Join("testdata", "query_failure.prom"))
@@ -80,7 +88,7 @@ func TestCollector_Collect(t *testing.T) {
 	})
 
 	t.Run("Database connection fails", func(t *testing.T) {
-		col := NewCollector(log.NewJSONLogger(os.Stdout), &Config{})
+		col := NewCollector(log.NewJSONLogger(os.Stdout), ExampleConfig)
 
 		openErr := errors.New("failed to open database")
 		col.openDatabase = func(_ string) (*sql.DB, error) { return nil, openErr }
@@ -110,7 +118,7 @@ func TestCollector_collectStorageMetrics(t *testing.T) {
 			).
 			RowsWillBeClosed()
 
-		col := NewCollector(log.NewJSONLogger(os.Stdout), &Config{})
+		col := NewCollector(log.NewJSONLogger(os.Stdout), ExampleConfig)
 		col.openDatabase = func(_ string) (*sql.DB, error) { return db, nil }
 
 		metricChan := make(chan prometheus.Metric, 3)
@@ -140,7 +148,7 @@ func TestCollector_collectStorageMetrics(t *testing.T) {
 			).
 			RowsWillBeClosed()
 
-		col := NewCollector(log.NewJSONLogger(os.Stdout), &Config{})
+		col := NewCollector(log.NewJSONLogger(os.Stdout), ExampleConfig)
 		col.openDatabase = func(_ string) (*sql.DB, error) { return db, nil }
 
 		metricChan := make(chan prometheus.Metric, 3)

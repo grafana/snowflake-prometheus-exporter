@@ -287,7 +287,14 @@ func (c *Collector) Collect(metrics chan<- prometheus.Metric) {
 
 	var up float64 = 1
 	// Open a new connection to the database each time; This makes the connection more robust to transient failures
-	db, err := c.openDatabase(c.config.snowflakeConnectionString())
+	connectionString, err := c.config.snowflakeConnectionString()
+	if err != nil {
+		level.Error(c.logger).Log("msg", "Failed to generate connection string.", "err", err)
+		// Emit up metric here, to indicate connection failed.
+		metrics <- prometheus.MustNewConstMetric(c.up, prometheus.GaugeValue, 0)
+		return
+	}
+	db, err := c.openDatabase(connectionString)
 	if err != nil {
 		level.Error(c.logger).Log("msg", "Failed to connect to Snowflake.", "err", err)
 		// Emit up metric here, to indicate connection failed.
