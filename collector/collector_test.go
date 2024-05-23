@@ -168,7 +168,7 @@ func TestCollector_collectStorageMetrics(t *testing.T) {
 	})
 }
 
-func newRows(t *testing.T, rows [][]string) *sqlmock.Rows {
+func newRows(t *testing.T, rows [][]*string) *sqlmock.Rows {
 	numRows := len(rows[0])
 
 	for _, row := range rows {
@@ -185,10 +185,17 @@ func newRows(t *testing.T, rows [][]string) *sqlmock.Rows {
 	for _, row := range rows {
 		rowVals := []driver.Value{}
 		for _, s := range row {
-			rowVals = append(rowVals, sql.NullString{
-				String: s,
-				Valid:  true,
-			})
+			if s != nil {
+				rowVals = append(rowVals, sql.NullString{
+					String: *s,
+					Valid:  true,
+				})
+			} else {
+				rowVals = append(rowVals, sql.NullString{
+					String: "",
+					Valid:  false,
+				})
+			}
 		}
 
 		sqlRows.AddRow(rowVals...)
@@ -229,68 +236,98 @@ func createMockDB(t *testing.T) (*sql.DB, sqlmock.Sqlmock) {
 	db, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
 	require.NoError(t, err)
 
+	val1 := "1028.0"
+	val2 := "2048.0"
+	val3 := "4096.0"
+	val4 := "0.5"
+	val5 := "0.25"
+	val6 := "0.125"
+	val7 := "56"
+	val8 := "12"
+	val9 := "89"
+	val10 := "45"
+	val11 := "24"
+	val12 := "216"
+	val13 := "240"
+	val14 := "2160"
+	val15 := "2400"
+	val16 := "80"
+	val17 := "40"
+	val18 := "20"
+	val19 := "10"
+	val20 := "1234"
+	val21 := "123"
+	val22 := "234"
+	val23 := "534"
+	val24 := "1.5"
+	val25 := "8192"
+	val26 := "16384"
+	val27 := "32768"
+	val28 := "65536"
+	val29 := "131072"
+
 	mock.ExpectQuery(storageMetricQuery).
 		WillReturnRows(
-			newRows(t, [][]string{
-				{"1028.0", "2048.0", "4096.0"},
+			newRows(t, [][]*string{
+				{&val1, &val2, &val3},
 			}),
 		).
 		RowsWillBeClosed()
 
 	mock.ExpectQuery(databaseStorageMetricQuery).
 		WillReturnRows(
-			newRows(t, [][]string{
-				{testDB1Name, testDB1ID, "1028.0", "2048.0"},
-				{testDB2Name, testDB2ID, "1028.0", "2048.0"},
+			newRows(t, [][]*string{
+				{&testDB1Name, &testDB1ID, &val1, &val2},
+				{&testDB2Name, &testDB2ID, &val1, &val2},
 			}),
 		).RowsWillBeClosed()
 
 	mock.ExpectQuery(creditMetricQuery).
 		WillReturnRows(
-			newRows(t, [][]string{
-				{testService1Name, testService1Type, "0.5", "0.5"},
-				{testService2Name, testService2Type, "0.25", "0.125"},
+			newRows(t, [][]*string{
+				{&testService1Name, &testService1Type, &val4, &val4},
+				{&testService2Name, &testService2Type, &val5, &val6},
 			}),
 		).
 		RowsWillBeClosed()
 
 	mock.ExpectQuery(warehouseCreditMetricQuery).
 		WillReturnRows(
-			newRows(t, [][]string{
-				{testWarehouse1Name, testWarehouse1ID, "56", "12"},
-				{testWarehouse2Name, testWarehouse2ID, "89", "45"},
+			newRows(t, [][]*string{
+				{&testWarehouse1Name, &testWarehouse1ID, &val7, &val8},
+				{&testWarehouse2Name, &testWarehouse2ID, &val9, &val10},
 			}),
 		).
 		RowsWillBeClosed()
 
 	mock.ExpectQuery(loginMetricQuery).
 		WillReturnRows(
-			newRows(t, [][]string{
-				{testClient1Type, testClient1Version, "24", "216", "240"},
-				{testClient2Type, testClient2Version, "240", "2160", "2400"},
+			newRows(t, [][]*string{
+				{&testClient1Type, &testClient1Version, &val11, &val12, &val13},
+				{&testClient2Type, &testClient2Version, &val13, &val14, &val15},
 			}),
 		).
 		RowsWillBeClosed()
 
 	mock.ExpectQuery(warehouseLoadMetricQuery).
 		WillReturnRows(
-			newRows(t, [][]string{
-				{testWarehouse1Name, testWarehouse1ID, "80", "40", "20", "10"},
-				{testWarehouse2Name, testWarehouse2ID, "1234", "123", "234", "534"},
+			newRows(t, [][]*string{
+				{&testWarehouse1Name, &testWarehouse1ID, &val16, &val17, &val18, &val19},
+				{&testWarehouse2Name, &testWarehouse2ID, &val20, &val21, &val22, &val23},
 			}),
 		).
 		RowsWillBeClosed()
 
 	mock.ExpectQuery(autoClusteringMetricQuery).
 		WillReturnRows(
-			newRows(t, [][]string{
+			newRows(t, [][]*string{
 				{
-					testTableName, testTableID, testSchemaName, testSchemaID, testDB1Name, testDB1ID,
-					"1.5", "2048", "4096",
+					&testTableName, &testTableID, &testSchemaName, &testSchemaID, &testDB1Name, &testDB1ID,
+					&val24, &val2, &val3,
 				},
 				{
-					testTableName, testTableID, testSchemaName, testSchemaID, testDB2Name, testDB2ID,
-					"1.5", "8192", "16384",
+					&testTableName, &testTableID, &testSchemaName, &testSchemaID, &testDB2Name, &testDB2ID,
+					&val24, &val25, &val26,
 				},
 			}),
 		).
@@ -298,14 +335,14 @@ func createMockDB(t *testing.T) (*sql.DB, sqlmock.Sqlmock) {
 
 	mock.ExpectQuery(tableStorageMetricQuery).
 		WillReturnRows(
-			newRows(t, [][]string{
+			newRows(t, [][]*string{
 				{
-					testTableName, testTableID, testSchemaName, testSchemaID, testDB1Name, testDB1ID,
-					"1028", "2048", "4096", "8192",
+					&testTableName, &testTableID, &testSchemaName, &testSchemaID, &testDB1Name, &testDB1ID,
+					&val1, &val2, &val3, &val25,
 				},
 				{
-					testTableName, testTableID, testSchemaName, testSchemaID, testDB2Name, testDB2ID,
-					"16384", "32768", "65536", "131072",
+					&testTableName, &testTableID, nil, &testSchemaID, &testDB2Name, &testDB2ID,
+					&val26, &val27, &val28, &val29,
 				},
 			}),
 		).
@@ -313,14 +350,14 @@ func createMockDB(t *testing.T) (*sql.DB, sqlmock.Sqlmock) {
 
 	mock.ExpectQuery(replicationMetricQuery).
 		WillReturnRows(
-			newRows(t, [][]string{
+			newRows(t, [][]*string{
 				{
-					testDB1Name, testDB1ID,
-					"1028", "2048",
+					&testDB1Name, &testDB1ID,
+					&val1, &val2,
 				},
 				{
-					testDB2Name, testDB2ID,
-					"16384", "32768",
+					&testDB2Name, &testDB2ID,
+					&val26, &val27,
 				},
 			}),
 		).

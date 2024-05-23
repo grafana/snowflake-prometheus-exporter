@@ -365,14 +365,20 @@ func (c *Collector) collectStorageMetrics(db *sql.DB, metrics chan<- prometheus.
 		return fmt.Errorf("expected a single row to be returned, but none was found")
 	}
 
-	var storageBytes, stageBytes, failsafeBytes float64
+	var storageBytes, stageBytes, failsafeBytes sql.NullFloat64
 	if err := rows.Scan(&storageBytes, &stageBytes, &failsafeBytes); err != nil {
 		return fmt.Errorf("failed to scan row: %w", err)
 	}
 
-	metrics <- prometheus.MustNewConstMetric(c.storageBytes, prometheus.GaugeValue, storageBytes)
-	metrics <- prometheus.MustNewConstMetric(c.stageBytes, prometheus.GaugeValue, stageBytes)
-	metrics <- prometheus.MustNewConstMetric(c.failsafeBytes, prometheus.GaugeValue, failsafeBytes)
+	if storageBytes.Valid {
+		metrics <- prometheus.MustNewConstMetric(c.storageBytes, prometheus.GaugeValue, storageBytes.Float64)
+	}
+	if stageBytes.Valid {
+		metrics <- prometheus.MustNewConstMetric(c.stageBytes, prometheus.GaugeValue, stageBytes.Float64)
+	}
+	if failsafeBytes.Valid {
+		metrics <- prometheus.MustNewConstMetric(c.failsafeBytes, prometheus.GaugeValue, failsafeBytes.Float64)
+	}
 
 	return rows.Err()
 }
@@ -385,14 +391,18 @@ func (c *Collector) collectDatabaseStorageMetrics(db *sql.DB, metrics chan<- pro
 	defer rows.Close()
 
 	for rows.Next() {
-		var dbName, dbID string
-		var databaseBytes, failsafeBytes float64
+		var dbName, dbID sql.NullString
+		var databaseBytes, failsafeBytes sql.NullFloat64
 		if err := rows.Scan(&dbName, &dbID, &databaseBytes, &failsafeBytes); err != nil {
 			return fmt.Errorf("failed to scan row: %w", err)
 		}
 
-		metrics <- prometheus.MustNewConstMetric(c.databaseBytes, prometheus.GaugeValue, databaseBytes, dbName, dbID)
-		metrics <- prometheus.MustNewConstMetric(c.databaseFailsafeBytes, prometheus.GaugeValue, failsafeBytes, dbName, dbID)
+		if databaseBytes.Valid {
+			metrics <- prometheus.MustNewConstMetric(c.databaseBytes, prometheus.GaugeValue, databaseBytes.Float64, dbName.String, dbID.String)
+		}
+		if failsafeBytes.Valid {
+			metrics <- prometheus.MustNewConstMetric(c.databaseFailsafeBytes, prometheus.GaugeValue, failsafeBytes.Float64, dbName.String, dbID.String)
+		}
 	}
 
 	return rows.Err()
@@ -406,14 +416,18 @@ func (c *Collector) collectCreditMetrics(db *sql.DB, metrics chan<- prometheus.M
 	defer rows.Close()
 
 	for rows.Next() {
-		var serviceType, serviceName string
-		var computeCreditsUsedAvg, cloudServiceCreditsUsedAvg float64
+		var serviceType, serviceName sql.NullString
+		var computeCreditsUsedAvg, cloudServiceCreditsUsedAvg sql.NullFloat64
 		if err := rows.Scan(&serviceType, &serviceName, &computeCreditsUsedAvg, &cloudServiceCreditsUsedAvg); err != nil {
 			return fmt.Errorf("failed to scan row: %w", err)
 		}
 
-		metrics <- prometheus.MustNewConstMetric(c.usedComputeCredits, prometheus.GaugeValue, computeCreditsUsedAvg, serviceType, serviceName)
-		metrics <- prometheus.MustNewConstMetric(c.usedCloudServicesCredits, prometheus.GaugeValue, cloudServiceCreditsUsedAvg, serviceType, serviceName)
+		if computeCreditsUsedAvg.Valid {
+			metrics <- prometheus.MustNewConstMetric(c.usedComputeCredits, prometheus.GaugeValue, computeCreditsUsedAvg.Float64, serviceType.String, serviceName.String)
+		}
+		if cloudServiceCreditsUsedAvg.Valid {
+			metrics <- prometheus.MustNewConstMetric(c.usedCloudServicesCredits, prometheus.GaugeValue, cloudServiceCreditsUsedAvg.Float64, serviceType.String, serviceName.String)
+		}
 	}
 
 	return rows.Err()
@@ -427,14 +441,18 @@ func (c *Collector) collectWarehouseCreditMetrics(db *sql.DB, metrics chan<- pro
 	defer rows.Close()
 
 	for rows.Next() {
-		var warehouseName, warehouseID string
-		var computeCreditsUsedAvg, cloudServiceCreditsUsedAvg float64
+		var warehouseName, warehouseID sql.NullString
+		var computeCreditsUsedAvg, cloudServiceCreditsUsedAvg sql.NullFloat64
 		if err := rows.Scan(&warehouseName, &warehouseID, &computeCreditsUsedAvg, &cloudServiceCreditsUsedAvg); err != nil {
 			return fmt.Errorf("failed to scan row: %w", err)
 		}
 
-		metrics <- prometheus.MustNewConstMetric(c.warehouseUsedComputeCredits, prometheus.GaugeValue, computeCreditsUsedAvg, warehouseName, warehouseID)
-		metrics <- prometheus.MustNewConstMetric(c.warehouseUsedCloudServicesCredits, prometheus.GaugeValue, cloudServiceCreditsUsedAvg, warehouseName, warehouseID)
+		if computeCreditsUsedAvg.Valid {
+			metrics <- prometheus.MustNewConstMetric(c.warehouseUsedComputeCredits, prometheus.GaugeValue, computeCreditsUsedAvg.Float64, warehouseName.String, warehouseID.String)
+		}
+		if cloudServiceCreditsUsedAvg.Valid {
+			metrics <- prometheus.MustNewConstMetric(c.warehouseUsedCloudServicesCredits, prometheus.GaugeValue, cloudServiceCreditsUsedAvg.Float64, warehouseName.String, warehouseID.String)
+		}
 	}
 
 	return rows.Err()
@@ -448,16 +466,22 @@ func (c *Collector) collectLoginMetrics(db *sql.DB, metrics chan<- prometheus.Me
 	defer rows.Close()
 
 	for rows.Next() {
-		var clientType, clientVersion string
-		var failures, successes, total float64
+		var clientType, clientVersion sql.NullString
+		var failures, successes, total sql.NullFloat64
 		if err := rows.Scan(&clientType, &clientVersion, &failures, &successes, &total); err != nil {
 			return fmt.Errorf("failed to scan row: %w", err)
 		}
 
 		// Divided by 24 to get the per-hour average
-		metrics <- prometheus.MustNewConstMetric(c.logins, prometheus.GaugeValue, total/24, clientType, clientVersion)
-		metrics <- prometheus.MustNewConstMetric(c.failedLogins, prometheus.GaugeValue, failures/24, clientType, clientVersion)
-		metrics <- prometheus.MustNewConstMetric(c.successfulLogins, prometheus.GaugeValue, successes/24, clientType, clientVersion)
+		if total.Valid {
+			metrics <- prometheus.MustNewConstMetric(c.logins, prometheus.GaugeValue, total.Float64/24, clientType.String, clientVersion.String)
+		}
+		if failures.Valid {
+			metrics <- prometheus.MustNewConstMetric(c.failedLogins, prometheus.GaugeValue, failures.Float64/24, clientType.String, clientVersion.String)
+		}
+		if successes.Valid {
+			metrics <- prometheus.MustNewConstMetric(c.successfulLogins, prometheus.GaugeValue, successes.Float64/24, clientType.String, clientVersion.String)
+		}
 	}
 
 	return rows.Err()
@@ -471,16 +495,24 @@ func (c *Collector) collectWarehouseLoadMetrics(db *sql.DB, metrics chan<- prome
 	defer rows.Close()
 
 	for rows.Next() {
-		var warehouseName, warehouseID string
-		var avgRunning, avgQueued, avgQueuedProvisioning, avgBlocked float64
+		var warehouseName, warehouseID sql.NullString
+		var avgRunning, avgQueued, avgQueuedProvisioning, avgBlocked sql.NullFloat64
 		if err := rows.Scan(&warehouseName, &warehouseID, &avgRunning, &avgQueued, &avgQueuedProvisioning, &avgBlocked); err != nil {
 			return fmt.Errorf("failed to scan row: %w", err)
 		}
 
-		metrics <- prometheus.MustNewConstMetric(c.warehouseExecutedQueryLoad, prometheus.GaugeValue, avgRunning, warehouseName, warehouseID)
-		metrics <- prometheus.MustNewConstMetric(c.warehouseOverloadedQueueLoad, prometheus.GaugeValue, avgQueued, warehouseName, warehouseID)
-		metrics <- prometheus.MustNewConstMetric(c.warehouseProvisioningQueueLoad, prometheus.GaugeValue, avgQueuedProvisioning, warehouseName, warehouseID)
-		metrics <- prometheus.MustNewConstMetric(c.warehouseBlockedQueryLoad, prometheus.GaugeValue, avgBlocked, warehouseName, warehouseID)
+		if avgRunning.Valid {
+			metrics <- prometheus.MustNewConstMetric(c.warehouseExecutedQueryLoad, prometheus.GaugeValue, avgRunning.Float64, warehouseName.String, warehouseID.String)
+		}
+		if avgQueued.Valid {
+			metrics <- prometheus.MustNewConstMetric(c.warehouseOverloadedQueueLoad, prometheus.GaugeValue, avgQueued.Float64, warehouseName.String, warehouseID.String)
+		}
+		if avgQueuedProvisioning.Valid {
+			metrics <- prometheus.MustNewConstMetric(c.warehouseProvisioningQueueLoad, prometheus.GaugeValue, avgQueuedProvisioning.Float64, warehouseName.String, warehouseID.String)
+		}
+		if avgBlocked.Valid {
+			metrics <- prometheus.MustNewConstMetric(c.warehouseBlockedQueryLoad, prometheus.GaugeValue, avgBlocked.Float64, warehouseName.String, warehouseID.String)
+		}
 	}
 
 	return rows.Err()
@@ -494,19 +526,25 @@ func (c *Collector) collectAutoClusteringMetrics(db *sql.DB, metrics chan<- prom
 	defer rows.Close()
 
 	for rows.Next() {
-		var tableName, tableID, databaseName, databaseID, schemaName, schemaID string
-		var creditsUsed, bytesReclustered, rowsReclustered float64
+		var tableName, tableID, databaseName, databaseID, schemaName, schemaID sql.NullString
+		var creditsUsed, bytesReclustered, rowsReclustered sql.NullFloat64
 		if err := rows.Scan(&tableName, &tableID, &schemaName, &schemaID, &databaseName, &databaseID,
 			&creditsUsed, &bytesReclustered, &rowsReclustered); err != nil {
 			return fmt.Errorf("failed to scan row: %w", err)
 		}
 
-		metrics <- prometheus.MustNewConstMetric(c.autoClusteringCredits, prometheus.GaugeValue, creditsUsed,
-			tableName, tableID, schemaName, schemaID, databaseName, databaseID)
-		metrics <- prometheus.MustNewConstMetric(c.autoClusteringBytes, prometheus.GaugeValue, bytesReclustered,
-			tableName, tableID, schemaName, schemaID, databaseName, databaseID)
-		metrics <- prometheus.MustNewConstMetric(c.autoClusteringRows, prometheus.GaugeValue, rowsReclustered,
-			tableName, tableID, schemaName, schemaID, databaseName, databaseID)
+		if creditsUsed.Valid {
+			metrics <- prometheus.MustNewConstMetric(c.autoClusteringCredits, prometheus.GaugeValue, creditsUsed.Float64,
+				tableName.String, tableID.String, schemaName.String, schemaID.String, databaseName.String, databaseID.String)
+		}
+		if bytesReclustered.Valid {
+			metrics <- prometheus.MustNewConstMetric(c.autoClusteringBytes, prometheus.GaugeValue, bytesReclustered.Float64,
+				tableName.String, tableID.String, schemaName.String, schemaID.String, databaseName.String, databaseID.String)
+		}
+		if rowsReclustered.Valid {
+			metrics <- prometheus.MustNewConstMetric(c.autoClusteringRows, prometheus.GaugeValue, rowsReclustered.Float64,
+				tableName.String, tableID.String, schemaName.String, schemaID.String, databaseName.String, databaseID.String)
+		}
 	}
 
 	return rows.Err()
@@ -520,21 +558,29 @@ func (c *Collector) collectTableStorageMetrics(db *sql.DB, metrics chan<- promet
 	defer rows.Close()
 
 	for rows.Next() {
-		var tableName, tableID, databaseName, databaseID, schemaName, schemaID string
-		var activeBytes, timeTravelBytes, failsafeBytes, cloneBytes float64
+		var tableName, tableID, databaseName, databaseID, schemaName, schemaID sql.NullString
+		var activeBytes, timeTravelBytes, failsafeBytes, cloneBytes sql.NullFloat64
 		if err := rows.Scan(&tableName, &tableID, &schemaName, &schemaID, &databaseName, &databaseID,
 			&activeBytes, &timeTravelBytes, &failsafeBytes, &cloneBytes); err != nil {
 			return fmt.Errorf("failed to scan row: %w", err)
 		}
 
-		metrics <- prometheus.MustNewConstMetric(c.tableActiveBytes, prometheus.GaugeValue, activeBytes,
-			tableName, tableID, schemaName, schemaID, databaseName, databaseID)
-		metrics <- prometheus.MustNewConstMetric(c.tableTimeTravelBytes, prometheus.GaugeValue, timeTravelBytes,
-			tableName, tableID, schemaName, schemaID, databaseName, databaseID)
-		metrics <- prometheus.MustNewConstMetric(c.tableFailsafeBytes, prometheus.GaugeValue, failsafeBytes,
-			tableName, tableID, schemaName, schemaID, databaseName, databaseID)
-		metrics <- prometheus.MustNewConstMetric(c.tableCloneBytes, prometheus.GaugeValue, cloneBytes,
-			tableName, tableID, schemaName, schemaID, databaseName, databaseID)
+		if activeBytes.Valid {
+			metrics <- prometheus.MustNewConstMetric(c.tableActiveBytes, prometheus.GaugeValue, activeBytes.Float64,
+				tableName.String, tableID.String, schemaName.String, schemaID.String, databaseName.String, databaseID.String)
+		}
+		if timeTravelBytes.Valid {
+			metrics <- prometheus.MustNewConstMetric(c.tableTimeTravelBytes, prometheus.GaugeValue, timeTravelBytes.Float64,
+				tableName.String, tableID.String, schemaName.String, schemaID.String, databaseName.String, databaseID.String)
+		}
+		if failsafeBytes.Valid {
+			metrics <- prometheus.MustNewConstMetric(c.tableFailsafeBytes, prometheus.GaugeValue, failsafeBytes.Float64,
+				tableName.String, tableID.String, schemaName.String, schemaID.String, databaseName.String, databaseID.String)
+		}
+		if cloneBytes.Valid {
+			metrics <- prometheus.MustNewConstMetric(c.tableCloneBytes, prometheus.GaugeValue, cloneBytes.Float64,
+				tableName.String, tableID.String, schemaName.String, schemaID.String, databaseName.String, databaseID.String)
+		}
 	}
 
 	return rows.Err()
@@ -548,14 +594,18 @@ func (c *Collector) collectReplicationMetrics(db *sql.DB, metrics chan<- prometh
 	defer rows.Close()
 
 	for rows.Next() {
-		var databaseName, databaseID string
-		var creditsUsed, bytesTransferred float64
+		var databaseName, databaseID sql.NullString
+		var creditsUsed, bytesTransferred sql.NullFloat64
 		if err := rows.Scan(&databaseName, &databaseID, &creditsUsed, &bytesTransferred); err != nil {
 			return fmt.Errorf("failed to scan row: %w", err)
 		}
 
-		metrics <- prometheus.MustNewConstMetric(c.replicationUsedCredits, prometheus.GaugeValue, creditsUsed, databaseName, databaseID)
-		metrics <- prometheus.MustNewConstMetric(c.replicationTransferredBytes, prometheus.GaugeValue, bytesTransferred, databaseName, databaseID)
+		if creditsUsed.Valid {
+			metrics <- prometheus.MustNewConstMetric(c.replicationUsedCredits, prometheus.GaugeValue, creditsUsed.Float64, databaseName.String, databaseID.String)
+		}
+		if bytesTransferred.Valid {
+			metrics <- prometheus.MustNewConstMetric(c.replicationTransferredBytes, prometheus.GaugeValue, bytesTransferred.Float64, databaseName.String, databaseID.String)
+		}
 	}
 
 	return rows.Err()
