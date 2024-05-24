@@ -50,19 +50,19 @@ snowflake_successful_login_rate{client_type="mock_client_type",client_version="v
 # HELP snowflake_table_active_bytes Sum of active bytes owned by the table.
 # TYPE snowflake_table_active_bytes gauge
 snowflake_table_active_bytes{database_id="1",database_name="mock_db",schema_id="4",schema_name="mock_schema",table_id="3",table_name="mock_table"} 1028
-snowflake_table_active_bytes{database_id="2",database_name="another_mock_db",schema_id="4",schema_name="mock_schema",table_id="3",table_name="mock_table"} 16384
+snowflake_table_active_bytes{database_id="2",database_name="another_mock_db",schema_id="4",schema_name="",table_id="3",table_name="mock_table"} 16384
 # HELP snowflake_table_clone_bytes Sum of bytes owned by the table that are retained after deletion because they are referenced by one or more clones.
 # TYPE snowflake_table_clone_bytes gauge
 snowflake_table_clone_bytes{database_id="1",database_name="mock_db",schema_id="4",schema_name="mock_schema",table_id="3",table_name="mock_table"} 8192
-snowflake_table_clone_bytes{database_id="2",database_name="another_mock_db",schema_id="4",schema_name="mock_schema",table_id="3",table_name="mock_table"} 131072
+snowflake_table_clone_bytes{database_id="2",database_name="another_mock_db",schema_id="4",schema_name="",table_id="3",table_name="mock_table"} 131072
 # HELP snowflake_table_failsafe_bytes Sum of bytes in Fail-Safe state owned by the table.
 # TYPE snowflake_table_failsafe_bytes gauge
 snowflake_table_failsafe_bytes{database_id="1",database_name="mock_db",schema_id="4",schema_name="mock_schema",table_id="3",table_name="mock_table"} 4096
-snowflake_table_failsafe_bytes{database_id="2",database_name="another_mock_db",schema_id="4",schema_name="mock_schema",table_id="3",table_name="mock_table"} 65536
+snowflake_table_failsafe_bytes{database_id="2",database_name="another_mock_db",schema_id="4",schema_name="",table_id="3",table_name="mock_table"} 65536
 # HELP snowflake_table_time_travel_bytes Sum of bytes in Time Travel state owned by the table.
 # TYPE snowflake_table_time_travel_bytes gauge
 snowflake_table_time_travel_bytes{database_id="1",database_name="mock_db",schema_id="4",schema_name="mock_schema",table_id="3",table_name="mock_table"} 2048
-snowflake_table_time_travel_bytes{database_id="2",database_name="another_mock_db",schema_id="4",schema_name="mock_schema",table_id="3",table_name="mock_table"} 32768
+snowflake_table_time_travel_bytes{database_id="2",database_name="another_mock_db",schema_id="4",schema_name="",table_id="3",table_name="mock_table"} 32768
 # HELP snowflake_used_cloud_services_credits Average overall credits billed per hour for cloud services over the last 24 hours.
 # TYPE snowflake_used_cloud_services_credits gauge
 snowflake_used_cloud_services_credits{service="another_mock_service_type",service_type="another_mock_service"} 0.125
