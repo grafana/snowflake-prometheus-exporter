@@ -17,6 +17,7 @@ package collector
 import (
 	"database/sql"
 	"fmt"
+	"time"
 
 	"github.com/go-kit/log"
 	"github.com/go-kit/log/level"
@@ -380,6 +381,8 @@ func (c *Collector) collectStorageMetrics(db *sql.DB, metrics chan<- prometheus.
 		metrics <- prometheus.MustNewConstMetric(c.failsafeBytes, prometheus.GaugeValue, failsafeBytes.Float64)
 	}
 
+	// TODO: remove after testing
+	time.Sleep(10 * time.Second)
 	return rows.Err()
 }
 
@@ -405,6 +408,8 @@ func (c *Collector) collectDatabaseStorageMetrics(db *sql.DB, metrics chan<- pro
 		}
 	}
 
+	// TODO: remove after testing
+	time.Sleep(10 * time.Second)
 	return rows.Err()
 }
 
@@ -430,6 +435,8 @@ func (c *Collector) collectCreditMetrics(db *sql.DB, metrics chan<- prometheus.M
 		}
 	}
 
+	// TODO: remove after testing
+	time.Sleep(10 * time.Second)
 	return rows.Err()
 }
 
@@ -455,6 +462,8 @@ func (c *Collector) collectWarehouseCreditMetrics(db *sql.DB, metrics chan<- pro
 		}
 	}
 
+	// TODO: remove after testing
+	time.Sleep(10 * time.Second)
 	return rows.Err()
 }
 
@@ -484,6 +493,8 @@ func (c *Collector) collectLoginMetrics(db *sql.DB, metrics chan<- prometheus.Me
 		}
 	}
 
+	// TODO: remove after testing
+	time.Sleep(10 * time.Second)
 	return rows.Err()
 }
 
@@ -515,6 +526,8 @@ func (c *Collector) collectWarehouseLoadMetrics(db *sql.DB, metrics chan<- prome
 		}
 	}
 
+	// TODO: remove after testing
+	time.Sleep(10 * time.Second)
 	return rows.Err()
 }
 
@@ -547,6 +560,8 @@ func (c *Collector) collectAutoClusteringMetrics(db *sql.DB, metrics chan<- prom
 		}
 	}
 
+	// TODO: remove after testing
+	time.Sleep(10 * time.Second)
 	return rows.Err()
 }
 
@@ -583,6 +598,8 @@ func (c *Collector) collectTableStorageMetrics(db *sql.DB, metrics chan<- promet
 		}
 	}
 
+	// TODO: remove after testing
+	time.Sleep(60 * time.Second)
 	return rows.Err()
 }
 
@@ -608,5 +625,7 @@ func (c *Collector) collectReplicationMetrics(db *sql.DB, metrics chan<- prometh
 		}
 	}
 
+	// TODO: remove after testing
+	time.Sleep(10 * time.Second)
 	return rows.Err()
 }
