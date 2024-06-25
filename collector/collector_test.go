@@ -42,6 +42,7 @@ var ExampleConfig = &Config{
 func TestCollector_Collect(t *testing.T) {
 	t.Run("Metrics match expected", func(t *testing.T) {
 		db, mock := createMockDB(t)
+		mock.MatchExpectationsInOrder(false)
 
 		col := NewCollector(log.NewJSONLogger(os.Stdout), ExampleConfig)
 		col.openDatabase = func(_ string) (*sql.DB, error) { return db, nil }
@@ -57,6 +58,7 @@ func TestCollector_Collect(t *testing.T) {
 
 	t.Run("Metrics have no lint errors", func(t *testing.T) {
 		db, mock := createMockDB(t)
+		mock.MatchExpectationsInOrder(false)
 
 		col := NewCollector(log.NewJSONLogger(os.Stdout), ExampleConfig)
 		col.openDatabase = func(_ string) (*sql.DB, error) { return db, nil }
@@ -70,6 +72,7 @@ func TestCollector_Collect(t *testing.T) {
 
 	t.Run("All queries fail", func(t *testing.T) {
 		db, mock := createQueryErrMockDB(t)
+		mock.MatchExpectationsInOrder(false)
 
 		col := NewCollector(log.NewJSONLogger(os.Stdout), ExampleConfig)
 		col.openDatabase = func(_ string) (*sql.DB, error) { return db, nil }
