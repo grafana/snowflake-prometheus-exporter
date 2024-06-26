@@ -286,9 +286,8 @@ func (c *Collector) Describe(descs chan<- *prometheus.Desc) {
 func (c *Collector) Collect(metrics chan<- prometheus.Metric) {
 	level.Debug(c.logger).Log("msg", "Collecting metrics.")
 
-	// Create a WaitGroup to block closing the DB until all 9 goroutines are done
+	// Create a WaitGroup to block closing the database until all goroutines are done
 	var wg sync.WaitGroup
-	wg.Add(9)
 
 	var up float64 = 1
 	// Open a new connection to the database each time; This makes the connection more robust to transient failures
@@ -308,6 +307,7 @@ func (c *Collector) Collect(metrics chan<- prometheus.Metric) {
 	}
 	defer db.Close()
 
+	wg.Add(1)
 	go func() {
 		if err := c.collectStorageMetrics(db, metrics); err != nil {
 			level.Error(c.logger).Log("msg", "Failed to collect storage metrics.", "err", err)
@@ -316,6 +316,7 @@ func (c *Collector) Collect(metrics chan<- prometheus.Metric) {
 		wg.Done()
 	}()
 
+	wg.Add(1)
 	go func() {
 		if err := c.collectDatabaseStorageMetrics(db, metrics); err != nil {
 			level.Error(c.logger).Log("msg", "Failed to collect database storage metrics.", "err", err)
@@ -324,6 +325,7 @@ func (c *Collector) Collect(metrics chan<- prometheus.Metric) {
 		wg.Done()
 	}()
 
+	wg.Add(1)
 	go func() {
 		if err := c.collectCreditMetrics(db, metrics); err != nil {
 			level.Error(c.logger).Log("msg", "Failed to collect credit metrics.", "err", err)
@@ -332,6 +334,7 @@ func (c *Collector) Collect(metrics chan<- prometheus.Metric) {
 		wg.Done()
 	}()
 
+	wg.Add(1)
 	go func() {
 		if err := c.collectWarehouseCreditMetrics(db, metrics); err != nil {
 			level.Error(c.logger).Log("msg", "Failed to collect warehouse credit metrics.", "err", err)
@@ -340,6 +343,7 @@ func (c *Collector) Collect(metrics chan<- prometheus.Metric) {
 		wg.Done()
 	}()
 
+	wg.Add(1)
 	go func() {
 		if err := c.collectLoginMetrics(db, metrics); err != nil {
 			level.Error(c.logger).Log("msg", "Failed to collect login metrics.", "err", err)
@@ -348,6 +352,7 @@ func (c *Collector) Collect(metrics chan<- prometheus.Metric) {
 		wg.Done()
 	}()
 
+	wg.Add(1)
 	go func() {
 		if err := c.collectWarehouseLoadMetrics(db, metrics); err != nil {
 			level.Error(c.logger).Log("msg", "Failed to collect warehouse load metrics.", "err", err)
@@ -356,6 +361,7 @@ func (c *Collector) Collect(metrics chan<- prometheus.Metric) {
 		wg.Done()
 	}()
 
+	wg.Add(1)
 	go func() {
 		if err := c.collectAutoClusteringMetrics(db, metrics); err != nil {
 			level.Error(c.logger).Log("msg", "Failed to collect autoclustering metrics.", "err", err)
@@ -364,6 +370,7 @@ func (c *Collector) Collect(metrics chan<- prometheus.Metric) {
 		wg.Done()
 	}()
 
+	wg.Add(1)
 	go func() {
 		if err := c.collectTableStorageMetrics(db, metrics); err != nil {
 			level.Error(c.logger).Log("msg", "Failed to collect table storage metrics.", "err", err)
@@ -372,6 +379,7 @@ func (c *Collector) Collect(metrics chan<- prometheus.Metric) {
 		wg.Done()
 	}()
 
+	wg.Add(1)
 	go func() {
 		if err := c.collectReplicationMetrics(db, metrics); err != nil {
 			level.Error(c.logger).Log("msg", "Failed to collect replication metrics.", "err", err)
