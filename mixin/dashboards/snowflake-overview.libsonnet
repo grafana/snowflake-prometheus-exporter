@@ -16,22 +16,22 @@ local warehouseActivityPanel = {
   datasource: promDatasource,
   targets: [
     prometheus.target(
-      'snowflake_warehouse_executed_queries{instance=~"$instance", job=~"$job", name=~"$warehouse"}',
+      'last_over_time(snowflake_warehouse_executed_queries{instance=~"$instance", job=~"$job", name=~"$warehouse"}[1h])',
       datasource=promDatasource,
       legendFormat='{{instance}} - {{name}} - Executed query load'
     ),
     prometheus.target(
-      'snowflake_warehouse_overloaded_queue_size{instance=~"$instance", job=~"$job", name=~"$warehouse"}',
+      'last_over_time(snowflake_warehouse_overloaded_queue_size{instance=~"$instance", job=~"$job", name=~"$warehouse"}[1h])',
       datasource=promDatasource,
       legendFormat='{{instance}} - {{name}} - Overloaded queue load'
     ),
     prometheus.target(
-      'snowflake_warehouse_provisioning_queue_size{instance=~"$instance", job=~"$job", name=~"$warehouse"}',
+      'last_over_time(snowflake_warehouse_provisioning_queue_size{instance=~"$instance", job=~"$job", name=~"$warehouse"}[1h])',
       datasource=promDatasource,
       legendFormat='{{instance}} - {{name}} - Provisioning queue load'
     ),
     prometheus.target(
-      'snowflake_warehouse_blocked_queries{instance=~"$instance", job=~"$job", name=~"$warehouse"}',
+      'last_over_time(snowflake_warehouse_blocked_queries{instance=~"$instance", job=~"$job", name=~"$warehouse"}[1h])',
       datasource=promDatasource,
       legendFormat='{{instance}} - {{name}} - Blocked query load'
     ),
@@ -100,17 +100,17 @@ local accountStorageUsagePanel = {
   datasource: promDatasource,
   targets: [
     prometheus.target(
-      'snowflake_storage_bytes{instance=~"$instance", job=~"$job"}',
+      'last_over_time(snowflake_storage_bytes{instance=~"$instance", job=~"$job"}[1h])',
       datasource=promDatasource,
       legendFormat='{{instance}} - Storage'
     ),
     prometheus.target(
-      'snowflake_stage_bytes{instance=~"$instance", job=~"$job"}',
+      'last_over_time(snowflake_stage_bytes{instance=~"$instance", job=~"$job"}[1h])',
       datasource=promDatasource,
       legendFormat='{{instance}} - Stage'
     ),
     prometheus.target(
-      'snowflake_failsafe_bytes{instance=~"$instance", job=~"$job"}',
+      'last_over_time(snowflake_failsafe_bytes{instance=~"$instance", job=~"$job"}[1h])',
       datasource=promDatasource,
       legendFormat='{{instance}} - Failsafe'
     ),
@@ -176,17 +176,17 @@ local loginAttemptsPanel = {
   datasource: promDatasource,
   targets: [
     prometheus.target(
-      'sum by (job, instance) (snowflake_login_rate{job=~"$job", instance=~"$instance"})',
+      'sum by (job, instance) (last_over_time(snowflake_login_rate{job=~"$job", instance=~"$instance"}[1h]))',
       datasource=promDatasource,
       legendFormat='{{instance}} - Total'
     ),
     prometheus.target(
-      'sum by (job, instance) (snowflake_failed_login_rate{job=~"$job", instance=~"$instance"})',
+      'sum by (job, instance) (last_over_time(snowflake_failed_login_rate{job=~"$job", instance=~"$instance"}[1h]))',
       datasource=promDatasource,
       legendFormat='{{instance}} - Failed'
     ),
     prometheus.target(
-      'sum by (job, instance) (snowflake_successful_login_rate{job=~"$job", instance=~"$instance"})',
+      'sum by (job, instance) (last_over_time(snowflake_successful_login_rate{job=~"$job", instance=~"$instance"}[1h]))',
       datasource=promDatasource,
       legendFormat='{{instance}} - Successful'
     ),
@@ -252,7 +252,7 @@ local successfulLoginAttemptsPanel = {
   datasource: promDatasource,
   targets: [
     prometheus.target(
-      'sum by (job, instance) (snowflake_successful_login_rate{job=~"$job", instance=~"$instance"}) / sum by (job, instance) (snowflake_login_rate{job=~"$job", instance=~"$instance"})',
+      'sum by (job, instance) (last_over_time(snowflake_successful_login_rate{job=~"$job", instance=~"$instance"}[1h])) / sum by (job, instance) (last_over_time(snowflake_login_rate{job=~"$job", instance=~"$instance"}[1h]))',
       datasource=promDatasource,
       legendFormat='{{instance}}'
     ),
@@ -313,7 +313,7 @@ local failedLoginAttemptsPanel = {
   datasource: promDatasource,
   targets: [
     prometheus.target(
-      'sum by (job, instance) (snowflake_failed_login_rate{job=~"$job", instance=~"$instance"}) / sum by (job, instance) (snowflake_login_rate{job=~"$job", instance=~"$instance"})',
+      'sum by (job, instance) (last_over_time(snowflake_failed_login_rate{job=~"$job", instance=~"$instance"}[1h])) / sum by (job, instance) (last_over_time(snowflake_login_rate{job=~"$job", instance=~"$instance"}[1h]))',
       datasource=promDatasource,
       legendFormat='{{instance}}'
     ),
@@ -377,13 +377,13 @@ local averageHourlyCreditsUsedPanel = {
   datasource: promDatasource,
   targets: [
     prometheus.target(
-      'sum by (job, instance) (snowflake_used_compute_credits{job=~"$job", instance=~"$instance"})',
+      'sum by (job, instance) (last_over_time(snowflake_used_compute_credits{job=~"$job", instance=~"$instance"}[1h]))',
       intervalFactor=1,
       datasource=promDatasource,
       legendFormat='{{instance}} - Compute'
     ),
     prometheus.target(
-      'sum by (job, instance) (snowflake_used_cloud_services_credits{job=~"$job", instance=~"$instance"})',
+      'sum by (job, instance) (last_over_time(snowflake_used_cloud_services_credits{job=~"$job", instance=~"$instance"}[1h]))',
       intervalFactor=1,
       datasource=promDatasource,
       legendFormat='{{instance}} - Service'
@@ -447,7 +447,7 @@ local top5ServiceComputeCreditsUsedPanel = {
   datasource: promDatasource,
   targets: [
     prometheus.target(
-      'snowflake_used_compute_credits{job=~"$job", instance=~"$instance"}',
+      'last_over_time(snowflake_used_compute_credits{job=~"$job", instance=~"$instance"}[1h])',
       datasource=promDatasource,
       format='table',
       legendFormat='__auto'
@@ -547,7 +547,7 @@ local top5ServiceCloudServiceCreditsUsedPanel = {
   datasource: promDatasource,
   targets: [
     prometheus.target(
-      'snowflake_used_cloud_services_credits{job=~"$job", instance=~"$instance"}',
+      'last_over_time(snowflake_used_cloud_services_credits{job=~"$job", instance=~"$instance"}[1h])',
       datasource=promDatasource,
       format='table',
       legendFormat='__auto'
@@ -647,7 +647,7 @@ local top5WarehouseComputeCreditsUsedPanel = {
   datasource: promDatasource,
   targets: [
     prometheus.target(
-      'snowflake_warehouse_used_compute_credits{job=~"$job", instance=~"$instance"}',
+      'last_over_time(snowflake_warehouse_used_compute_credits{job=~"$job", instance=~"$instance"}[1h])',
       datasource=promDatasource,
       format='table',
       legendFormat='__auto'
@@ -741,7 +741,7 @@ local top5WarehouseCloudServicesCreditsUsedPanel = {
   datasource: promDatasource,
   targets: [
     prometheus.target(
-      'snowflake_warehouse_used_cloud_service_credits{job=~"$job", instance=~"$instance"}',
+      'last_over_time(snowflake_warehouse_used_cloud_service_credits{job=~"$job", instance=~"$instance"}[1h])',
       datasource=promDatasource,
       format='table',
       legendFormat='__auto'
@@ -836,7 +836,7 @@ local autoclusteringCreditsUsedPanel = {
   datasource: promDatasource,
   targets: [
     prometheus.target(
-      'snowflake_auto_clustering_credits{job=~"$job", instance=~"$instance"}',
+      'last_over_time(snowflake_auto_clustering_credits{job=~"$job", instance=~"$instance"}[1h])',
       datasource=promDatasource,
       legendFormat='{{database_name}} - {{schema_name}} - {{table_name}}'
     ),
@@ -903,7 +903,7 @@ local top5TableAutoclusteringCreditsUsedPanel = {
   datasource: promDatasource,
   targets: [
     prometheus.target(
-      'snowflake_auto_clustering_credits{job=~"$job", instance=~"$instance"}',
+      'last_over_time(snowflake_auto_clustering_credits{job=~"$job", instance=~"$instance"}[1h])',
       datasource=promDatasource,
       format='table',
       legendFormat='__auto'
@@ -1022,7 +1022,7 @@ local top5DatabaseAutoclusteringCreditsUsedPanel = {
   datasource: promDatasource,
   targets: [
     prometheus.target(
-      'sum by (instance, job, database_name) (snowflake_auto_clustering_credits{job=~"$job", instance=~"$instance"})',
+      'sum by (instance, job, database_name) (last_over_time(snowflake_auto_clustering_credits{job=~"$job", instance=~"$instance"}[1h]))',
       datasource=promDatasource,
       format='table',
       legendFormat='__auto'
