@@ -390,9 +390,11 @@ func (c *Collector) Collect(metrics chan<- prometheus.Metric) {
 
 	wg.Wait()
 	metrics <- prometheus.MustNewConstMetric(c.up, prometheus.GaugeValue, up)
+	level.Debug(c.logger).Log("msg", "Finished collecting metrics.")
 }
 
 func (c *Collector) collectStorageMetrics(db *sql.DB, metrics chan<- prometheus.Metric) error {
+	level.Debug(c.logger).Log("msg", "Collecting storage metrics.")
 	rows, err := db.Query(storageMetricQuery)
 	if err != nil {
 		return fmt.Errorf("failed to query metrics: %w", err)
@@ -421,10 +423,12 @@ func (c *Collector) collectStorageMetrics(db *sql.DB, metrics chan<- prometheus.
 		metrics <- prometheus.MustNewConstMetric(c.failsafeBytes, prometheus.GaugeValue, failsafeBytes.Float64)
 	}
 
+	level.Debug(c.logger).Log("msg", "Finished collecting storage metrics.")
 	return rows.Err()
 }
 
 func (c *Collector) collectDatabaseStorageMetrics(db *sql.DB, metrics chan<- prometheus.Metric) error {
+	level.Debug(c.logger).Log("msg", "Collecting database storage metrics.")
 	rows, err := db.Query(databaseStorageMetricQuery)
 	if err != nil {
 		return fmt.Errorf("failed to query metrics: %w", err)
@@ -446,10 +450,12 @@ func (c *Collector) collectDatabaseStorageMetrics(db *sql.DB, metrics chan<- pro
 		}
 	}
 
+	level.Debug(c.logger).Log("msg", "Finished collecting database storage metrics.")
 	return rows.Err()
 }
 
 func (c *Collector) collectCreditMetrics(db *sql.DB, metrics chan<- prometheus.Metric) error {
+	level.Debug(c.logger).Log("msg", "Collecting credit metrics.")
 	rows, err := db.Query(creditMetricQuery)
 	if err != nil {
 		return fmt.Errorf("failed to query metrics: %w", err)
@@ -471,10 +477,12 @@ func (c *Collector) collectCreditMetrics(db *sql.DB, metrics chan<- prometheus.M
 		}
 	}
 
+	level.Debug(c.logger).Log("msg", "Finished collecting credit metrics.")
 	return rows.Err()
 }
 
 func (c *Collector) collectWarehouseCreditMetrics(db *sql.DB, metrics chan<- prometheus.Metric) error {
+	level.Debug(c.logger).Log("msg", "Collecting warehouse credit metrics.")
 	rows, err := db.Query(warehouseCreditMetricQuery)
 	if err != nil {
 		return fmt.Errorf("failed to query metrics: %w", err)
@@ -496,10 +504,12 @@ func (c *Collector) collectWarehouseCreditMetrics(db *sql.DB, metrics chan<- pro
 		}
 	}
 
+	level.Debug(c.logger).Log("msg", "Finished collecting warehouse credit metrics.")
 	return rows.Err()
 }
 
 func (c *Collector) collectLoginMetrics(db *sql.DB, metrics chan<- prometheus.Metric) error {
+	level.Debug(c.logger).Log("msg", "Collecting login metrics.")
 	rows, err := db.Query(loginMetricQuery)
 	if err != nil {
 		return fmt.Errorf("failed to query metrics: %w", err)
@@ -525,10 +535,12 @@ func (c *Collector) collectLoginMetrics(db *sql.DB, metrics chan<- prometheus.Me
 		}
 	}
 
+	level.Debug(c.logger).Log("msg", "Finished collecting login metrics.")
 	return rows.Err()
 }
 
 func (c *Collector) collectWarehouseLoadMetrics(db *sql.DB, metrics chan<- prometheus.Metric) error {
+	level.Debug(c.logger).Log("msg", "Collecting warehouse load metrics.")
 	rows, err := db.Query(warehouseLoadMetricQuery)
 	if err != nil {
 		return fmt.Errorf("failed to query metrics: %w", err)
@@ -556,10 +568,12 @@ func (c *Collector) collectWarehouseLoadMetrics(db *sql.DB, metrics chan<- prome
 		}
 	}
 
+	level.Debug(c.logger).Log("msg", "Finished collecting warehouse load metrics.")
 	return rows.Err()
 }
 
 func (c *Collector) collectAutoClusteringMetrics(db *sql.DB, metrics chan<- prometheus.Metric) error {
+	level.Debug(c.logger).Log("msg", "Collecting auto-clustering metrics.")
 	rows, err := db.Query(autoClusteringMetricQuery)
 	if err != nil {
 		return fmt.Errorf("failed to query metrics: %w", err)
@@ -588,10 +602,12 @@ func (c *Collector) collectAutoClusteringMetrics(db *sql.DB, metrics chan<- prom
 		}
 	}
 
+	level.Debug(c.logger).Log("msg", "Finished collecting auto-clustering metrics.")
 	return rows.Err()
 }
 
 func (c *Collector) collectTableStorageMetrics(db *sql.DB, metrics chan<- prometheus.Metric) error {
+	level.Debug(c.logger).Log("msg", "Collecting table storage metrics.")
 	rows, err := db.Query(tableStorageMetricQuery)
 	if err != nil {
 		return fmt.Errorf("failed to query metrics: %w", err)
@@ -624,10 +640,12 @@ func (c *Collector) collectTableStorageMetrics(db *sql.DB, metrics chan<- promet
 		}
 	}
 
+	level.Debug(c.logger).Log("msg", "Finished collecting table storage metrics.")
 	return rows.Err()
 }
 
 func (c *Collector) collectReplicationMetrics(db *sql.DB, metrics chan<- prometheus.Metric) error {
+	level.Debug(c.logger).Log("msg", "Collecting replication metrics.")
 	rows, err := db.Query(replicationMetricQuery)
 	if err != nil {
 		return fmt.Errorf("failed to query metrics: %w", err)
@@ -649,5 +667,6 @@ func (c *Collector) collectReplicationMetrics(db *sql.DB, metrics chan<- prometh
 		}
 	}
 
+	level.Debug(c.logger).Log("msg", "Finished collecting replication metrics.")
 	return rows.Err()
 }
