@@ -63,6 +63,9 @@ snowflake_table_failsafe_bytes{database_id="2",database_name="another_mock_db",s
 # TYPE snowflake_table_time_travel_bytes gauge
 snowflake_table_time_travel_bytes{database_id="1",database_name="mock_db",schema_id="4",schema_name="mock_schema",table_id="3",table_name="mock_table"} 2048
 snowflake_table_time_travel_bytes{database_id="2",database_name="another_mock_db",schema_id="4",schema_name="",table_id="3",table_name="mock_table"} 32768
+# HELP snowflake_table_deleted_tables Number of tables that have been purged from storage.
+# TYPE snowflake_table_deleted_tables gauge
+snowflake_table_deleted_tables 10
 # HELP snowflake_used_cloud_services_credits Average overall credits billed per hour for cloud services over the last 24 hours.
 # TYPE snowflake_used_cloud_services_credits gauge
 snowflake_used_cloud_services_credits{service="another_mock_service_type",service_type="another_mock_service"} 0.125

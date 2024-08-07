@@ -63,6 +63,11 @@ const (
 	FROM ACCOUNT_USAGE.TABLE_STORAGE_METRICS
 	GROUP BY TABLE_NAME, ID, TABLE_CATALOG, TABLE_CATALOG_ID, TABLE_SCHEMA, TABLE_SCHEMA_ID;`
 
+	// https://docs.snowflake.com/en/sql-reference/account-usage/table_storage_metrics
+	deletedTablesMetricQuery = `SELECT COUNT(DISTINCT TABLE_NAME, ID, TABLE_SCHEMA, TABLE_SCHEMA_ID, TABLE_CATALOG, TABLE_CATALOG_ID) AS NUM_TABLES
+	FROM ACCOUNT_USAGE.TABLE_STORAGE_METRICS
+	WHERE DELETED = TRUE;`
+
 	// https://docs.snowflake.com/en/sql-reference/account-usage/replication_usage_history.html
 	replicationMetricQuery = `SELECT DATABASE_NAME, DATABASE_ID, sum(CREDITS_USED), sum(BYTES_TRANSFERRED) 
 	FROM ACCOUNT_USAGE.REPLICATION_USAGE_HISTORY
