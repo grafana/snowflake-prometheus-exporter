@@ -9,21 +9,22 @@ Exports [Snowflake](www.snowflake.com) warehouse, database, table, and replicati
 The exporter may be configured through its command line flags:
 
 ```
-  -h, --help                 Show context-sensitive help (also try --help-long and --help-man).
+  -h, --help                          Show context-sensitive help (also try --help-long and --help-man).
       --web.listen-address=:9975 ...
-                             Addresses on which to expose metrics and web interface. Repeatable for multiple addresses.
+                                      Addresses on which to expose metrics and web interface. Repeatable for multiple addresses.
       --web.telemetry-path="/metrics"
-                             Path under which to expose metrics.
-      --account=ACCOUNT      The account to collect metrics for.
-      --username=USERNAME    The username for the user used when querying metrics.
-      --password=PASSWORD    The password for the user used when querying metrics.
-      --private-key-path     The path to the user's RSA private key file.
-      --private-key-password The password for the user's RSA private key.
-      --role="ACCOUNTADMIN"  The role to use when querying metrics.
-      --warehouse=WAREHOUSE  The warehouse to use when querying metrics.
-      --version              Show application version.
-      --log.level=info       Only log messages with the given severity or above. One of: [debug, info, warn, error]
-      --log.format=logfmt    Output format of log messages. One of: [logfmt, json]
+                                      Path under which to expose metrics.
+      --account=ACCOUNT               The account to collect metrics for.
+      --username=USERNAME             The username for the user used when querying metrics.
+      --password=PASSWORD             The password for the user used when querying metrics.
+      --private-key-path              The path to the user's RSA private key file.
+      --private-key-password          The password for the user's RSA private key.
+      --role="ACCOUNTADMIN"           The role to use when querying metrics.
+      --warehouse=WAREHOUSE           The warehouse to use when querying metrics.
+      --exclude-deleted-tables        Exclude deleted tables when collecting table storage metrics.
+      --version                       Show application version.
+      --log.level=info                Only log messages with the given severity or above. One of: [debug, info, warn, error]
+      --log.format=logfmt             Output format of log messages. One of: [logfmt, json]
 ```
 
 Example usage:
