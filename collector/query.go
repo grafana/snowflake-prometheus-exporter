@@ -58,9 +58,10 @@ const (
 	GROUP BY TABLE_NAME, TABLE_ID, DATABASE_NAME, DATABASE_ID, SCHEMA_NAME, SCHEMA_ID;`
 
 	// https://docs.snowflake.com/en/sql-reference/account-usage/table_storage_metrics.html
-	tableStorageMetricQuery = `SELECT TABLE_NAME, ID, TABLE_SCHEMA, TABLE_SCHEMA_ID, TABLE_CATALOG, TABLE_CATALOG_ID, 
+	tableStorageMetricQuery = `SELECT TABLE_NAME, ID, TABLE_SCHEMA, TABLE_SCHEMA_ID, TABLE_CATALOG, TABLE_CATALOG_ID,
 		sum(ACTIVE_BYTES), sum(TIME_TRAVEL_BYTES), sum(FAILSAFE_BYTES), sum(RETAINED_FOR_CLONE_BYTES)
 	FROM ACCOUNT_USAGE.TABLE_STORAGE_METRICS
+	WHERE TABLE_ENTERED_FAILSAFE IS NULL OR TABLE_ENTERED_FAILSAFE >= dateadd(day, -8, current_timestamp())
 	GROUP BY TABLE_NAME, ID, TABLE_CATALOG, TABLE_CATALOG_ID, TABLE_SCHEMA, TABLE_SCHEMA_ID;`
 
 	// https://docs.snowflake.com/en/sql-reference/account-usage/replication_usage_history.html
