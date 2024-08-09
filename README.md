@@ -10,10 +10,8 @@ The exporter may be configured through its command line flags:
 
 ```
   -h, --help                          Show context-sensitive help (also try --help-long and --help-man).
-      --web.listen-address=:9975 ...
-                                      Addresses on which to expose metrics and web interface. Repeatable for multiple addresses.
-      --web.telemetry-path="/metrics"
-                                      Path under which to expose metrics.
+      --web.listen-address=:9975 ...  Addresses on which to expose metrics and web interface. Repeatable for multiple addresses.
+      --web.telemetry-path="/metrics" Path under which to expose metrics.
       --account=ACCOUNT               The account to collect metrics for.
       --username=USERNAME             The username for the user used when querying metrics.
       --password=PASSWORD             The password for the user used when querying metrics.
@@ -101,3 +99,7 @@ SNOWFLAKE_EXPORTER_ROLE=ACCOUNTADMIN \
 SNOWFLAKE_EXPORTER_WAREHOUSE=WAREHOUSE \
 ./snowflake-exporter
 ```
+
+## Troubleshooting
+
+The exporter is susceptible to slow collection times in environments with a large number of deleted tables. For environments experiencing poor performance, enabling `--exclude-deleted-tables` may lead to improved metric processing speed.
