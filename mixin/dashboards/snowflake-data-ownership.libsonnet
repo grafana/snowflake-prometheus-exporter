@@ -387,6 +387,63 @@ local top5LargestTablesPanel = {
   ],
 };
 
+local deletedTablesPanel = {
+  datasource: promDatasource,
+  targets: [
+    prometheus.target(
+      'snowflake_table_active_bytes{job=~"$job", instance=~"$instance"}',
+      datasource=promDatasource,
+      legendFormat='{{instance}}',
+      format='time_series',
+    ),
+  ],
+  type: 'stat',
+  title: 'Deleted tables',
+  description: 'The number of tables that have been purged from storage.',
+  fieldConfig: {
+    defaults: {
+      color: {
+        mode: 'fixed',
+      },
+      mappings: [],
+      thresholds: {
+        mode: 'absolute',
+        steps: [
+          {
+            color: 'green',
+            value: null,
+          },
+          {
+            color: 'red',
+            value: 80,
+          },
+        ],
+      },
+      unit: 'none',
+    },
+    overrides: [],
+  },
+  interval: '15s',
+  options: {
+    colorMode: 'value',
+    graphMode: 'none',
+    justifyMode: 'center',
+    orientation: 'auto',
+    percentChangeColorMode: 'standard',
+    reduceOptions: {
+      calcs: [
+        'lastNotNull',
+      ],
+      fields: '',
+      values: false,
+    },
+    showPercentChange: false,
+    textMode: 'auto',
+    wideLayout: true,
+  },
+  pluginVersion: '11.2.0-73830',
+};
+
 local tableDataRow = {
   datasource: promDatasource,
   targets: [],
@@ -750,7 +807,8 @@ local cloneTableOwnedDataPanel = {
           failsafeSchemaOwnedDataPanel { gridPos: { h: 8, w: 6, x: 6, y: 0 } },
           cloneSchemaOwnedDataPanel { gridPos: { h: 8, w: 6, x: 12, y: 0 } },
           timeTravelSchemaOwnedDataPanel { gridPos: { h: 8, w: 6, x: 18, y: 0 } },
-          top5LargestTablesPanel { gridPos: { h: 7, w: 24, x: 0, y: 8 } },
+          top5LargestTablesPanel { gridPos: { h: 7, w: 18, x: 0, y: 8 } },
+          deletedTablesPanel { gridPos: { h: 7, w: 6, x: 18, y: 8 } },
           tableDataRow { gridPos: { h: 1, w: 24, x: 0, y: 15 } },
           activeTableOwnedDataPanel { gridPos: { h: 8, w: 12, x: 0, y: 16 } },
           failsafeTableOwnedDataPanel { gridPos: { h: 8, w: 12, x: 12, y: 16 } },
