@@ -35,6 +35,7 @@ type Config struct {
 	PrivateKeyPath     string
 	PrivateKeyPassword string
 	PrivateKey         *rsa.PrivateKey
+	ExcludeDeleted     bool
 }
 
 var (

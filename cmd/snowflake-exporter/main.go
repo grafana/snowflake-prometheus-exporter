@@ -42,6 +42,7 @@ var (
 	privateKeyPassword = kingpin.Flag("private-key-password", "The password for the user's RSA private key.").Envar("SNOWFLAKE_EXPORTER_PRIVATE_KEY_PASSWORD").String()
 	role               = kingpin.Flag("role", "The role to use when querying metrics.").Default("ACCOUNTADMIN").Envar("SNOWFLAKE_EXPORTER_ROLE").String()
 	warehouse          = kingpin.Flag("warehouse", "The warehouse to use when querying metrics.").Envar("SNOWFLAKE_EXPORTER_WAREHOUSE").Required().String()
+	excludeDeleted     = kingpin.Flag("exclude-deleted-tables", "Exclude deleted tables when collecting table storage metrics.").Default("false").Bool()
 )
 
 const (
@@ -76,6 +77,7 @@ func main() {
 		PrivateKeyPassword: *privateKeyPassword,
 		Role:               *role,
 		Warehouse:          *warehouse,
+		ExcludeDeleted:     *excludeDeleted,
 	}
 
 	if err := c.Validate(); err != nil {
