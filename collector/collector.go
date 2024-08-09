@@ -78,6 +78,7 @@ type Collector struct {
 	tableTimeTravelBytes              *prometheus.Desc
 	tableFailsafeBytes                *prometheus.Desc
 	tableCloneBytes                   *prometheus.Desc
+	tableDeletedTables                *prometheus.Desc
 	replicationUsedCredits            *prometheus.Desc
 	replicationTransferredBytes       *prometheus.Desc
 	up                                *prometheus.Desc
@@ -228,6 +229,12 @@ func NewCollector(logger log.Logger, c *Config) *Collector {
 			[]string{labelTableName, labelTableID, labelSchemaName, labelSchemaID, labelDatabaseName, labelDatabaseID},
 			nil,
 		),
+		tableDeletedTables: prometheus.NewDesc(
+			prometheus.BuildFQName(namespace, "table", "deleted_tables"),
+			"Number of tables that have been purged from storage.",
+			nil,
+			nil,
+		),
 		replicationUsedCredits: prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, "db_replication", "used_credits"),
 			"Sum of the number of credits used for database replication over the last 24 hours.",
@@ -276,6 +283,7 @@ func (c *Collector) Describe(descs chan<- *prometheus.Desc) {
 	descs <- c.tableTimeTravelBytes
 	descs <- c.tableFailsafeBytes
 	descs <- c.tableCloneBytes
+	descs <- c.tableDeletedTables
 	descs <- c.replicationUsedCredits
 	descs <- c.replicationTransferredBytes
 	descs <- c.up
@@ -374,6 +382,15 @@ func (c *Collector) Collect(metrics chan<- prometheus.Metric) {
 	go func() {
 		if err := c.collectTableStorageMetrics(db, metrics); err != nil {
 			level.Error(c.logger).Log("msg", "Failed to collect table storage metrics.", "err", err)
+			up = 0
+		}
+		wg.Done()
+	}()
+
+	wg.Add(1)
+	go func() {
+		if err := c.collectDeletedTablesMetrics(db, metrics); err != nil {
+			level.Error(c.logger).Log("msg", "Failed to collect deleted tables metrics.", "err", err)
 			up = 0
 		}
 		wg.Done()
@@ -649,6 +666,29 @@ func (c *Collector) collectTableStorageMetrics(db *sql.DB, metrics chan<- promet
 	}
 
 	level.Debug(c.logger).Log("msg", "Finished collecting table storage metrics.")
+	return rows.Err()
+}
+
+func (c *Collector) collectDeletedTablesMetrics(db *sql.DB, metrics chan<- prometheus.Metric) error {
+	level.Debug(c.logger).Log("msg", "Collecting deleted table metrics.")
+	rows, err := db.Query(deletedTablesMetricQuery)
+	level.Debug(c.logger).Log("msg", "Done querying deleted table metrics.")
+	if err != nil {
+		return fmt.Errorf("failed to query metrics: %w", err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var deletedTables sql.NullFloat64
+		if err := rows.Scan(&deletedTables); err != nil {
+			return fmt.Errorf("failed to scan row: %w", err)
+		}
+
+		if deletedTables.Valid {
+			metrics <- prometheus.MustNewConstMetric(c.tableDeletedTables, prometheus.GaugeValue, deletedTables.Float64)
+		}
+	}
+
 	return rows.Err()
 }
 
