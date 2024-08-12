@@ -391,7 +391,7 @@ local deletedTablesPanel = {
   datasource: promDatasource,
   targets: [
     prometheus.target(
-      'snowflake_table_active_bytes{job=~"$job", instance=~"$instance"}',
+      'snowflake_table_deleted_tables{job=~"$job", instance=~"$instance"}',
       datasource=promDatasource,
       legendFormat='{{instance}}',
       format='time_series',
