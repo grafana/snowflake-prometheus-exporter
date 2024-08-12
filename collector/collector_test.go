@@ -351,6 +351,16 @@ func createMockDB(t *testing.T) (*sql.DB, sqlmock.Sqlmock) {
 		).
 		RowsWillBeClosed()
 
+	mock.ExpectQuery(deletedTablesMetricQuery).
+		WillReturnRows(
+			newRows(t, [][]*string{
+				{
+					&val19,
+				},
+			}),
+		).
+		RowsWillBeClosed()
+
 	mock.ExpectQuery(replicationMetricQuery).
 		WillReturnRows(
 			newRows(t, [][]*string{
@@ -387,6 +397,7 @@ func createQueryErrMockDB(t *testing.T) (*sql.DB, sqlmock.Sqlmock) {
 	mock.ExpectQuery(warehouseLoadMetricQuery).WillReturnError(queryErr)
 	mock.ExpectQuery(autoClusteringMetricQuery).WillReturnError(queryErr)
 	mock.ExpectQuery(tableStorageMetricQuery).WillReturnError(queryErr)
+	mock.ExpectQuery(deletedTablesMetricQuery).WillReturnError(queryErr)
 	mock.ExpectQuery(replicationMetricQuery).WillReturnError(queryErr)
 
 	mock.ExpectClose()
