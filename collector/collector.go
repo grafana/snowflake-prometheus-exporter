@@ -631,12 +631,22 @@ func (c *Collector) collectAutoClusteringMetrics(db *sql.DB, metrics chan<- prom
 }
 
 func (c *Collector) collectTableStorageMetrics(db *sql.DB, metrics chan<- prometheus.Metric) error {
-	level.Debug(c.logger).Log("msg", "Collecting table storage metrics.")
-	rows, err := db.Query(tableStorageMetricQuery)
-	level.Debug(c.logger).Log("msg", "Done querying table storage metrics.")
-	if err != nil {
-		return fmt.Errorf("failed to query metrics: %w", err)
+	var rows *sql.Rows
+	var err error
+	if c.config.ExcludeDeleted {
+		level.Debug(c.logger).Log("msg", "Collecting table storage metrics excluding deleted tables.")
+		rows, err = db.Query(tableStorageExcludeDeletedMetricQuery)
+		if err != nil {
+			return fmt.Errorf("failed to query metrics: %w", err)
+		}
+	} else {
+		level.Debug(c.logger).Log("msg", "Collecting table storage metrics.")
+		rows, err = db.Query(tableStorageMetricQuery)
+		if err != nil {
+			return fmt.Errorf("failed to query metrics: %w", err)
+		}
 	}
+	level.Debug(c.logger).Log("msg", "Done querying table storage metrics.")
 	defer rows.Close()
 
 	for rows.Next() {
