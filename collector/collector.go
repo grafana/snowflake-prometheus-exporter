@@ -387,14 +387,16 @@ func (c *Collector) Collect(metrics chan<- prometheus.Metric) {
 		wg.Done()
 	}()
 
-	wg.Add(1)
-	go func() {
-		if err := c.collectDeletedTablesMetrics(db, metrics); err != nil {
-			level.Error(c.logger).Log("msg", "Failed to collect deleted tables metrics.", "err", err)
-			up = 0
-		}
-		wg.Done()
-	}()
+	if !c.config.ExcludeDeleted {
+		wg.Add(1)
+		go func() {
+			if err := c.collectDeletedTablesMetrics(db, metrics); err != nil {
+				level.Error(c.logger).Log("msg", "Failed to collect deleted tables metrics.", "err", err)
+				up = 0
+			}
+			wg.Done()
+		}()
+	}
 
 	wg.Add(1)
 	go func() {
