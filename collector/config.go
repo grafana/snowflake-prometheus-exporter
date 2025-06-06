@@ -119,6 +119,7 @@ func (c Config) snowflakeConnectionString() (string, error) {
 		Role:      c.Role,
 		Warehouse: c.Warehouse,
 		Database:  "SNOWFLAKE",
+		Tracing:   "trace",
 	}
 
 	if c.Password != "" {
