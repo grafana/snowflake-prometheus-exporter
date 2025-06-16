@@ -18,7 +18,6 @@ import (
 	"database/sql"
 	"fmt"
 	"sync"
-	"time"
 
 	"github.com/go-kit/log"
 	"github.com/go-kit/log/level"
@@ -650,68 +649,34 @@ func (c *Collector) collectTableStorageMetrics(db *sql.DB, metrics chan<- promet
 	level.Debug(c.logger).Log("msg", "Done querying table storage metrics.")
 	defer rows.Close()
 
-	processedRows := 0
-	startTime := time.Now()
-
 	for rows.Next() {
-		processedRows++
-		level.Debug(c.logger).Log("msg", "----------------------------------------")
-		level.Debug(c.logger).Log("msg", "Processing row", 
-			"row_number", processedRows,
-			"time_ms", time.Since(startTime).Milliseconds())
-
 		var tableName, tableID, databaseName, databaseID, schemaName, schemaID sql.NullString
 		var activeBytes, timeTravelBytes, failsafeBytes, cloneBytes sql.NullFloat64
-		
 		if err := rows.Scan(&tableName, &tableID, &schemaName, &schemaID, &databaseName, &databaseID,
 			&activeBytes, &timeTravelBytes, &failsafeBytes, &cloneBytes); err != nil {
 			return fmt.Errorf("failed to scan row: %w", err)
 		}
 
 		if activeBytes.Valid {
-			level.Debug(c.logger).Log("msg", "Creating active_bytes metric", 
-				"value", activeBytes.Float64,
-				"table", tableName.String)
 			metrics <- prometheus.MustNewConstMetric(c.tableActiveBytes, prometheus.GaugeValue, activeBytes.Float64,
 				tableName.String, tableID.String, schemaName.String, schemaID.String, databaseName.String, databaseID.String)
-			level.Debug(c.logger).Log("msg", "Sent active_bytes metric")
 		}
 		if timeTravelBytes.Valid {
-			level.Debug(c.logger).Log("msg", "Creating time_travel_bytes metric", 
-				"value", timeTravelBytes.Float64,
-				"table", tableName.String)
 			metrics <- prometheus.MustNewConstMetric(c.tableTimeTravelBytes, prometheus.GaugeValue, timeTravelBytes.Float64,
 				tableName.String, tableID.String, schemaName.String, schemaID.String, databaseName.String, databaseID.String)
-			level.Debug(c.logger).Log("msg", "Sent time_travel_bytes metric")
 		}
 		if failsafeBytes.Valid {
-			level.Debug(c.logger).Log("msg", "Creating failsafe_bytes metric", 
-				"value", failsafeBytes.Float64,
-				"table", tableName.String)
 			metrics <- prometheus.MustNewConstMetric(c.tableFailsafeBytes, prometheus.GaugeValue, failsafeBytes.Float64,
 				tableName.String, tableID.String, schemaName.String, schemaID.String, databaseName.String, databaseID.String)
-			level.Debug(c.logger).Log("msg", "Sent failsafe_bytes metric")
 		}
 		if cloneBytes.Valid {
-			level.Debug(c.logger).Log("msg", "Creating clone_bytes metric", 
-				"value", cloneBytes.Float64,
-				"table", tableName.String)
 			metrics <- prometheus.MustNewConstMetric(c.tableCloneBytes, prometheus.GaugeValue, cloneBytes.Float64,
 				tableName.String, tableID.String, schemaName.String, schemaID.String, databaseName.String, databaseID.String)
-			level.Debug(c.logger).Log("msg", "Sent clone_bytes metric")
 		}
 	}
 
-	if err := rows.Err(); err != nil {
-		return err
-	}
-
-	level.Debug(c.logger).Log("msg", "----------------------------------------")
-	level.Debug(c.logger).Log("msg", "Finished collecting table storage metrics", 
-		"rows_processed", processedRows,
-		"duration_ms", time.Since(startTime).Milliseconds())
-	level.Debug(c.logger).Log("msg", "----------------------------------------")
-	return nil
+	level.Debug(c.logger).Log("msg", "Finished collecting table storage metrics.")
+	return rows.Err()
 }
 
 func (c *Collector) collectDeletedTablesMetrics(db *sql.DB, metrics chan<- prometheus.Metric) error {
@@ -734,7 +699,6 @@ func (c *Collector) collectDeletedTablesMetrics(db *sql.DB, metrics chan<- prome
 		}
 	}
 
-	level.Debug(c.logger).Log("msg", "Finished collecting deleted table metrics.")
 	return rows.Err()
 }
 
