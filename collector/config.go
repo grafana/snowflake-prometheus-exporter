@@ -36,6 +36,7 @@ type Config struct {
 	PrivateKeyPassword string
 	PrivateKey         *rsa.PrivateKey
 	ExcludeDeleted     bool
+	EnableTracing      bool
 }
 
 var (
@@ -119,7 +120,10 @@ func (c Config) snowflakeConnectionString() (string, error) {
 		Role:      c.Role,
 		Warehouse: c.Warehouse,
 		Database:  "SNOWFLAKE",
-		Tracing:   "trace",
+	}
+
+	if c.EnableTracing {
+		sf.Tracing = "trace"
 	}
 
 	if c.Password != "" {

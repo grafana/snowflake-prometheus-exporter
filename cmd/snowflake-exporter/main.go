@@ -43,6 +43,7 @@ var (
 	role               = kingpin.Flag("role", "The role to use when querying metrics.").Default("ACCOUNTADMIN").Envar("SNOWFLAKE_EXPORTER_ROLE").String()
 	warehouse          = kingpin.Flag("warehouse", "The warehouse to use when querying metrics.").Envar("SNOWFLAKE_EXPORTER_WAREHOUSE").Required().String()
 	excludeDeleted     = kingpin.Flag("exclude-deleted-tables", "Exclude deleted tables when collecting table storage metrics.").Default("false").Bool()
+	enableTracing      = kingpin.Flag("enable-tracing", "Enable trace logging for Snowflake connections.").Default("false").Envar("SNOWFLAKE_EXPORTER_ENABLE_TRACING").Bool()
 )
 
 const (
@@ -78,6 +79,7 @@ func main() {
 		Role:               *role,
 		Warehouse:          *warehouse,
 		ExcludeDeleted:     *excludeDeleted,
+		EnableTracing:      *enableTracing,
 	}
 
 	if err := c.Validate(); err != nil {

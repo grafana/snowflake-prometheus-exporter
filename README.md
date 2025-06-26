@@ -20,6 +20,7 @@ The exporter may be configured through its command line flags:
       --role="ACCOUNTADMIN"           The role to use when querying metrics.
       --warehouse=WAREHOUSE           The warehouse to use when querying metrics.
       --exclude-deleted-tables        Exclude deleted tables when collecting table storage metrics.
+      --enable-tracing                Enable trace logging for Snowflake connections.
       --version                       Show application version.
       --log.level=info                Only log messages with the given severity or above. One of: [debug, info, warn, error]
       --log.format=logfmt             Output format of log messages. One of: [logfmt, json]
@@ -52,6 +53,7 @@ Alternatively, the exporter may be configured using environment variables:
 | SNOWFLAKE_EXPORTER_PRIVATE_KEY_PASSWORD | The password for the user's RSA private key (not required for unencrypted keys). |
 | SNOWFLAKE_EXPORTER_ROLE                 | The role to use when querying metrics.                                           |
 | SNOWFLAKE_EXPORTER_WAREHOUSE            | The warehouse to use when querying metrics.                                      |
+| SNOWFLAKE_EXPORTER_ENABLE_TRACING       | Enable trace logging for Snowflake connections.                                  |
 | SNOWFLAKE_EXPORTER_WEB_TELEMETRY_PATH   | Path under which to expose metrics.                                              |
 
 Example usage:
