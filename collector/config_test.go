@@ -139,6 +139,30 @@ func TestConfig_snowflakeConnectionString(t *testing.T) {
 			expectedString: "some-user:some-pass@some-account.snowflakecomputing.com:443?database=SNOWFLAKE&ocspFailOpen=true&role=ACCOUNTADMIN&validateDefaultParameters=true&warehouse=some-warehouse",
 		},
 		{
+			name: "Valid config with tracing enabled",
+			inputConfig: Config{
+				AccountName:   "some-account",
+				Username:      "some-user",
+				Password:      "some-pass",
+				Role:          "ACCOUNTADMIN",
+				Warehouse:     "some-warehouse",
+				EnableTracing: true,
+			},
+			expectedString: "some-user:some-pass@some-account.snowflakecomputing.com:443?database=SNOWFLAKE&ocspFailOpen=true&role=ACCOUNTADMIN&tracing=trace&validateDefaultParameters=true&warehouse=some-warehouse",
+		},
+		{
+			name: "Valid config with tracing disabled (same as default valid config)",
+			inputConfig: Config{
+				AccountName:   "some-account",
+				Username:      "some-user",
+				Password:      "some-pass",
+				Role:          "ACCOUNTADMIN",
+				Warehouse:     "some-warehouse",
+				EnableTracing: false,
+			},
+			expectedString: "some-user:some-pass@some-account.snowflakecomputing.com:443?database=SNOWFLAKE&ocspFailOpen=true&role=ACCOUNTADMIN&validateDefaultParameters=true&warehouse=some-warehouse",
+		},
+		{
 			name: "Connection string parts are escaped",
 			inputConfig: Config{
 				AccountName: "some%account",
