@@ -701,6 +701,7 @@ func (c *Collector) collectDeletedTablesMetrics(db *sql.DB, metrics chan<- prome
 		}
 	}
 
+	level.Debug(c.logger).Log("msg", "Finished collecting deleted table metrics.")
 	return rows.Err()
 }
 
