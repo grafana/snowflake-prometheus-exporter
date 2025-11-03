@@ -101,7 +101,7 @@ function(this) {
       unit: 'bytes',
       sources: {
         prometheus: {
-          expr: 'sum by (' + aggregationLabels + ') (last_over_time(snowflake_table_active_bytes{%(queriesSelector)s, database_name=~"$database_name", schema_name=~"$schema_name", table_name=~"$table_name"}[24h]))',
+          expr: 'sum by (' + aggregationLabels + ', table_name) (last_over_time(snowflake_table_active_bytes{%(queriesSelector)s, database_name=~"$database_name", schema_name=~"$schema_name", table_name=~"$table_name"}[24h]))',
           legendCustomTemplate: legendCustomTemplate + ' - {{table_name}}',
         },
       },
@@ -115,7 +115,7 @@ function(this) {
       unit: 'bytes',
       sources: {
         prometheus: {
-          expr: 'sum by (' + aggregationLabels + ') (last_over_time(snowflake_table_time_travel_bytes{%(queriesSelector)s, database_name=~"$database_name", schema_name=~"$schema_name", table_name=~"$table_name"}[24h]))',
+          expr: 'sum by (' + aggregationLabels + ', table_name) (last_over_time(snowflake_table_time_travel_bytes{%(queriesSelector)s, database_name=~"$database_name", schema_name=~"$schema_name", table_name=~"$table_name"}[24h]))',
           legendCustomTemplate: legendCustomTemplate + ' - {{table_name}}',
         },
       },
@@ -129,7 +129,7 @@ function(this) {
       unit: 'bytes',
       sources: {
         prometheus: {
-          expr: 'sum by (' + aggregationLabels + ') (last_over_time(snowflake_table_failsafe_bytes{%(queriesSelector)s, database_name=~"$database_name", schema_name=~"$schema_name", table_name=~"$table_name"}[24h]))',
+          expr: 'sum by (' + aggregationLabels + ', table_name) (last_over_time(snowflake_table_failsafe_bytes{%(queriesSelector)s, database_name=~"$database_name", schema_name=~"$schema_name", table_name=~"$table_name"}[24h]))',
           legendCustomTemplate: legendCustomTemplate + ' - {{table_name}}',
         },
       },
@@ -143,7 +143,7 @@ function(this) {
       unit: 'bytes',
       sources: {
         prometheus: {
-          expr: 'sum by (' + aggregationLabels + ') (last_over_time(snowflake_table_clone_bytes{%(queriesSelector)s, database_name=~"$database_name", schema_name=~"$schema_name", table_name=~"$table_name"}[24h]))',
+          expr: 'sum by (' + aggregationLabels + ', table_name) (last_over_time(snowflake_table_clone_bytes{%(queriesSelector)s, database_name=~"$database_name", schema_name=~"$schema_name", table_name=~"$table_name"}[24h]))',
           legendCustomTemplate: legendCustomTemplate + ' - {{table_name}}',
         },
       },
