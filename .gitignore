@@ -8,6 +8,9 @@
 # VS Code
 .vscode
 
+# IDEA
+.idea
+
 # Test binary, built with `go test -c`
 *.test
 
