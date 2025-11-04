@@ -16,7 +16,7 @@ local activeSchemaOwnedDataPanel = {
   datasource: promDatasource,
   targets: [
     prometheus.target(
-      'sum by (instance, database_name, schema_name) (snowflake_table_active_bytes{job=~"$job", instance=~"$instance", database_name=~"$database", schema_name=~"$schema"})',
+      'sum by (instance, database_name, schema_name) (last_over_time(snowflake_table_active_bytes{job=~"$job", instance=~"$instance", database_name=~"$database", schema_name=~"$schema"}[24h]))',
       datasource=promDatasource,
       legendFormat='{{instance}} - {{database_name}} - {{schema_name}}'
     ),
@@ -83,7 +83,7 @@ local timeTravelSchemaOwnedDataPanel = {
   datasource: promDatasource,
   targets: [
     prometheus.target(
-      'sum by (instance, database_name, schema_name) (snowflake_table_time_travel_bytes{job=~"$job", instance=~"$instance", database_name=~"$database", schema_name=~"$schema"})',
+      'sum by (instance, database_name, schema_name) (last_over_time(snowflake_table_time_travel_bytes{job=~"$job", instance=~"$instance", database_name=~"$database", schema_name=~"$schema"}[24h]))',
       datasource=promDatasource,
       legendFormat='{{instance}} - {{database_name}} - {{schema_name}}'
     ),
@@ -149,7 +149,7 @@ local failsafeSchemaOwnedDataPanel = {
   datasource: promDatasource,
   targets: [
     prometheus.target(
-      'sum by (instance, database_name, schema_name) (snowflake_table_failsafe_bytes{job=~"$job", instance=~"$instance", database_name=~"$database", schema_name=~"$schema"})',
+      'sum by (instance, database_name, schema_name) (last_over_time(snowflake_table_failsafe_bytes{job=~"$job", instance=~"$instance", database_name=~"$database", schema_name=~"$schema"}[24h]))',
       datasource=promDatasource,
       legendFormat='{{instance}} - {{database_name}} - {{schema_name}}'
     ),
@@ -215,7 +215,7 @@ local cloneSchemaOwnedDataPanel = {
   datasource: promDatasource,
   targets: [
     prometheus.target(
-      'sum by (instance, database_name, schema_name) (snowflake_table_clone_bytes{job=~"$job", instance=~"$instance", database_name=~"$database", schema_name=~"$schema"})',
+      'sum by (instance, database_name, schema_name) (last_over_time(snowflake_table_clone_bytes{job=~"$job", instance=~"$instance", database_name=~"$database", schema_name=~"$schema"}[24h]))',
       datasource=promDatasource,
       legendFormat='{{instance}} - {{database_name}} - {{schema_name}}'
     ),
@@ -281,7 +281,7 @@ local top5LargestTablesPanel = {
   datasource: promDatasource,
   targets: [
     prometheus.target(
-      'snowflake_table_active_bytes{job=~"$job", instance=~"$instance", database_name=~"$database", schema_name=~"$schema"}',
+      'last_over_time(snowflake_table_active_bytes{job=~"$job", instance=~"$instance", database_name=~"$database", schema_name=~"$schema"}[24h])',
       datasource=promDatasource,
       format='table',
       legendFormat='__auto'
@@ -456,7 +456,7 @@ local activeTableOwnedDataPanel = {
   datasource: promDatasource,
   targets: [
     prometheus.target(
-      'sum by (instance, database_name, schema_name, table_name) (snowflake_table_active_bytes{job=~"$job", instance=~"$instance", database_name=~"$database", schema_name=~"$schema", table_name=~"$table"})',
+      'sum by (instance, database_name, schema_name, table_name) (last_over_time(snowflake_table_active_bytes{job=~"$job", instance=~"$instance", database_name=~"$database", schema_name=~"$schema", table_name=~"$table"}[24h]))',
       datasource=promDatasource,
       legendFormat='{{instance}} - {{database_name}} - {{schema_name}} - {{table_name}}'
     ),
@@ -522,7 +522,7 @@ local timeTravelTableOwnedDataPanel = {
   datasource: promDatasource,
   targets: [
     prometheus.target(
-      'sum by (instance, database_name, schema_name, table_name) (snowflake_table_time_travel_bytes{job=~"$job", instance=~"$instance", database_name=~"$database", schema_name=~"$schema", table_name=~"$table"})',
+      'sum by (instance, database_name, schema_name, table_name) (last_over_time(snowflake_table_time_travel_bytes{job=~"$job", instance=~"$instance", database_name=~"$database", schema_name=~"$schema", table_name=~"$table"}[24h]))',
       datasource=promDatasource,
       legendFormat='{{instance}} - {{database_name}} - {{schema_name}} - {{table_name}}'
     ),
@@ -588,7 +588,7 @@ local failsafeTableOwnedDataPanel = {
   datasource: promDatasource,
   targets: [
     prometheus.target(
-      'sum by (instance, database_name, schema_name, table_name) (snowflake_table_failsafe_bytes{job=~"$job", instance=~"$instance", database_name=~"$database", schema_name=~"$schema", table_name=~"$table"})',
+      'sum by (instance, database_name, schema_name, table_name) (last_over_time(snowflake_table_failsafe_bytes{job=~"$job", instance=~"$instance", database_name=~"$database", schema_name=~"$schema", table_name=~"$table"}[24h]))',
       datasource=promDatasource,
       legendFormat='{{instance}} - {{database_name}} - {{schema_name}} - {{table_name}}'
     ),
@@ -654,7 +654,7 @@ local cloneTableOwnedDataPanel = {
   datasource: promDatasource,
   targets: [
     prometheus.target(
-      'sum by (instance, database_name, schema_name, table_name) (snowflake_table_clone_bytes{job=~"$job", instance=~"$instance", database_name=~"$database", schema_name=~"$schema", table_name=~"$table"})',
+      'sum by (instance, database_name, schema_name, table_name) (last_over_time(snowflake_table_clone_bytes{job=~"$job", instance=~"$instance", database_name=~"$database", schema_name=~"$schema", table_name=~"$table"}[24h]))',
       datasource=promDatasource,
       legendFormat='{{instance}} - {{database_name}} - {{schema_name}} - {{table_name}}'
     ),
