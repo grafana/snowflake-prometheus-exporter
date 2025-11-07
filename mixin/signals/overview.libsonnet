@@ -87,7 +87,7 @@ function(this) {
       name: 'Account stage usage',
       nameShort: 'Account stage usage',
       description: 'The stage usage for the account.',
-      type: 'raw',
+      type: 'gauge',
       unit: 'bytes',
       sources: {
         prometheus: {
@@ -101,7 +101,7 @@ function(this) {
       name: 'Account failsafe usage',
       nameShort: 'Account failsafe usage',
       description: 'The failsafe usage for the account.',
-      type: 'raw',
+      type: 'gauge',
       unit: 'bytes',
       sources: {
         prometheus: {
@@ -213,7 +213,7 @@ function(this) {
       name: 'Service compute credits used',
       nameShort: 'Service compute credits used',
       description: 'The top 5 services that have the highest compute credit usages.',
-      type: 'raw',
+      type: 'gauge',
       unit: 'credits/hr',
       sources: {
         prometheus: {
@@ -226,7 +226,7 @@ function(this) {
       name: 'Service cloud service credits used',
       nameShort: 'Service cloud service credits used',
       description: 'The top 5 services that have the highest compute credit usages.',
-      type: 'raw',
+      type: 'gauge',
       unit: 'credits/hr',
       sources: {
         prometheus: {
@@ -239,7 +239,7 @@ function(this) {
       name: 'Warehouse compute credits used',
       nameShort: 'Warehouse compute credits used',
       description: 'The top 5 warehouses that have the highest compute credit usages.',
-      type: 'raw',
+      type: 'gauge',
       unit: 'credits/hr',
       sources: {
         prometheus: {
@@ -252,7 +252,7 @@ function(this) {
       name: 'Warehouse cloud services credits used',
       nameShort: 'Warehouse cloud services credits used',
       description: 'The top 5 warehouses that have the highest services credit usages.',
-      type: 'raw',
+      type: 'gauge',
       unit: 'credits/hr',
       sources: {
         prometheus: {
@@ -265,7 +265,7 @@ function(this) {
       name: 'Autoclustering credits used',
       nameShort: 'Autoclustering credits used',
       description: 'Credits billed for automatic reclustering.',
-      type: 'raw',
+      type: 'gauge',
       unit: 'credits/hr',
       sources: {
         prometheus: {
@@ -279,7 +279,7 @@ function(this) {
       name: 'Table autoclustering credits used',
       nameShort: 'Table autoclustering credits used',
       description: 'The top 5 tables that have the highest autoclustering credit usages.',
-      type: 'raw',
+      type: 'gauge',
       unit: 'credits/hr',
       sources: {
         prometheus: {
