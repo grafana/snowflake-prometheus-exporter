@@ -6,7 +6,7 @@ groups:
             description: '{{ printf "%.2f" $value }}% of logins have failed on {{$labels.instance}}, which is above threshold of 30%.'
             summary: Large login failure rate.
           expr: |
-            100 * sum by (job, instance) (last_over_time(snowflake_failed_login_rate{}[1h])) / sum by (job, instance) (last_over_time(snowflake_login_rate{}[30m]))
+            100 * sum by (job, instance) (last_over_time(snowflake_failed_login_rate{}[1h])) / sum by (job, instance) (last_over_time(snowflake_login_rate{}[1h]))
             > 30
           for: 5m
           labels:
@@ -16,7 +16,7 @@ groups:
             description: Compute credit usage is {{ printf "%.2f" $value }} credits/hr for {{$labels.instance}}, which is within 20% of 5 credits/hr.
             summary: Compute credit usage is within 20% of the configured limit.
           expr: |
-            sum by (job, instance) (last_over_time(snowflake_used_compute_credits{}[1h]))
+            sum by (job, instance) (last_over_time(snowflake_used_compute_credits{}[24h]))
             > 0.8 * 5
           for: 5m
           labels:

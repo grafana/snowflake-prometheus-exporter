@@ -1,351 +1,51 @@
 {
-      "__inputs": [ ],
-      "__requires": [ ],
       "annotations": {
          "list": [ ]
       },
-      "description": "Overview of Snowflake traffic and billing.",
-      "editable": false,
-      "gnetId": null,
-      "graphTooltip": 0,
-      "hideControls": false,
-      "id": null,
       "links": [
          {
-            "asDropdown": false,
-            "icon": "external link",
+            "asDropdown": true,
             "includeVars": true,
             "keepTime": true,
             "tags": [
                "snowflake-mixin"
             ],
-            "targetBlank": false,
-            "title": "Other Snowflake dashboards",
-            "type": "dashboards",
-            "url": ""
+            "title": "All dashboards",
+            "type": "dashboards"
+         },
+         {
+            "keepTime": true,
+            "title": "Snowflake data ownership",
+            "type": "link",
+            "url": "/d/snowflake_data_ownership"
          }
       ],
       "panels": [
          {
-            "datasource": {
-               "uid": "${prometheus_datasource}"
-            },
-            "description": "Warehouse query activity for the warehouse selected by the Warehouse selector.",
-            "fieldConfig": {
-               "defaults": {
-                  "color": {
-                     "mode": "palette-classic"
-                  },
-                  "custom": {
-                     "axisCenteredZero": false,
-                     "axisColorMode": "text",
-                     "axisLabel": "",
-                     "axisPlacement": "auto",
-                     "barAlignment": 0,
-                     "drawStyle": "line",
-                     "fillOpacity": 0,
-                     "gradientMode": "none",
-                     "hideFrom": {
-                        "legend": false,
-                        "tooltip": false,
-                        "viz": false
-                     },
-                     "lineInterpolation": "linear",
-                     "lineStyle": {
-                        "fill": "solid"
-                     },
-                     "lineWidth": 1,
-                     "pointSize": 5,
-                     "scaleDistribution": {
-                        "type": "linear"
-                     },
-                     "showPoints": "auto",
-                     "spanNulls": 3600000,
-                     "stacking": {
-                        "group": "A",
-                        "mode": "none"
-                     },
-                     "thresholdsStyle": {
-                        "mode": "off"
-                     }
-                  },
-                  "mappings": [ ],
-                  "unit": "percentunit"
-               },
-               "overrides": [ ]
-            },
+            "collapsed": false,
             "gridPos": {
-               "h": 7,
-               "w": 12,
+               "h": 1,
+               "w": 0,
                "x": 0,
                "y": 0
             },
-            "id": 2,
-            "options": {
-               "legend": {
-                  "calcs": [ ],
-                  "displayMode": "list",
-                  "placement": "bottom",
-                  "showLegend": true
-               },
-               "tooltip": {
-                  "mode": "single",
-                  "sort": "none"
-               }
-            },
-            "targets": [
-               {
-                  "datasource": {
-                     "uid": "${prometheus_datasource}"
-                  },
-                  "expr": "snowflake_warehouse_executed_queries{instance=~\"$instance\", job=~\"$job\", name=~\"$warehouse\"}",
-                  "format": "time_series",
-                  "intervalFactor": 2,
-                  "legendFormat": "{{instance}} - {{name}} - Executed query load"
-               },
-               {
-                  "datasource": {
-                     "uid": "${prometheus_datasource}"
-                  },
-                  "expr": "snowflake_warehouse_overloaded_queue_size{instance=~\"$instance\", job=~\"$job\", name=~\"$warehouse\"}",
-                  "format": "time_series",
-                  "intervalFactor": 2,
-                  "legendFormat": "{{instance}} - {{name}} - Overloaded queue load"
-               },
-               {
-                  "datasource": {
-                     "uid": "${prometheus_datasource}"
-                  },
-                  "expr": "snowflake_warehouse_provisioning_queue_size{instance=~\"$instance\", job=~\"$job\", name=~\"$warehouse\"}",
-                  "format": "time_series",
-                  "intervalFactor": 2,
-                  "legendFormat": "{{instance}} - {{name}} - Provisioning queue load"
-               },
-               {
-                  "datasource": {
-                     "uid": "${prometheus_datasource}"
-                  },
-                  "expr": "snowflake_warehouse_blocked_queries{instance=~\"$instance\", job=~\"$job\", name=~\"$warehouse\"}",
-                  "format": "time_series",
-                  "intervalFactor": 2,
-                  "legendFormat": "{{instance}} - {{name}} - Blocked query load"
-               }
-            ],
-            "title": "Warehouse activity",
-            "type": "timeseries"
+            "id": 1,
+            "panels": [ ],
+            "title": "Overview",
+            "type": "row"
          },
          {
             "datasource": {
-               "uid": "${prometheus_datasource}"
-            },
-            "description": "Data storage used for the account.",
-            "fieldConfig": {
-               "defaults": {
-                  "color": {
-                     "mode": "palette-classic"
-                  },
-                  "custom": {
-                     "axisCenteredZero": false,
-                     "axisColorMode": "text",
-                     "axisLabel": "",
-                     "axisPlacement": "auto",
-                     "barAlignment": 0,
-                     "drawStyle": "line",
-                     "fillOpacity": 0,
-                     "gradientMode": "none",
-                     "hideFrom": {
-                        "legend": false,
-                        "tooltip": false,
-                        "viz": false
-                     },
-                     "lineInterpolation": "linear",
-                     "lineWidth": 1,
-                     "pointSize": 5,
-                     "scaleDistribution": {
-                        "type": "linear"
-                     },
-                     "showPoints": "auto",
-                     "spanNulls": 3600000,
-                     "stacking": {
-                        "group": "A",
-                        "mode": "none"
-                     },
-                     "thresholdsStyle": {
-                        "mode": "off"
-                     }
-                  },
-                  "mappings": [ ],
-                  "unit": "bytes"
-               },
-               "overrides": [ ]
-            },
-            "gridPos": {
-               "h": 7,
-               "w": 12,
-               "x": 12,
-               "y": 0
-            },
-            "id": 3,
-            "options": {
-               "legend": {
-                  "calcs": [ ],
-                  "displayMode": "list",
-                  "placement": "bottom",
-                  "showLegend": true
-               },
-               "tooltip": {
-                  "mode": "single",
-                  "sort": "none"
-               }
-            },
-            "targets": [
-               {
-                  "datasource": {
-                     "uid": "${prometheus_datasource}"
-                  },
-                  "expr": "snowflake_storage_bytes{instance=~\"$instance\", job=~\"$job\"}",
-                  "format": "time_series",
-                  "intervalFactor": 2,
-                  "legendFormat": "{{instance}} - Storage"
-               },
-               {
-                  "datasource": {
-                     "uid": "${prometheus_datasource}"
-                  },
-                  "expr": "snowflake_stage_bytes{instance=~\"$instance\", job=~\"$job\"}",
-                  "format": "time_series",
-                  "intervalFactor": 2,
-                  "legendFormat": "{{instance}} - Stage"
-               },
-               {
-                  "datasource": {
-                     "uid": "${prometheus_datasource}"
-                  },
-                  "expr": "snowflake_failsafe_bytes{instance=~\"$instance\", job=~\"$job\"}",
-                  "format": "time_series",
-                  "intervalFactor": 2,
-                  "legendFormat": "{{instance}} - Failsafe"
-               }
-            ],
-            "title": "Account storage usage",
-            "type": "timeseries"
-         },
-         {
-            "datasource": {
-               "uid": "${prometheus_datasource}"
-            },
-            "description": "Login attempt rate over the last 24 hours.",
-            "fieldConfig": {
-               "defaults": {
-                  "color": {
-                     "mode": "palette-classic"
-                  },
-                  "custom": {
-                     "axisCenteredZero": false,
-                     "axisColorMode": "text",
-                     "axisLabel": "",
-                     "axisPlacement": "auto",
-                     "barAlignment": 0,
-                     "drawStyle": "line",
-                     "fillOpacity": 0,
-                     "gradientMode": "none",
-                     "hideFrom": {
-                        "legend": false,
-                        "tooltip": false,
-                        "viz": false
-                     },
-                     "lineInterpolation": "linear",
-                     "lineWidth": 1,
-                     "pointSize": 5,
-                     "scaleDistribution": {
-                        "type": "linear"
-                     },
-                     "showPoints": "auto",
-                     "spanNulls": 3600000,
-                     "stacking": {
-                        "group": "A",
-                        "mode": "none"
-                     },
-                     "thresholdsStyle": {
-                        "mode": "off"
-                     }
-                  },
-                  "mappings": [ ],
-                  "unit": "logins/hr"
-               },
-               "overrides": [ ]
-            },
-            "gridPos": {
-               "h": 7,
-               "w": 12,
-               "x": 0,
-               "y": 7
-            },
-            "id": 4,
-            "options": {
-               "legend": {
-                  "calcs": [ ],
-                  "displayMode": "list",
-                  "placement": "bottom",
-                  "showLegend": true
-               },
-               "tooltip": {
-                  "mode": "single",
-                  "sort": "none"
-               }
-            },
-            "targets": [
-               {
-                  "datasource": {
-                     "uid": "${prometheus_datasource}"
-                  },
-                  "expr": "sum by (job, instance) (snowflake_login_rate{job=~\"$job\", instance=~\"$instance\"})",
-                  "format": "time_series",
-                  "intervalFactor": 2,
-                  "legendFormat": "{{instance}} - Total"
-               },
-               {
-                  "datasource": {
-                     "uid": "${prometheus_datasource}"
-                  },
-                  "expr": "sum by (job, instance) (snowflake_failed_login_rate{job=~\"$job\", instance=~\"$instance\"})",
-                  "format": "time_series",
-                  "intervalFactor": 2,
-                  "legendFormat": "{{instance}} - Failed"
-               },
-               {
-                  "datasource": {
-                     "uid": "${prometheus_datasource}"
-                  },
-                  "expr": "sum by (job, instance) (snowflake_successful_login_rate{job=~\"$job\", instance=~\"$instance\"})",
-                  "format": "time_series",
-                  "intervalFactor": 2,
-                  "legendFormat": "{{instance}} - Successful"
-               }
-            ],
-            "title": "Login attempts",
-            "type": "timeseries"
-         },
-         {
-            "datasource": {
-               "uid": "${prometheus_datasource}"
+               "type": "datasource",
+               "uid": "-- Mixed --"
             },
             "description": "Percentage of total login attempts that were successful.",
             "fieldConfig": {
                "defaults": {
-                  "color": {
-                     "mode": "thresholds"
-                  },
-                  "mappings": [ ],
                   "max": 1,
                   "min": 0,
                   "thresholds": {
-                     "mode": "absolute",
                      "steps": [
-                        {
-                           "color": "green",
-                           "value": null
-                        },
                         {
                            "color": "red",
                            "value": 0
@@ -361,18 +61,16 @@
                      ]
                   },
                   "unit": "percentunit"
-               },
-               "overrides": [ ]
+               }
             },
             "gridPos": {
-               "h": 7,
-               "w": 6,
-               "x": 12,
-               "y": 7
+               "h": 8,
+               "w": 12,
+               "x": 0,
+               "y": 1
             },
-            "id": 5,
+            "id": 2,
             "options": {
-               "orientation": "auto",
                "reduceOptions": {
                   "calcs": [
                      "lastNotNull"
@@ -384,16 +82,18 @@
                "showThresholdLabels": false,
                "showThresholdMarkers": false
             },
-            "pluginVersion": "9.1.7",
+            "pluginVersion": "v11.4.0",
             "targets": [
                {
                   "datasource": {
-                     "uid": "${prometheus_datasource}"
+                     "type": "prometheus",
+                     "uid": "${datasource}"
                   },
-                  "expr": "sum by (job, instance) (snowflake_successful_login_rate{job=~\"$job\", instance=~\"$instance\"}) / sum by (job, instance) (snowflake_login_rate{job=~\"$job\", instance=~\"$instance\"})",
+                  "expr": "sum by (job,instance) (snowflake_successful_login_rate{job=\"integrations/snowflake\",job=~\"$job\",instance=~\"$instance\"}) / sum by (job,instance) (snowflake_login_rate{job=\"integrations/snowflake\",job=~\"$job\",instance=~\"$instance\"})",
                   "format": "time_series",
-                  "intervalFactor": 2,
-                  "legendFormat": "{{instance}}"
+                  "instant": false,
+                  "legendFormat": "{{instance}} - Successful",
+                  "refId": "Successful login attempts"
                }
             ],
             "title": "Successful login attempts",
@@ -401,23 +101,18 @@
          },
          {
             "datasource": {
-               "uid": "${prometheus_datasource}"
+               "type": "datasource",
+               "uid": "-- Mixed --"
             },
             "description": "Percentage of total login attempts that failed.",
             "fieldConfig": {
                "defaults": {
-                  "color": {
-                     "mode": "thresholds"
-                  },
-                  "mappings": [ ],
                   "max": 1,
                   "min": 0,
                   "thresholds": {
-                     "mode": "absolute",
                      "steps": [
                         {
-                           "color": "green",
-                           "value": null
+                           "color": "green"
                         },
                         {
                            "color": "#EAB839",
@@ -430,18 +125,16 @@
                      ]
                   },
                   "unit": "percentunit"
-               },
-               "overrides": [ ]
+               }
             },
             "gridPos": {
-               "h": 7,
-               "w": 6,
-               "x": 18,
-               "y": 7
+               "h": 8,
+               "w": 12,
+               "x": 12,
+               "y": 1
             },
-            "id": 6,
+            "id": 3,
             "options": {
-               "orientation": "auto",
                "reduceOptions": {
                   "calcs": [
                      "lastNotNull"
@@ -452,195 +145,523 @@
                "showThresholdLabels": false,
                "showThresholdMarkers": false
             },
-            "pluginVersion": "9.1.7",
+            "pluginVersion": "v11.4.0",
             "targets": [
                {
                   "datasource": {
-                     "uid": "${prometheus_datasource}"
+                     "type": "prometheus",
+                     "uid": "${datasource}"
                   },
-                  "expr": "sum by (job, instance) (snowflake_failed_login_rate{job=~\"$job\", instance=~\"$instance\"}) / sum by (job, instance) (snowflake_login_rate{job=~\"$job\", instance=~\"$instance\"})",
+                  "expr": "sum by (job,instance) (snowflake_failed_login_rate{job=\"integrations/snowflake\",job=~\"$job\",instance=~\"$instance\"}) / sum by (job,instance) (snowflake_login_rate{job=\"integrations/snowflake\",job=~\"$job\",instance=~\"$instance\"})",
                   "format": "time_series",
-                  "intervalFactor": 2,
-                  "legendFormat": "{{instance}}"
+                  "instant": false,
+                  "legendFormat": "{{instance}} - Failed",
+                  "refId": "Failed login attempts"
                }
             ],
             "title": "Failed login attempts",
             "type": "gauge"
          },
          {
-            "collapsed": false,
             "datasource": {
-               "uid": "${prometheus_datasource}"
+               "type": "prometheus",
+               "uid": "${datasource}"
+            },
+            "description": "Login attempt rate over the last 24 hours.",
+            "fieldConfig": {
+               "defaults": {
+                  "custom": {
+                     "fillOpacity": 30,
+                     "gradientMode": "opacity",
+                     "lineInterpolation": "smooth",
+                     "lineWidth": 2,
+                     "showPoints": "never"
+                  },
+                  "unit": "logins/hr"
+               }
             },
             "gridPos": {
-               "h": 1,
+               "h": 8,
                "w": 24,
                "x": 0,
-               "y": 14
+               "y": 9
+            },
+            "id": 4,
+            "options": {
+               "legend": {
+                  "calcs": [ ],
+                  "displayMode": "list"
+               },
+               "tooltip": {
+                  "mode": "multi",
+                  "sort": "desc"
+               }
+            },
+            "pluginVersion": "v11.0.0",
+            "targets": [
+               {
+                  "datasource": {
+                     "type": "prometheus",
+                     "uid": "${datasource}"
+                  },
+                  "expr": "sum by (job,instance) (snowflake_login_rate{job=\"integrations/snowflake\",job=~\"$job\",instance=~\"$instance\"})",
+                  "format": "time_series",
+                  "instant": false,
+                  "legendFormat": "{{instance}} - Total",
+                  "refId": "Login attempts total"
+               },
+               {
+                  "datasource": {
+                     "type": "prometheus",
+                     "uid": "${datasource}"
+                  },
+                  "expr": "sum by (job,instance) (snowflake_failed_login_rate{job=\"integrations/snowflake\",job=~\"$job\",instance=~\"$instance\"})",
+                  "format": "time_series",
+                  "instant": false,
+                  "legendFormat": "{{instance}} - Failed",
+                  "refId": "Login attempts failed"
+               },
+               {
+                  "datasource": {
+                     "type": "prometheus",
+                     "uid": "${datasource}"
+                  },
+                  "expr": "sum by (job,instance) (snowflake_successful_login_rate{job=\"integrations/snowflake\",job=~\"$job\",instance=~\"$instance\"})",
+                  "format": "time_series",
+                  "instant": false,
+                  "legendFormat": "{{instance}} - Successful",
+                  "refId": "Login attempts successful"
+               }
+            ],
+            "title": "Login attempts",
+            "type": "timeseries"
+         },
+         {
+            "datasource": {
+               "type": "prometheus",
+               "uid": "${datasource}"
+            },
+            "description": "Warehouse query activity for the warehouse selected by the Warehouse selector.",
+            "fieldConfig": {
+               "defaults": {
+                  "custom": {
+                     "fillOpacity": 30,
+                     "gradientMode": "opacity",
+                     "lineInterpolation": "smooth",
+                     "lineWidth": 2,
+                     "showPoints": "never"
+                  },
+                  "unit": "percentunit"
+               }
+            },
+            "gridPos": {
+               "h": 8,
+               "w": 12,
+               "x": 0,
+               "y": 17
+            },
+            "id": 5,
+            "options": {
+               "legend": {
+                  "calcs": [ ],
+                  "displayMode": "list"
+               },
+               "tooltip": {
+                  "mode": "multi",
+                  "sort": "desc"
+               }
+            },
+            "pluginVersion": "v11.0.0",
+            "targets": [
+               {
+                  "datasource": {
+                     "type": "prometheus",
+                     "uid": "${datasource}"
+                  },
+                  "expr": "snowflake_warehouse_executed_queries{job=\"integrations/snowflake\",job=~\"$job\",instance=~\"$instance\", name=~\"$warehouse\"}",
+                  "format": "time_series",
+                  "instant": false,
+                  "legendFormat": "{{instance}} - {{name}} - Executed query load",
+                  "refId": "Warehouse activity executed queries"
+               },
+               {
+                  "datasource": {
+                     "type": "prometheus",
+                     "uid": "${datasource}"
+                  },
+                  "expr": "snowflake_warehouse_overloaded_queue_size{job=\"integrations/snowflake\",job=~\"$job\",instance=~\"$instance\", name=~\"$warehouse\"}",
+                  "format": "time_series",
+                  "instant": false,
+                  "legendFormat": "{{instance}} - {{name}} - Overloaded queue load",
+                  "refId": "Warehouse activity overloaded queue load"
+               },
+               {
+                  "datasource": {
+                     "type": "prometheus",
+                     "uid": "${datasource}"
+                  },
+                  "expr": "snowflake_warehouse_provisioning_queue_size{job=\"integrations/snowflake\",job=~\"$job\",instance=~\"$instance\", name=~\"$warehouse\"}",
+                  "format": "time_series",
+                  "instant": false,
+                  "legendFormat": "{{instance}} - {{name}} - Provisioning queue load",
+                  "refId": "Warehouse activity provisioning queue load"
+               },
+               {
+                  "datasource": {
+                     "type": "prometheus",
+                     "uid": "${datasource}"
+                  },
+                  "expr": "snowflake_warehouse_blocked_queries{job=\"integrations/snowflake\",job=~\"$job\",instance=~\"$instance\", name=~\"$warehouse\"}",
+                  "format": "time_series",
+                  "instant": false,
+                  "legendFormat": "{{instance}} - {{name}} - Blocked query load",
+                  "refId": "Warehouse activity blocked query load"
+               }
+            ],
+            "title": "Warehouse activity",
+            "type": "timeseries"
+         },
+         {
+            "datasource": {
+               "type": "prometheus",
+               "uid": "${datasource}"
+            },
+            "description": "Data storage used for the account.",
+            "fieldConfig": {
+               "defaults": {
+                  "custom": {
+                     "fillOpacity": 30,
+                     "gradientMode": "opacity",
+                     "lineInterpolation": "smooth",
+                     "lineWidth": 2,
+                     "showPoints": "never"
+                  },
+                  "unit": "bytes"
+               }
+            },
+            "gridPos": {
+               "h": 8,
+               "w": 12,
+               "x": 12,
+               "y": 17
+            },
+            "id": 6,
+            "options": {
+               "legend": {
+                  "calcs": [ ],
+                  "displayMode": "list"
+               },
+               "tooltip": {
+                  "mode": "multi",
+                  "sort": "desc"
+               }
+            },
+            "pluginVersion": "v11.0.0",
+            "targets": [
+               {
+                  "datasource": {
+                     "type": "prometheus",
+                     "uid": "${datasource}"
+                  },
+                  "expr": "snowflake_storage_bytes{job=\"integrations/snowflake\",job=~\"$job\",instance=~\"$instance\"}",
+                  "format": "time_series",
+                  "instant": false,
+                  "legendFormat": "{{instance}} - Storage",
+                  "refId": "Account storage usage"
+               },
+               {
+                  "datasource": {
+                     "type": "prometheus",
+                     "uid": "${datasource}"
+                  },
+                  "expr": "snowflake_stage_bytes{job=\"integrations/snowflake\",job=~\"$job\",instance=~\"$instance\"}",
+                  "format": "time_series",
+                  "instant": false,
+                  "legendFormat": "{{instance}} - Stage",
+                  "refId": "Account stage usage"
+               },
+               {
+                  "datasource": {
+                     "type": "prometheus",
+                     "uid": "${datasource}"
+                  },
+                  "expr": "snowflake_failsafe_bytes{job=\"integrations/snowflake\",job=~\"$job\",instance=~\"$instance\"}",
+                  "format": "time_series",
+                  "instant": false,
+                  "legendFormat": "{{instance}} - Failsafe",
+                  "refId": "Account failsafe usage"
+               }
+            ],
+            "title": "Account storage usage",
+            "type": "timeseries"
+         },
+         {
+            "collapsed": false,
+            "gridPos": {
+               "h": 1,
+               "w": 0,
+               "x": 0,
+               "y": 25
             },
             "id": 7,
-            "targets": [ ],
+            "panels": [ ],
             "title": "Billing",
             "type": "row"
          },
          {
             "datasource": {
-               "uid": "${prometheus_datasource}"
+               "type": "prometheus",
+               "uid": "${datasource}"
+            },
+            "description": "Billing usage for the account.",
+            "fieldConfig": {
+               "defaults": {
+                  "custom": {
+                     "fillOpacity": 30,
+                     "gradientMode": "opacity",
+                     "lineInterpolation": "smooth",
+                     "lineWidth": 2,
+                     "showPoints": "never",
+                     "thresholdsStyle": "area"
+                  },
+                  "thresholds": {
+                     "steps": [
+                        {
+                           "color": "transparent",
+                           "value": null
+                        },
+                        {
+                           "color": "orange",
+                           "value": 80
+                        },
+                        {
+                           "color": "red",
+                           "value": 100
+                        }
+                     ]
+                  },
+                  "unit": "percent"
+               }
+            },
+            "gridPos": {
+               "h": 8,
+               "w": 12,
+               "x": 0,
+               "y": 26
+            },
+            "id": 8,
+            "options": {
+               "legend": {
+                  "calcs": [ ],
+                  "displayMode": "list"
+               },
+               "tooltip": {
+                  "mode": "multi",
+                  "sort": "desc"
+               }
+            },
+            "pluginVersion": "v11.0.0",
+            "targets": [
+               {
+                  "datasource": {
+                     "type": "prometheus",
+                     "uid": "${datasource}"
+                  },
+                  "expr": "sum by (job,instance) (last_over_time(snowflake_used_compute_credits{job=\"integrations/snowflake\",job=~\"$job\",instance=~\"$instance\"}[24h]) / 5)",
+                  "format": "time_series",
+                  "instant": false,
+                  "legendFormat": "{{instance}} - Compute usage",
+                  "refId": "Compute credit usage percentage"
+               }
+            ],
+            "title": "Billing usage",
+            "type": "timeseries"
+         },
+         {
+            "datasource": {
+               "type": "prometheus",
+               "uid": "${datasource}"
+            },
+            "description": "Cloud services billing usage for the account.",
+            "fieldConfig": {
+               "defaults": {
+                  "custom": {
+                     "fillOpacity": 30,
+                     "gradientMode": "opacity",
+                     "lineInterpolation": "smooth",
+                     "lineWidth": 2,
+                     "showPoints": "never",
+                     "thresholdsStyle": "area"
+                  },
+                  "thresholds": {
+                     "steps": [
+                        {
+                           "color": "transparent",
+                           "value": null
+                        },
+                        {
+                           "color": "orange",
+                           "value": 1
+                        },
+                        {
+                           "color": "red",
+                           "value": 100
+                        }
+                     ]
+                  },
+                  "unit": "percent"
+               }
+            },
+            "gridPos": {
+               "h": 8,
+               "w": 12,
+               "x": 12,
+               "y": 26
+            },
+            "id": 9,
+            "options": {
+               "legend": {
+                  "calcs": [ ],
+                  "displayMode": "list"
+               },
+               "tooltip": {
+                  "mode": "multi",
+                  "sort": "desc"
+               }
+            },
+            "pluginVersion": "v11.0.0",
+            "targets": [
+               {
+                  "datasource": {
+                     "type": "prometheus",
+                     "uid": "${datasource}"
+                  },
+                  "expr": "sum by (job,instance) (last_over_time(snowflake_used_cloud_services_credits{job=\"integrations/snowflake\",job=~\"$job\",instance=~\"$instance\"}[24h]) / 1)",
+                  "format": "time_series",
+                  "instant": false,
+                  "legendFormat": "{{instance}} - Cloud services usage",
+                  "refId": "Cloud services credit usage percentage"
+               }
+            ],
+            "title": "Cloud services billing usage",
+            "type": "timeseries"
+         },
+         {
+            "datasource": {
+               "type": "prometheus",
+               "uid": "${datasource}"
             },
             "description": "Number of billing credits used by the account.",
             "fieldConfig": {
                "defaults": {
-                  "color": {
-                     "mode": "palette-classic"
-                  },
                   "custom": {
-                     "axisCenteredZero": false,
-                     "axisColorMode": "text",
-                     "axisLabel": "",
-                     "axisPlacement": "auto",
-                     "fillOpacity": 80,
-                     "gradientMode": "none",
-                     "hideFrom": {
-                        "legend": false,
-                        "tooltip": false,
-                        "viz": false
-                     },
-                     "lineWidth": 1,
-                     "scaleDistribution": {
-                        "type": "linear"
-                     }
+                     "axisLabel": "credits/hr",
+                     "fillOpacity": 30,
+                     "gradientMode": "opacity",
+                     "lineInterpolation": "smooth",
+                     "lineWidth": 2,
+                     "showPoints": "never"
                   },
-                  "mappings": [ ],
-                  "unit": "credits/hr"
-               },
-               "overrides": [ ]
+                  "unit": "none"
+               }
             },
             "gridPos": {
-               "h": 7,
+               "h": 8,
                "w": 12,
                "x": 0,
-               "y": 15
+               "y": 34
             },
-            "id": 8,
-            "interval": "5m",
+            "id": 10,
             "options": {
-               "barRadius": 0,
-               "barWidth": 1,
-               "groupWidth": 0.73999999999999999,
                "legend": {
+                  "asTable": true,
                   "calcs": [ ],
                   "displayMode": "list",
-                  "placement": "bottom",
-                  "showLegend": true
+                  "placement": "right"
                },
-               "orientation": "auto",
-               "showValue": "auto",
-               "stacking": "none",
                "tooltip": {
-                  "mode": "single",
-                  "sort": "none"
-               },
-               "xField": "Time",
-               "xTickLabelRotation": 0,
-               "xTickLabelSpacing": 0
+                  "mode": "multi",
+                  "sort": "desc"
+               }
             },
+            "pluginVersion": "v11.0.0",
             "targets": [
                {
                   "datasource": {
-                     "uid": "${prometheus_datasource}"
+                     "type": "prometheus",
+                     "uid": "${datasource}"
                   },
-                  "expr": "sum by (job, instance) (snowflake_used_compute_credits{job=~\"$job\", instance=~\"$instance\"})",
+                  "expr": "sum by (job,instance) (snowflake_used_compute_credits{job=\"integrations/snowflake\",job=~\"$job\",instance=~\"$instance\"})",
                   "format": "time_series",
-                  "intervalFactor": 1,
-                  "legendFormat": "{{instance}} - Compute"
+                  "instant": false,
+                  "legendFormat": "{{instance}} - Compute",
+                  "refId": "Used compute credits"
                },
                {
                   "datasource": {
-                     "uid": "${prometheus_datasource}"
+                     "type": "prometheus",
+                     "uid": "${datasource}"
                   },
-                  "expr": "sum by (job, instance) (snowflake_used_cloud_services_credits{job=~\"$job\", instance=~\"$instance\"})",
+                  "expr": "sum by (job,instance) (snowflake_used_cloud_services_credits{job=\"integrations/snowflake\",job=~\"$job\",instance=~\"$instance\"})",
                   "format": "time_series",
-                  "intervalFactor": 1,
-                  "legendFormat": "{{instance}} - Service"
+                  "instant": false,
+                  "legendFormat": "{{instance}} - Service",
+                  "refId": "Used cloud services credits"
                }
             ],
             "title": "Average hourly credits used",
-            "type": "barchart"
+            "type": "timeseries"
          },
          {
             "datasource": {
-               "uid": "${prometheus_datasource}"
+               "type": "prometheus",
+               "uid": "${datasource}"
             },
             "description": "Credits billed for automatic reclustering.",
             "fieldConfig": {
                "defaults": {
-                  "color": {
-                     "mode": "palette-classic"
-                  },
                   "custom": {
-                     "axisCenteredZero": false,
-                     "axisColorMode": "text",
-                     "axisLabel": "",
-                     "axisPlacement": "auto",
-                     "barAlignment": 0,
-                     "drawStyle": "line",
-                     "fillOpacity": 0,
-                     "gradientMode": "none",
-                     "hideFrom": {
-                        "legend": false,
-                        "tooltip": false,
-                        "viz": false
-                     },
-                     "lineInterpolation": "linear",
-                     "lineWidth": 1,
-                     "pointSize": 5,
-                     "scaleDistribution": {
-                        "type": "linear"
-                     },
-                     "showPoints": "auto",
-                     "spanNulls": 3600000,
-                     "stacking": {
-                        "group": "A",
-                        "mode": "none"
-                     },
-                     "thresholdsStyle": {
-                        "mode": "off"
-                     }
+                     "axisLabel": "credits/hr",
+                     "fillOpacity": 30,
+                     "gradientMode": "opacity",
+                     "lineInterpolation": "smooth",
+                     "lineWidth": 2,
+                     "showPoints": "never"
                   },
-                  "mappings": [ ],
-                  "unit": "credits/hr"
-               },
-               "overrides": [ ]
-            },
-            "gridPos": {
-               "h": 7,
-               "w": 12,
-               "x": 12,
-               "y": 15
-            },
-            "id": 9,
-            "interval": "15s",
-            "options": {
-               "legend": {
-                  "calcs": [ ],
-                  "displayMode": "list",
-                  "placement": "bottom",
-                  "showLegend": true
-               },
-               "tooltip": {
-                  "mode": "single",
-                  "sort": "none"
+                  "unit": "none"
                }
             },
+            "gridPos": {
+               "h": 8,
+               "w": 12,
+               "x": 12,
+               "y": 34
+            },
+            "id": 11,
+            "options": {
+               "legend": {
+                  "asTable": true,
+                  "calcs": [ ],
+                  "displayMode": "list",
+                  "placement": "right"
+               },
+               "tooltip": {
+                  "mode": "multi",
+                  "sort": "desc"
+               }
+            },
+            "pluginVersion": "v11.0.0",
             "targets": [
                {
                   "datasource": {
-                     "uid": "${prometheus_datasource}"
+                     "type": "prometheus",
+                     "uid": "${datasource}"
                   },
-                  "expr": "snowflake_auto_clustering_credits{job=~\"$job\", instance=~\"$instance\"}",
+                  "expr": "snowflake_auto_clustering_credits{job=\"integrations/snowflake\",job=~\"$job\",instance=~\"$instance\"}",
                   "format": "time_series",
-                  "intervalFactor": 2,
-                  "legendFormat": "{{database_name}} - {{schema_name}} - {{table_name}}"
+                  "instant": false,
+                  "legendFormat": "{{database_name}} - {{schema_name}} - {{table_name}}",
+                  "refId": "Autoclustering credits used"
                }
             ],
             "title": "Autoclustering credits used",
@@ -648,52 +669,52 @@
          },
          {
             "datasource": {
-               "uid": "${prometheus_datasource}"
+               "type": "prometheus",
+               "uid": "${datasource}"
             },
             "description": "The top 5 services that have the highest compute credit usages.",
             "fieldConfig": {
-               "defaults": {
-                  "color": {
-                     "mode": "thresholds"
-                  },
-                  "custom": {
-                     "align": "center",
-                     "displayMode": "auto",
-                     "inspect": false
-                  },
-                  "decimals": 2,
-                  "mappings": [ ],
-                  "unit": "credits/hr"
-               },
-               "overrides": [ ]
+               "overrides": [
+                  {
+                     "matcher": {
+                        "id": "byName",
+                        "options": "Credits"
+                     },
+                     "properties": [
+                        {
+                           "id": "unit",
+                           "value": "credits/hr"
+                        },
+                        {
+                           "id": "decimals",
+                           "value": 2
+                        }
+                     ]
+                  }
+               ]
             },
             "gridPos": {
-               "h": 7,
+               "h": 8,
                "w": 12,
                "x": 0,
-               "y": 22
+               "y": 42
             },
-            "id": 10,
+            "id": 12,
             "options": {
-               "footer": {
-                  "fields": "",
-                  "reducer": [
-                     "sum"
-                  ],
-                  "show": false
-               },
                "showHeader": true
             },
-            "pluginVersion": "9.1.7",
+            "pluginVersion": "v11.0.0",
             "targets": [
                {
                   "datasource": {
-                     "uid": "${prometheus_datasource}"
+                     "type": "prometheus",
+                     "uid": "${datasource}"
                   },
-                  "expr": "snowflake_used_compute_credits{job=~\"$job\", instance=~\"$instance\"}",
+                  "expr": "snowflake_used_compute_credits{job=\"integrations/snowflake\",job=~\"$job\",instance=~\"$instance\"}",
                   "format": "table",
-                  "intervalFactor": 2,
-                  "legendFormat": "__auto"
+                  "instant": true,
+                  "legendFormat": "{{instance}}",
+                  "refId": "Service compute credits used"
                }
             ],
             "title": "Top 5 service compute credits used",
@@ -759,52 +780,52 @@
          },
          {
             "datasource": {
-               "uid": "${prometheus_datasource}"
+               "type": "prometheus",
+               "uid": "${datasource}"
             },
             "description": "The top 5 services that have the highest compute credit usages.",
             "fieldConfig": {
-               "defaults": {
-                  "color": {
-                     "mode": "thresholds"
-                  },
-                  "custom": {
-                     "align": "auto",
-                     "displayMode": "auto",
-                     "inspect": false
-                  },
-                  "decimals": 2,
-                  "mappings": [ ],
-                  "unit": "credits/hr"
-               },
-               "overrides": [ ]
+               "overrides": [
+                  {
+                     "matcher": {
+                        "id": "byName",
+                        "options": "Credits"
+                     },
+                     "properties": [
+                        {
+                           "id": "unit",
+                           "value": "credits/hr"
+                        },
+                        {
+                           "id": "decimals",
+                           "value": 2
+                        }
+                     ]
+                  }
+               ]
             },
             "gridPos": {
-               "h": 7,
+               "h": 8,
                "w": 12,
                "x": 12,
-               "y": 22
+               "y": 42
             },
-            "id": 11,
+            "id": 13,
             "options": {
-               "footer": {
-                  "fields": "",
-                  "reducer": [
-                     "sum"
-                  ],
-                  "show": false
-               },
                "showHeader": true
             },
-            "pluginVersion": "9.1.7",
+            "pluginVersion": "v11.0.0",
             "targets": [
                {
                   "datasource": {
-                     "uid": "${prometheus_datasource}"
+                     "type": "prometheus",
+                     "uid": "${datasource}"
                   },
-                  "expr": "snowflake_used_cloud_services_credits{job=~\"$job\", instance=~\"$instance\"}",
+                  "expr": "snowflake_used_cloud_services_credits{job=\"integrations/snowflake\",job=~\"$job\",instance=~\"$instance\"}",
                   "format": "table",
-                  "intervalFactor": 2,
-                  "legendFormat": "__auto"
+                  "instant": true,
+                  "legendFormat": "{{instance}}",
+                  "refId": "Service cloud service credits used"
                }
             ],
             "title": "Top 5 service cloud service credits used",
@@ -870,51 +891,48 @@
          },
          {
             "datasource": {
-               "uid": "${prometheus_datasource}"
+               "type": "prometheus",
+               "uid": "${datasource}"
             },
             "description": "The top 5 warehouses that have the highest compute credit usages.",
             "fieldConfig": {
-               "defaults": {
-                  "color": {
-                     "mode": "thresholds"
-                  },
-                  "custom": {
-                     "align": "center",
-                     "displayMode": "auto",
-                     "inspect": false
-                  },
-                  "mappings": [ ],
-                  "unit": "credits/hr"
-               },
-               "overrides": [ ]
+               "overrides": [
+                  {
+                     "matcher": {
+                        "id": "byName",
+                        "options": "Credits"
+                     },
+                     "properties": [
+                        {
+                           "id": "unit",
+                           "value": "credits/hr"
+                        }
+                     ]
+                  }
+               ]
             },
             "gridPos": {
-               "h": 7,
+               "h": 8,
                "w": 12,
                "x": 0,
-               "y": 29
+               "y": 50
             },
-            "id": 12,
+            "id": 14,
             "options": {
-               "footer": {
-                  "fields": "",
-                  "reducer": [
-                     "sum"
-                  ],
-                  "show": false
-               },
                "showHeader": true
             },
-            "pluginVersion": "9.1.7",
+            "pluginVersion": "v11.0.0",
             "targets": [
                {
                   "datasource": {
-                     "uid": "${prometheus_datasource}"
+                     "type": "prometheus",
+                     "uid": "${datasource}"
                   },
-                  "expr": "snowflake_warehouse_used_compute_credits{job=~\"$job\", instance=~\"$instance\"}",
+                  "expr": "snowflake_warehouse_used_compute_credits{job=\"integrations/snowflake\",job=~\"$job\",instance=~\"$instance\"}",
                   "format": "table",
-                  "intervalFactor": 2,
-                  "legendFormat": "__auto"
+                  "instant": true,
+                  "legendFormat": "{{instance}}",
+                  "refId": "Warehouse compute credits used"
                }
             ],
             "title": "Top 5 warehouse compute credits used",
@@ -975,52 +993,52 @@
          },
          {
             "datasource": {
-               "uid": "${prometheus_datasource}"
+               "type": "prometheus",
+               "uid": "${datasource}"
             },
             "description": "The top 5 warehouses that have the highest services credit usages.",
             "fieldConfig": {
-               "defaults": {
-                  "color": {
-                     "mode": "thresholds"
-                  },
-                  "custom": {
-                     "align": "center",
-                     "displayMode": "auto",
-                     "inspect": false
-                  },
-                  "decimals": 2,
-                  "mappings": [ ],
-                  "unit": "credits/hr"
-               },
-               "overrides": [ ]
+               "overrides": [
+                  {
+                     "matcher": {
+                        "id": "byName",
+                        "options": "Credits"
+                     },
+                     "properties": [
+                        {
+                           "id": "unit",
+                           "value": "credits/hr"
+                        },
+                        {
+                           "id": "decimals",
+                           "value": 2
+                        }
+                     ]
+                  }
+               ]
             },
             "gridPos": {
-               "h": 7,
+               "h": 8,
                "w": 12,
                "x": 12,
-               "y": 29
+               "y": 50
             },
-            "id": 13,
+            "id": 15,
             "options": {
-               "footer": {
-                  "fields": "",
-                  "reducer": [
-                     "sum"
-                  ],
-                  "show": false
-               },
                "showHeader": true
             },
-            "pluginVersion": "9.1.7",
+            "pluginVersion": "v11.0.0",
             "targets": [
                {
                   "datasource": {
-                     "uid": "${prometheus_datasource}"
+                     "type": "prometheus",
+                     "uid": "${datasource}"
                   },
-                  "expr": "snowflake_warehouse_used_cloud_service_credits{job=~\"$job\", instance=~\"$instance\"}",
+                  "expr": "snowflake_warehouse_used_cloud_service_credits{job=\"integrations/snowflake\",job=~\"$job\",instance=~\"$instance\"}",
                   "format": "table",
-                  "intervalFactor": 2,
-                  "legendFormat": "__auto"
+                  "instant": true,
+                  "legendFormat": "{{instance}}",
+                  "refId": "Warehouse cloud services credits used"
                }
             ],
             "title": "Top 5 warehouse cloud services credits used",
@@ -1081,64 +1099,48 @@
          },
          {
             "datasource": {
-               "uid": "${prometheus_datasource}"
+               "type": "prometheus",
+               "uid": "${datasource}"
             },
             "description": "The top 5 databases that have the highest autoclustering credit usages.",
             "fieldConfig": {
-               "defaults": {
-                  "color": {
-                     "mode": "thresholds"
-                  },
-                  "custom": {
-                     "align": "center",
-                     "displayMode": "auto",
-                     "inspect": false
-                  },
-                  "mappings": [ ],
-                  "thresholds": {
-                     "mode": "absolute",
-                     "steps": [
+               "overrides": [
+                  {
+                     "matcher": {
+                        "id": "byName",
+                        "options": "Credits"
+                     },
+                     "properties": [
                         {
-                           "color": "green",
-                           "value": null
-                        },
-                        {
-                           "color": "red",
-                           "value": 80
+                           "id": "unit",
+                           "value": "credits/hr"
                         }
                      ]
-                  },
-                  "unit": "credits/hr"
-               },
-               "overrides": [ ]
+                  }
+               ]
             },
             "gridPos": {
-               "h": 7,
+               "h": 8,
                "w": 12,
                "x": 0,
-               "y": 36
+               "y": 58
             },
-            "id": 14,
+            "id": 16,
             "options": {
-               "footer": {
-                  "fields": "",
-                  "reducer": [
-                     "sum"
-                  ],
-                  "show": false
-               },
                "showHeader": true
             },
-            "pluginVersion": "9.1.7",
+            "pluginVersion": "v11.0.0",
             "targets": [
                {
                   "datasource": {
-                     "uid": "${prometheus_datasource}"
+                     "type": "prometheus",
+                     "uid": "${datasource}"
                   },
-                  "expr": "sum by (instance, job, database_name) (snowflake_auto_clustering_credits{job=~\"$job\", instance=~\"$instance\"})",
+                  "expr": "sum by (job,instance, database_name) (snowflake_auto_clustering_credits{job=\"integrations/snowflake\",job=~\"$job\",instance=~\"$instance\"})",
                   "format": "table",
-                  "intervalFactor": 2,
-                  "legendFormat": "__auto"
+                  "instant": true,
+                  "legendFormat": "{{instance}}",
+                  "refId": "Database autoclustering credits used"
                }
             ],
             "title": "Top 5 database autoclustering credits used",
@@ -1203,60 +1205,48 @@
          },
          {
             "datasource": {
-               "uid": "${prometheus_datasource}"
+               "type": "prometheus",
+               "uid": "${datasource}"
             },
             "description": "The top 5 tables that have the highest autoclustering credit usages.",
             "fieldConfig": {
-               "defaults": {
-                  "color": {
-                     "mode": "thresholds"
-                  },
-                  "custom": {
-                     "align": "center",
-                     "displayMode": "auto",
-                     "inspect": false
-                  },
-                  "mappings": [ ],
-                  "thresholds": {
-                     "mode": "absolute",
-                     "steps": [
+               "overrides": [
+                  {
+                     "matcher": {
+                        "id": "byName",
+                        "options": "Credits"
+                     },
+                     "properties": [
                         {
-                           "color": "green",
-                           "value": null
+                           "id": "unit",
+                           "value": "credits/hr"
                         }
                      ]
-                  },
-                  "unit": "credits/hr"
-               },
-               "overrides": [ ]
+                  }
+               ]
             },
             "gridPos": {
-               "h": 7,
+               "h": 8,
                "w": 12,
                "x": 12,
-               "y": 36
+               "y": 58
             },
-            "id": 15,
+            "id": 17,
             "options": {
-               "footer": {
-                  "fields": "",
-                  "reducer": [
-                     "sum"
-                  ],
-                  "show": false
-               },
                "showHeader": true
             },
-            "pluginVersion": "9.1.7",
+            "pluginVersion": "v11.0.0",
             "targets": [
                {
                   "datasource": {
-                     "uid": "${prometheus_datasource}"
+                     "type": "prometheus",
+                     "uid": "${datasource}"
                   },
-                  "expr": "snowflake_auto_clustering_credits{job=~\"$job\", instance=~\"$instance\"}",
+                  "expr": "snowflake_auto_clustering_credits{job=\"integrations/snowflake\",job=~\"$job\",instance=~\"$instance\"}",
                   "format": "table",
-                  "intervalFactor": 2,
-                  "legendFormat": "__auto"
+                  "instant": true,
+                  "legendFormat": "{{instance}}",
+                  "refId": "Table autoclustering credits used"
                }
             ],
             "title": "Top 5 table autoclustering credits used",
@@ -1333,90 +1323,48 @@
          }
       ],
       "refresh": "30m",
-      "rows": [ ],
-      "schemaVersion": 14,
-      "style": "dark",
+      "schemaVersion": 39,
       "tags": [
          "snowflake-mixin"
       ],
       "templating": {
          "list": [
             {
-               "current": { },
-               "hide": 0,
-               "label": "Data Source",
-               "name": "prometheus_datasource",
-               "options": [ ],
+               "label": "Data source",
+               "name": "datasource",
                "query": "prometheus",
-               "refresh": 1,
                "regex": "",
                "type": "datasource"
             },
             {
                "allValue": ".+",
-               "current": { },
                "datasource": {
-                  "uid": "${prometheus_datasource}"
+                  "type": "prometheus",
+                  "uid": "${datasource}"
                },
-               "hide": 0,
                "includeAll": true,
                "label": "Job",
                "multi": true,
                "name": "job",
-               "options": [ ],
-               "query": "label_values(snowflake_up{}, job)",
+               "query": "label_values(snowflake_successful_login_rate{job=\"integrations/snowflake\"}, job)",
                "refresh": 2,
-               "regex": "",
-               "sort": 2,
-               "tagValuesQuery": "",
-               "tags": [ ],
-               "tagsQuery": "",
-               "type": "query",
-               "useTags": false
+               "sort": 1,
+               "type": "query"
             },
             {
-               "allValue": ".*",
-               "current": { },
+               "allValue": ".+",
                "datasource": {
-                  "uid": "${prometheus_datasource}"
+                  "type": "prometheus",
+                  "uid": "${datasource}"
                },
-               "hide": 0,
                "includeAll": true,
-               "label": "instance",
+               "label": "Instance",
                "multi": true,
                "name": "instance",
-               "options": [ ],
-               "query": "label_values(snowflake_up{}, instance)",
+               "query": "label_values(snowflake_successful_login_rate{job=\"integrations/snowflake\",job=~\"$job\"}, instance)",
                "refresh": 2,
-               "regex": "",
-               "sort": 2,
-               "tagValuesQuery": "",
-               "tags": [ ],
-               "tagsQuery": "",
-               "type": "query",
-               "useTags": false
-            },
-            {
-               "allValue": ".*",
-               "current": { },
-               "datasource": {
-                  "uid": "${prometheus_datasource}"
-               },
-               "hide": 0,
-               "includeAll": true,
-               "label": "Warehouse",
-               "multi": true,
-               "name": "warehouse",
-               "options": [ ],
-               "query": "label_values(snowflake_warehouse_used_compute_credits{name!=\"CLOUD_SERVICES_ONLY\"}, name)",
-               "refresh": 2,
-               "regex": "",
-               "sort": 2,
-               "tagValuesQuery": "",
-               "tags": [ ],
-               "tagsQuery": "",
-               "type": "query",
-               "useTags": false
+               "sort": 1,
+               "type": "query"
             }
          ]
       },
@@ -1424,33 +1372,7 @@
          "from": "now-8h",
          "to": "now"
       },
-      "timepicker": {
-         "refresh_intervals": [
-            "5s",
-            "10s",
-            "30s",
-            "1m",
-            "5m",
-            "15m",
-            "30m",
-            "1h",
-            "2h",
-            "1d"
-         ],
-         "time_options": [
-            "5m",
-            "15m",
-            "1h",
-            "6h",
-            "12h",
-            "24h",
-            "2d",
-            "7d",
-            "30d"
-         ]
-      },
       "timezone": "default",
       "title": "Snowflake overview",
-      "uid": "snowflake-overview",
-      "version": 0
+      "uid": "snowflake_overview"
    }

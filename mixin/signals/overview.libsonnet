@@ -300,5 +300,33 @@ function(this) {
         },
       },
     },
+
+    computeCreditUsagePercentage: {
+      name: 'Compute credit usage percentage',
+      nameShort: 'Compute % of limit',
+      description: 'Percentage of compute credit limit being used.',
+      type: 'raw',
+      unit: 'percent',
+      sources: {
+        prometheus: {
+          expr: 'sum by (' + aggregationLabels + ') (last_over_time(snowflake_used_compute_credits{%(queriesSelector)s}[24h]) / ' + this.alertsComputeCreditUsageLimit + ')',
+          legendCustomTemplate: '{{instance}} - Compute usage',
+        },
+      },
+    },
+
+    cloudServicesCreditUsagePercentage: {
+      name: 'Cloud services credit usage percentage',
+      nameShort: 'Cloud services % of limit',
+      description: 'Percentage of cloud services credit limit being used.',
+      type: 'raw',
+      unit: 'percent',
+      sources: {
+        prometheus: {
+          expr: 'sum by (' + aggregationLabels + ') (last_over_time(snowflake_used_cloud_services_credits{%(queriesSelector)s}[24h]) / ' + this.alertsServiceCreditUsageLimit + ')',
+          legendCustomTemplate: '{{instance}} - Cloud services usage',
+        },
+      },
+    },
   },
 }

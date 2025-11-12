@@ -56,7 +56,8 @@ local commonlib = import 'common-lib/common/main.libsonnet';
             + g.dashboard.variable.custom.selectionOptions.withMulti(true)
             + g.dashboard.variable.custom.selectionOptions.withIncludeAll(true)
             + g.dashboard.variable.query.queryTypes.withLabelValues(label='database_name', metric='snowflake_table_active_bytes{%(queriesSelector)s}' % vars)
-            + g.dashboard.variable.query.withDatasourceFromVariable(vars.datasources.prometheus),
+            + g.dashboard.variable.query.withDatasourceFromVariable(vars.datasources.prometheus)
+            + g.dashboard.variable.query.refresh.onTime(),
 
             g.dashboard.variable.query.new(
               'schema_name',
@@ -64,7 +65,8 @@ local commonlib = import 'common-lib/common/main.libsonnet';
             + g.dashboard.variable.custom.selectionOptions.withMulti(true)
             + g.dashboard.variable.custom.selectionOptions.withIncludeAll(true)
             + g.dashboard.variable.query.queryTypes.withLabelValues(label='schema_name', metric='snowflake_table_active_bytes{%(queriesSelector)s, database_name=~"$database_name"}' % vars)
-            + g.dashboard.variable.query.withDatasourceFromVariable(vars.datasources.prometheus),
+            + g.dashboard.variable.query.withDatasourceFromVariable(vars.datasources.prometheus)
+            + g.dashboard.variable.query.refresh.onTime(),
 
             g.dashboard.variable.query.new(
               'table_name',
@@ -72,7 +74,8 @@ local commonlib = import 'common-lib/common/main.libsonnet';
             + g.dashboard.variable.custom.selectionOptions.withMulti(true)
             + g.dashboard.variable.custom.selectionOptions.withIncludeAll(true)
             + g.dashboard.variable.query.queryTypes.withLabelValues(label='table_name', metric='snowflake_table_active_bytes{%(queriesSelector)s, database_name=~"$database_name", schema_name=~"$schema_name"}' % vars)
-            + g.dashboard.variable.query.withDatasourceFromVariable(vars.datasources.prometheus),
+            + g.dashboard.variable.query.withDatasourceFromVariable(vars.datasources.prometheus)
+            + g.dashboard.variable.query.refresh.onTime(),
           ],
           uid + '_data_ownership',
           tags,

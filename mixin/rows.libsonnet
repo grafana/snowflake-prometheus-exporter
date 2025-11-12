@@ -10,11 +10,11 @@ local g = import './g.libsonnet';
         + g.panel.row.withCollapsed(false)
         + g.panel.row.withPanels(
           [
+            panels.successfulLoginAttempts { gridPos: { w: 12 } },
+            panels.failedLoginAttempts { gridPos: { w: 12 } },
+            panels.loginAttempts { gridPos: { w: 24 } },
             panels.overviewWarehouseActivity { gridPos: { w: 12 } },
             panels.accountStorageUsage { gridPos: { w: 12 } },
-            panels.loginAttempts { gridPos: { w: 12 } },
-            panels.successfulLoginAttempts { gridPos: { w: 6 } },
-            panels.failedLoginAttempts { gridPos: { w: 6 } },
           ]
         ),
 
@@ -22,6 +22,8 @@ local g = import './g.libsonnet';
         g.panel.row.new('Billing')
         + g.panel.row.withPanels(
           [
+            panels.computeBillingUsage { gridPos: { w: 12 } },
+            panels.cloudServicesBillingUsage { gridPos: { w: 12 } },
             panels.averageHourlyCreditsUsed { gridPos: { w: 12 } },
             panels.autoclusteringCreditsUsed { gridPos: { w: 12 } },
             panels.top5ServiceComputeCreditsUsed { gridPos: { w: 12 } },
@@ -37,10 +39,10 @@ local g = import './g.libsonnet';
         g.panel.row.new('Data ownership')
         + g.panel.row.withPanels(
           [
-            panels.activeSchemaOwnedData { gridPos: { w: 6 } },
-            panels.failsafeSchemaOwnedData { gridPos: { w: 6 } },
-            panels.cloneSchemaOwnedData { gridPos: { w: 6 } },
-            panels.timeTravelSchemaOwnedData { gridPos: { w: 6 } },
+            panels.activeSchemaOwnedData { gridPos: { w: 12 } },
+            panels.failsafeSchemaOwnedData { gridPos: { w: 12 } },
+            panels.cloneSchemaOwnedData { gridPos: { w: 12 } },
+            panels.timeTravelSchemaOwnedData { gridPos: { w: 12 } },
             panels.top5LargestTables { gridPos: { w: 18 } },
             panels.deletedTables { gridPos: { w: 6 } },
           ]

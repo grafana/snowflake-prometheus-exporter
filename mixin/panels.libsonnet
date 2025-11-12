@@ -88,6 +88,45 @@ local commonlib = import 'common-lib/common/main.libsonnet';
         + g.panel.gauge.options.withShowThresholdLabels(false)
         + g.panel.gauge.options.withShowThresholdMarkers(false),
 
+      // Billing panels
+      computeBillingUsage:
+        commonlib.panels.generic.timeSeries.base.new(
+          'Billing usage',
+          targets=[
+            signals.overview.computeCreditUsagePercentage.asTarget(),
+          ],
+        )
+        + g.panel.timeSeries.panelOptions.withDescription('Billing usage for the account.')
+        + g.panel.timeSeries.standardOptions.withUnit('percent')
+        + g.panel.timeSeries.standardOptions.thresholds.withSteps([
+          g.panel.timeSeries.thresholdStep.withColor('transparent')
+          + g.panel.timeSeries.thresholdStep.withValue(null),
+          g.panel.timeSeries.thresholdStep.withColor('orange')
+          + g.panel.timeSeries.thresholdStep.withValue(80),
+          g.panel.timeSeries.thresholdStep.withColor('red')
+          + g.panel.timeSeries.thresholdStep.withValue(100),
+        ])
+        + g.panel.timeSeries.fieldConfig.defaults.custom.withThresholdsStyle('area'),
+
+      cloudServicesBillingUsage:
+        commonlib.panels.generic.timeSeries.base.new(
+          'Cloud services billing usage',
+          targets=[
+            signals.overview.cloudServicesCreditUsagePercentage.asTarget(),
+          ],
+        )
+        + g.panel.timeSeries.panelOptions.withDescription('Cloud services billing usage for the account.')
+        + g.panel.timeSeries.standardOptions.withUnit('percent')
+        + g.panel.timeSeries.standardOptions.thresholds.withSteps([
+          g.panel.timeSeries.thresholdStep.withColor('transparent')
+          + g.panel.timeSeries.thresholdStep.withValue(null),
+          g.panel.timeSeries.thresholdStep.withColor('orange')
+          + g.panel.timeSeries.thresholdStep.withValue(1),
+          g.panel.timeSeries.thresholdStep.withColor('red')
+          + g.panel.timeSeries.thresholdStep.withValue(100),
+        ])
+        + g.panel.timeSeries.fieldConfig.defaults.custom.withThresholdsStyle('area'),
+
       averageHourlyCreditsUsed:
         commonlib.panels.generic.timeSeries.base.new(
           'Average hourly credits used',
@@ -96,8 +135,11 @@ local commonlib = import 'common-lib/common/main.libsonnet';
             signals.overview.usedCloudServicesCredits.asTarget(),
           ],
         )
+        + g.panel.timeSeries.options.legend.withAsTable(true)
+        + g.panel.timeSeries.options.legend.withPlacement('right')
         + g.panel.timeSeries.panelOptions.withDescription('Number of billing credits used by the account.')
-        + g.panel.timeSeries.standardOptions.withUnit('credits/hr'),
+        + g.panel.timeSeries.fieldConfig.defaults.custom.withAxisLabel('credits/hr')
+        + g.panel.timeSeries.standardOptions.withUnit('none'),
 
       autoclusteringCreditsUsed:
         commonlib.panels.generic.timeSeries.base.new(
@@ -106,8 +148,11 @@ local commonlib = import 'common-lib/common/main.libsonnet';
             signals.overview.autoclusteringCreditsUsed.asTarget(),
           ],
         )
+        + g.panel.timeSeries.options.legend.withAsTable(true)
+        + g.panel.timeSeries.options.legend.withPlacement('right')
         + g.panel.timeSeries.panelOptions.withDescription('Credits billed for automatic reclustering.')
-        + g.panel.timeSeries.standardOptions.withUnit('credits/hr'),
+        + g.panel.timeSeries.fieldConfig.defaults.custom.withAxisLabel('credits/hr')
+        + g.panel.timeSeries.standardOptions.withUnit('none'),
 
       top5ServiceComputeCreditsUsed:
         commonlib.panels.generic.table.base.new(
@@ -540,6 +585,8 @@ local commonlib = import 'common-lib/common/main.libsonnet';
             signals.ownership.activeSchemaOwnedData.asTarget(),
           ],
         )
+        + g.panel.timeSeries.options.legend.withAsTable(true)
+        + g.panel.timeSeries.options.legend.withPlacement('right')
         + g.panel.timeSeries.panelOptions.withDescription('Amount of active data owned by the selected schema.')
         + g.panel.timeSeries.standardOptions.withUnit('bytes'),
 
@@ -550,6 +597,8 @@ local commonlib = import 'common-lib/common/main.libsonnet';
             signals.ownership.timeTravelSchemaOwnedData.asTarget(),
           ],
         )
+        + g.panel.timeSeries.options.legend.withAsTable(true)
+        + g.panel.timeSeries.options.legend.withPlacement('right')
         + g.panel.timeSeries.panelOptions.withDescription('Amount of Time Travel data owned by the selected schema.')
         + g.panel.timeSeries.standardOptions.withUnit('bytes'),
 
@@ -560,6 +609,8 @@ local commonlib = import 'common-lib/common/main.libsonnet';
             signals.ownership.failsafeSchemaOwnedData.asTarget(),
           ],
         )
+        + g.panel.timeSeries.options.legend.withAsTable(true)
+        + g.panel.timeSeries.options.legend.withPlacement('right')
         + g.panel.timeSeries.panelOptions.withDescription('Amount of fail-safe data owned by the selected schema.')
         + g.panel.timeSeries.standardOptions.withUnit('bytes'),
 
@@ -570,6 +621,8 @@ local commonlib = import 'common-lib/common/main.libsonnet';
             signals.ownership.cloneSchemaOwnedData.asTarget(),
           ],
         )
+        + g.panel.timeSeries.options.legend.withAsTable(true)
+        + g.panel.timeSeries.options.legend.withPlacement('right')
         + g.panel.timeSeries.panelOptions.withDescription('Amount of clone data owned by the selected schema.')
         + g.panel.timeSeries.standardOptions.withUnit('bytes'),
 
@@ -672,6 +725,8 @@ local commonlib = import 'common-lib/common/main.libsonnet';
             signals.ownership.activeTableOwnedData.asTarget(),
           ],
         )
+        + g.panel.timeSeries.options.legend.withAsTable(true)
+        + g.panel.timeSeries.options.legend.withPlacement('right')
         + g.panel.timeSeries.panelOptions.withDescription('Amount of active data owned by the selected table.')
         + g.panel.timeSeries.standardOptions.withUnit('bytes'),
 
@@ -682,6 +737,8 @@ local commonlib = import 'common-lib/common/main.libsonnet';
             signals.ownership.timeTravelTableOwnedData.asTarget(),
           ],
         )
+        + g.panel.timeSeries.options.legend.withAsTable(true)
+        + g.panel.timeSeries.options.legend.withPlacement('right')
         + g.panel.timeSeries.panelOptions.withDescription('Amount of Time Travel data owned by the selected table.')
         + g.panel.timeSeries.standardOptions.withUnit('bytes'),
 
@@ -692,6 +749,8 @@ local commonlib = import 'common-lib/common/main.libsonnet';
             signals.ownership.failsafeTableOwnedData.asTarget(),
           ],
         )
+        + g.panel.timeSeries.options.legend.withAsTable(true)
+        + g.panel.timeSeries.options.legend.withPlacement('right')
         + g.panel.timeSeries.panelOptions.withDescription('Amount of fail-safe data owned by the selected table.')
         + g.panel.timeSeries.standardOptions.withUnit('bytes'),
 
@@ -702,6 +761,8 @@ local commonlib = import 'common-lib/common/main.libsonnet';
             signals.ownership.cloneTableOwnedData.asTarget(),
           ],
         )
+        + g.panel.timeSeries.options.legend.withAsTable(true)
+        + g.panel.timeSeries.options.legend.withPlacement('right')
         + g.panel.timeSeries.panelOptions.withDescription('Amount of clone data owned by the selected table.')
         + g.panel.timeSeries.standardOptions.withUnit('bytes'),
     },
