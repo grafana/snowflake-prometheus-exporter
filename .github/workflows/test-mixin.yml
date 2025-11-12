@@ -8,7 +8,7 @@ on:
   # To conserve resources we only run tests against main in PRs
   pull_request:
     branches:
-      - master
+      - main
 
 jobs:
   lint-mixin:
