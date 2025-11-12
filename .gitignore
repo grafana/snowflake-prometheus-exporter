@@ -20,9 +20,6 @@
 # build artifacts from `promu crossbuild`
 .build
 
-# build artifacts for mixin
-/mixin/*_out
-mixin/prometheus_alerts.yaml
 
 # MacOS specific files
 .DS_Store
