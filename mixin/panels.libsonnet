@@ -106,7 +106,7 @@ local commonlib = import 'common-lib/common/main.libsonnet';
           g.panel.timeSeries.thresholdStep.withColor('red')
           + g.panel.timeSeries.thresholdStep.withValue(100),
         ])
-        + g.panel.timeSeries.fieldConfig.defaults.custom.withThresholdsStyle('area'),
+        + g.panel.timeSeries.fieldConfig.defaults.custom.thresholdsStyle.withMode('area'),
 
       cloudServicesBillingUsage:
         commonlib.panels.generic.timeSeries.base.new(
@@ -121,11 +121,11 @@ local commonlib = import 'common-lib/common/main.libsonnet';
           g.panel.timeSeries.thresholdStep.withColor('transparent')
           + g.panel.timeSeries.thresholdStep.withValue(null),
           g.panel.timeSeries.thresholdStep.withColor('orange')
-          + g.panel.timeSeries.thresholdStep.withValue(1),
+          + g.panel.timeSeries.thresholdStep.withValue(80),
           g.panel.timeSeries.thresholdStep.withColor('red')
           + g.panel.timeSeries.thresholdStep.withValue(100),
         ])
-        + g.panel.timeSeries.fieldConfig.defaults.custom.withThresholdsStyle('area'),
+        + g.panel.timeSeries.fieldConfig.defaults.custom.thresholdsStyle.withMode('area'),
 
       averageHourlyCreditsUsed:
         commonlib.panels.generic.timeSeries.base.new(
