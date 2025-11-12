@@ -8,3 +8,23 @@ all:: vet common-all
 
 include Makefile.common
 
+# Check if .github/workflows/*.yml need to be updated
+# when changing the install-ci-deps target.
+install-ci-deps:
+	go install github.com/google/go-jsonnet/cmd/jsonnet@v0.20.0
+	go install github.com/google/go-jsonnet/cmd/jsonnetfmt@v0.20.0
+	go install github.com/google/go-jsonnet/cmd/jsonnet-lint@v0.20.0
+	go install github.com/monitoring-mixins/mixtool/cmd/mixtool@main
+	go install github.com/jsonnet-bundler/jsonnet-bundler/cmd/jb@v0.5.1
+	go install github.com/grafana/grizzly/cmd/grr@latest
+
+
+lint-fmt:
+	@RESULT=0; \
+	for f in $$(find . -name '*.libsonnet' -print -o -name '*.jsonnet' -print); do \
+			$(JSONNET_FMT) -- "$$f" | diff -u "$$f" -; \
+			if [ $$? -ne 0 ]; then \
+				RESULT=1; \
+			fi; \
+	done; \
+	exit $$RESULT

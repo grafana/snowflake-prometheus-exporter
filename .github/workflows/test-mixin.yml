@@ -11,8 +11,35 @@ on:
       - main
 
 jobs:
+  setup:
+    name: Setup tools
+    runs-on: ubuntu-latest
+    outputs:
+      cache-hit: ${{ steps.tools-cache.outputs.cache-hit }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Setup Go
+        uses: actions/setup-go@44694675825211faa026b3c33043df3e48a5fa00 # v6
+        with:
+          go-version: 1.23
+      - name: Tools cache
+        id: tools-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/go/bin
+          key: ${{ runner.os }}-tools-${{ hashFiles('Makefile') }}
+      - name: Install CI dependencies
+        if: steps.tools-cache.outputs.cache-hit != 'true'
+        run: make install-ci-deps
+
   lint-mixin:
     name: Test mixin
+    needs: setup
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -24,6 +51,8 @@ jobs:
       - name: Install dependencies & build generated files
         working-directory: ./mixin
         run: make all
+      - name: Lint jsonnet
+        run: make lint-fmt
       - name: Lint mixin
         working-directory: ./mixin
         run: make lint
