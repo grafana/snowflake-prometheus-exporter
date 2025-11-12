@@ -48,6 +48,16 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
+      - name: Setup Go
+        uses: actions/setup-go@44694675825211faa026b3c33043df3e48a5fa00 # v6
+        with:
+          go-version: 1.23
+      - name: Restore Tools cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/go/bin
+          key: ${{ runner.os }}-tools-${{ hashFiles('Makefile') }}
       - name: Install dependencies & build generated files
         working-directory: ./mixin
         run: make all
