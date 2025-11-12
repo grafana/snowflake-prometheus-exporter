@@ -1,0 +1,1025 @@
+{
+      "__inputs": [ ],
+      "__requires": [ ],
+      "annotations": {
+         "list": [ ]
+      },
+      "description": "A dashboard displaying metrics relating to data ownership.",
+      "editable": false,
+      "gnetId": null,
+      "graphTooltip": 0,
+      "hideControls": false,
+      "id": null,
+      "links": [
+         {
+            "asDropdown": false,
+            "icon": "external link",
+            "includeVars": true,
+            "keepTime": true,
+            "tags": [
+               "snowflake-mixin"
+            ],
+            "targetBlank": false,
+            "title": "Other Snowflake dashboards",
+            "type": "dashboards",
+            "url": ""
+         }
+      ],
+      "panels": [
+         {
+            "datasource": {
+               "uid": "${prometheus_datasource}"
+            },
+            "description": "Amount of active data owned by the selected schema.",
+            "fieldConfig": {
+               "defaults": {
+                  "color": {
+                     "mode": "palette-classic"
+                  },
+                  "custom": {
+                     "axisCenteredZero": false,
+                     "axisColorMode": "text",
+                     "axisLabel": "",
+                     "axisPlacement": "auto",
+                     "barAlignment": 0,
+                     "drawStyle": "line",
+                     "fillOpacity": 0,
+                     "gradientMode": "none",
+                     "hideFrom": {
+                        "legend": false,
+                        "tooltip": false,
+                        "viz": false
+                     },
+                     "lineInterpolation": "linear",
+                     "lineWidth": 1,
+                     "pointSize": 5,
+                     "scaleDistribution": {
+                        "type": "linear"
+                     },
+                     "showPoints": "auto",
+                     "spanNulls": 3600000,
+                     "stacking": {
+                        "group": "A",
+                        "mode": "none"
+                     },
+                     "thresholdsStyle": {
+                        "mode": "off"
+                     }
+                  },
+                  "mappings": [ ],
+                  "unit": "bytes"
+               },
+               "overrides": [ ]
+            },
+            "gridPos": {
+               "h": 8,
+               "w": 6,
+               "x": 0,
+               "y": 0
+            },
+            "id": 2,
+            "interval": "15s",
+            "options": {
+               "legend": {
+                  "calcs": [ ],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true
+               },
+               "tooltip": {
+                  "mode": "single",
+                  "sort": "none"
+               }
+            },
+            "targets": [
+               {
+                  "datasource": {
+                     "uid": "${prometheus_datasource}"
+                  },
+                  "expr": "sum by (instance, database_name, schema_name) (last_over_time(snowflake_table_active_bytes{job=~\"$job\", instance=~\"$instance\", database_name=~\"$database\", schema_name=~\"$schema\"}[24h]))",
+                  "format": "time_series",
+                  "intervalFactor": 2,
+                  "legendFormat": "{{instance}} - {{database_name}} - {{schema_name}}"
+               }
+            ],
+            "title": "Active schema owned data",
+            "type": "timeseries"
+         },
+         {
+            "datasource": {
+               "uid": "${prometheus_datasource}"
+            },
+            "description": "Amount of fail-safe data owned by the selected schema.",
+            "fieldConfig": {
+               "defaults": {
+                  "color": {
+                     "mode": "palette-classic"
+                  },
+                  "custom": {
+                     "axisCenteredZero": false,
+                     "axisColorMode": "text",
+                     "axisLabel": "",
+                     "axisPlacement": "auto",
+                     "barAlignment": 0,
+                     "drawStyle": "line",
+                     "fillOpacity": 0,
+                     "gradientMode": "none",
+                     "hideFrom": {
+                        "legend": false,
+                        "tooltip": false,
+                        "viz": false
+                     },
+                     "lineInterpolation": "linear",
+                     "lineWidth": 1,
+                     "pointSize": 5,
+                     "scaleDistribution": {
+                        "type": "linear"
+                     },
+                     "showPoints": "auto",
+                     "spanNulls": 3600000,
+                     "stacking": {
+                        "group": "A",
+                        "mode": "none"
+                     },
+                     "thresholdsStyle": {
+                        "mode": "off"
+                     }
+                  },
+                  "mappings": [ ],
+                  "unit": "bytes"
+               },
+               "overrides": [ ]
+            },
+            "gridPos": {
+               "h": 8,
+               "w": 6,
+               "x": 6,
+               "y": 0
+            },
+            "id": 3,
+            "options": {
+               "legend": {
+                  "calcs": [ ],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true
+               },
+               "tooltip": {
+                  "mode": "single",
+                  "sort": "none"
+               }
+            },
+            "targets": [
+               {
+                  "datasource": {
+                     "uid": "${prometheus_datasource}"
+                  },
+                  "expr": "sum by (instance, database_name, schema_name) (last_over_time(snowflake_table_failsafe_bytes{job=~\"$job\", instance=~\"$instance\", database_name=~\"$database\", schema_name=~\"$schema\"}[24h]))",
+                  "format": "time_series",
+                  "intervalFactor": 2,
+                  "legendFormat": "{{instance}} - {{database_name}} - {{schema_name}}"
+               }
+            ],
+            "title": "Fail-safe schema owned data",
+            "type": "timeseries"
+         },
+         {
+            "datasource": {
+               "uid": "${prometheus_datasource}"
+            },
+            "description": "Amount of clone data owned by the selected schema.",
+            "fieldConfig": {
+               "defaults": {
+                  "color": {
+                     "mode": "palette-classic"
+                  },
+                  "custom": {
+                     "axisCenteredZero": false,
+                     "axisColorMode": "text",
+                     "axisLabel": "",
+                     "axisPlacement": "auto",
+                     "barAlignment": 0,
+                     "drawStyle": "line",
+                     "fillOpacity": 0,
+                     "gradientMode": "none",
+                     "hideFrom": {
+                        "legend": false,
+                        "tooltip": false,
+                        "viz": false
+                     },
+                     "lineInterpolation": "linear",
+                     "lineWidth": 1,
+                     "pointSize": 5,
+                     "scaleDistribution": {
+                        "type": "linear"
+                     },
+                     "showPoints": "auto",
+                     "spanNulls": 3600000,
+                     "stacking": {
+                        "group": "A",
+                        "mode": "none"
+                     },
+                     "thresholdsStyle": {
+                        "mode": "off"
+                     }
+                  },
+                  "mappings": [ ],
+                  "unit": "bytes"
+               },
+               "overrides": [ ]
+            },
+            "gridPos": {
+               "h": 8,
+               "w": 6,
+               "x": 12,
+               "y": 0
+            },
+            "id": 4,
+            "options": {
+               "legend": {
+                  "calcs": [ ],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true
+               },
+               "tooltip": {
+                  "mode": "single",
+                  "sort": "none"
+               }
+            },
+            "targets": [
+               {
+                  "datasource": {
+                     "uid": "${prometheus_datasource}"
+                  },
+                  "expr": "sum by (instance, database_name, schema_name) (last_over_time(snowflake_table_clone_bytes{job=~\"$job\", instance=~\"$instance\", database_name=~\"$database\", schema_name=~\"$schema\"}[24h]))",
+                  "format": "time_series",
+                  "intervalFactor": 2,
+                  "legendFormat": "{{instance}} - {{database_name}} - {{schema_name}}"
+               }
+            ],
+            "title": "Clone schema owned data",
+            "type": "timeseries"
+         },
+         {
+            "datasource": {
+               "uid": "${prometheus_datasource}"
+            },
+            "description": "Amount of Time Travel data owned by the selected schema.",
+            "fieldConfig": {
+               "defaults": {
+                  "color": {
+                     "mode": "palette-classic"
+                  },
+                  "custom": {
+                     "axisCenteredZero": false,
+                     "axisColorMode": "text",
+                     "axisLabel": "",
+                     "axisPlacement": "auto",
+                     "barAlignment": 0,
+                     "drawStyle": "line",
+                     "fillOpacity": 0,
+                     "gradientMode": "none",
+                     "hideFrom": {
+                        "legend": false,
+                        "tooltip": false,
+                        "viz": false
+                     },
+                     "lineInterpolation": "linear",
+                     "lineWidth": 1,
+                     "pointSize": 5,
+                     "scaleDistribution": {
+                        "type": "linear"
+                     },
+                     "showPoints": "auto",
+                     "spanNulls": 3600000,
+                     "stacking": {
+                        "group": "A",
+                        "mode": "none"
+                     },
+                     "thresholdsStyle": {
+                        "mode": "off"
+                     }
+                  },
+                  "mappings": [ ],
+                  "unit": "bytes"
+               },
+               "overrides": [ ]
+            },
+            "gridPos": {
+               "h": 8,
+               "w": 6,
+               "x": 18,
+               "y": 0
+            },
+            "id": 5,
+            "options": {
+               "legend": {
+                  "calcs": [ ],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true
+               },
+               "tooltip": {
+                  "mode": "single",
+                  "sort": "none"
+               }
+            },
+            "targets": [
+               {
+                  "datasource": {
+                     "uid": "${prometheus_datasource}"
+                  },
+                  "expr": "sum by (instance, database_name, schema_name) (last_over_time(snowflake_table_time_travel_bytes{job=~\"$job\", instance=~\"$instance\", database_name=~\"$database\", schema_name=~\"$schema\"}[24h]))",
+                  "format": "time_series",
+                  "intervalFactor": 2,
+                  "legendFormat": "{{instance}} - {{database_name}} - {{schema_name}}"
+               }
+            ],
+            "title": "Time travel schema owned data",
+            "type": "timeseries"
+         },
+         {
+            "datasource": {
+               "uid": "${prometheus_datasource}"
+            },
+            "description": "The top 5 largest tables that belong to the selected schema.",
+            "fieldConfig": {
+               "defaults": {
+                  "color": {
+                     "mode": "thresholds"
+                  },
+                  "custom": {
+                     "align": "left",
+                     "displayMode": "auto",
+                     "inspect": false
+                  },
+                  "mappings": [ ],
+                  "unit": "bytes"
+               },
+               "overrides": [ ]
+            },
+            "gridPos": {
+               "h": 7,
+               "w": 18,
+               "x": 0,
+               "y": 8
+            },
+            "id": 6,
+            "options": {
+               "footer": {
+                  "fields": "",
+                  "reducer": [
+                     "sum"
+                  ],
+                  "show": false
+               },
+               "showHeader": true
+            },
+            "pluginVersion": "9.1.7",
+            "targets": [
+               {
+                  "datasource": {
+                     "uid": "${prometheus_datasource}"
+                  },
+                  "expr": "last_over_time(snowflake_table_active_bytes{job=~\"$job\", instance=~\"$instance\", database_name=~\"$database\", schema_name=~\"$schema\"}[24h])",
+                  "format": "table",
+                  "intervalFactor": 2,
+                  "legendFormat": "__auto"
+               }
+            ],
+            "title": "Top 5 largest tables",
+            "transformations": [
+               {
+                  "id": "groupBy",
+                  "options": {
+                     "fields": {
+                        "Value": {
+                           "aggregations": [
+                              "last"
+                           ],
+                           "operation": "aggregate"
+                        },
+                        "database_name": {
+                           "aggregations": [ ],
+                           "operation": "groupby"
+                        },
+                        "instance": {
+                           "aggregations": [ ],
+                           "operation": "groupby"
+                        },
+                        "schema_name": {
+                           "aggregations": [ ],
+                           "operation": "groupby"
+                        },
+                        "table_name": {
+                           "aggregations": [ ],
+                           "operation": "groupby"
+                        }
+                     }
+                  }
+               },
+               {
+                  "id": "sortBy",
+                  "options": {
+                     "fields": { },
+                     "sort": [
+                        {
+                           "desc": true,
+                           "field": "Value (last)"
+                        }
+                     ]
+                  }
+               },
+               {
+                  "id": "limit",
+                  "options": {
+                     "limitField": 5
+                  }
+               },
+               {
+                  "id": "organize",
+                  "options": {
+                     "excludeByName": { },
+                     "indexByName": {
+                        "Value (last)": 4,
+                        "database_name": 1,
+                        "instance": 0,
+                        "schema_name": 2,
+                        "table_name": 3
+                     },
+                     "renameByName": {
+                        "Value (last)": "Size",
+                        "database_name": "Database",
+                        "instance": "Instance",
+                        "schema_name": "Schema",
+                        "table_name": "Table"
+                     }
+                  }
+               }
+            ],
+            "type": "table"
+         },
+         {
+            "datasource": {
+               "uid": "${prometheus_datasource}"
+            },
+            "description": "The number of tables that have been purged from storage.",
+            "fieldConfig": {
+               "defaults": {
+                  "color": {
+                     "mode": "fixed"
+                  },
+                  "mappings": [ ],
+                  "thresholds": {
+                     "mode": "absolute",
+                     "steps": [
+                        {
+                           "color": "green",
+                           "value": null
+                        },
+                        {
+                           "color": "red",
+                           "value": 80
+                        }
+                     ]
+                  },
+                  "unit": "none"
+               },
+               "overrides": [ ]
+            },
+            "gridPos": {
+               "h": 7,
+               "w": 6,
+               "x": 18,
+               "y": 8
+            },
+            "id": 7,
+            "interval": "15s",
+            "options": {
+               "colorMode": "value",
+               "graphMode": "none",
+               "justifyMode": "center",
+               "orientation": "auto",
+               "percentChangeColorMode": "standard",
+               "reduceOptions": {
+                  "calcs": [
+                     "lastNotNull"
+                  ],
+                  "fields": "",
+                  "values": false
+               },
+               "showPercentChange": false,
+               "textMode": "auto",
+               "wideLayout": true
+            },
+            "pluginVersion": "11.2.0-73830",
+            "targets": [
+               {
+                  "datasource": {
+                     "uid": "${prometheus_datasource}"
+                  },
+                  "expr": "snowflake_table_deleted_tables{job=~\"$job\", instance=~\"$instance\"}",
+                  "format": "time_series",
+                  "intervalFactor": 2,
+                  "legendFormat": "{{instance}}"
+               }
+            ],
+            "title": "Deleted tables",
+            "type": "stat"
+         },
+         {
+            "collapsed": false,
+            "datasource": {
+               "uid": "${prometheus_datasource}"
+            },
+            "gridPos": {
+               "h": 1,
+               "w": 24,
+               "x": 0,
+               "y": 15
+            },
+            "id": 8,
+            "targets": [ ],
+            "title": "Table data",
+            "type": "row"
+         },
+         {
+            "datasource": {
+               "uid": "${prometheus_datasource}"
+            },
+            "description": "Amount of active data owned by the selected table.",
+            "fieldConfig": {
+               "defaults": {
+                  "color": {
+                     "mode": "palette-classic"
+                  },
+                  "custom": {
+                     "axisCenteredZero": false,
+                     "axisColorMode": "text",
+                     "axisLabel": "",
+                     "axisPlacement": "auto",
+                     "barAlignment": 0,
+                     "drawStyle": "line",
+                     "fillOpacity": 0,
+                     "gradientMode": "none",
+                     "hideFrom": {
+                        "legend": false,
+                        "tooltip": false,
+                        "viz": false
+                     },
+                     "lineInterpolation": "linear",
+                     "lineWidth": 1,
+                     "pointSize": 5,
+                     "scaleDistribution": {
+                        "type": "linear"
+                     },
+                     "showPoints": "auto",
+                     "spanNulls": 3600000,
+                     "stacking": {
+                        "group": "A",
+                        "mode": "none"
+                     },
+                     "thresholdsStyle": {
+                        "mode": "off"
+                     }
+                  },
+                  "mappings": [ ],
+                  "unit": "bytes"
+               },
+               "overrides": [ ]
+            },
+            "gridPos": {
+               "h": 8,
+               "w": 12,
+               "x": 0,
+               "y": 16
+            },
+            "id": 9,
+            "options": {
+               "legend": {
+                  "calcs": [ ],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true
+               },
+               "tooltip": {
+                  "mode": "single",
+                  "sort": "none"
+               }
+            },
+            "targets": [
+               {
+                  "datasource": {
+                     "uid": "${prometheus_datasource}"
+                  },
+                  "expr": "sum by (instance, database_name, schema_name, table_name) (last_over_time(snowflake_table_active_bytes{job=~\"$job\", instance=~\"$instance\", database_name=~\"$database\", schema_name=~\"$schema\", table_name=~\"$table\"}[24h]))",
+                  "format": "time_series",
+                  "intervalFactor": 2,
+                  "legendFormat": "{{instance}} - {{database_name}} - {{schema_name}} - {{table_name}}"
+               }
+            ],
+            "title": "Active table owned data",
+            "type": "timeseries"
+         },
+         {
+            "datasource": {
+               "uid": "${prometheus_datasource}"
+            },
+            "description": "Amount of fail-safe data owned by the selected table.",
+            "fieldConfig": {
+               "defaults": {
+                  "color": {
+                     "mode": "palette-classic"
+                  },
+                  "custom": {
+                     "axisCenteredZero": false,
+                     "axisColorMode": "text",
+                     "axisLabel": "",
+                     "axisPlacement": "auto",
+                     "barAlignment": 0,
+                     "drawStyle": "line",
+                     "fillOpacity": 0,
+                     "gradientMode": "none",
+                     "hideFrom": {
+                        "legend": false,
+                        "tooltip": false,
+                        "viz": false
+                     },
+                     "lineInterpolation": "linear",
+                     "lineWidth": 1,
+                     "pointSize": 5,
+                     "scaleDistribution": {
+                        "type": "linear"
+                     },
+                     "showPoints": "auto",
+                     "spanNulls": 3600000,
+                     "stacking": {
+                        "group": "A",
+                        "mode": "none"
+                     },
+                     "thresholdsStyle": {
+                        "mode": "off"
+                     }
+                  },
+                  "mappings": [ ],
+                  "unit": "bytes"
+               },
+               "overrides": [ ]
+            },
+            "gridPos": {
+               "h": 8,
+               "w": 12,
+               "x": 12,
+               "y": 16
+            },
+            "id": 10,
+            "options": {
+               "legend": {
+                  "calcs": [ ],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true
+               },
+               "tooltip": {
+                  "mode": "single",
+                  "sort": "none"
+               }
+            },
+            "targets": [
+               {
+                  "datasource": {
+                     "uid": "${prometheus_datasource}"
+                  },
+                  "expr": "sum by (instance, database_name, schema_name, table_name) (last_over_time(snowflake_table_failsafe_bytes{job=~\"$job\", instance=~\"$instance\", database_name=~\"$database\", schema_name=~\"$schema\", table_name=~\"$table\"}[24h]))",
+                  "format": "time_series",
+                  "intervalFactor": 2,
+                  "legendFormat": "{{instance}} - {{database_name}} - {{schema_name}} - {{table_name}}"
+               }
+            ],
+            "title": "Fail-safe table owned data",
+            "type": "timeseries"
+         },
+         {
+            "datasource": {
+               "uid": "${prometheus_datasource}"
+            },
+            "description": "Amount of Time Travel data owned by the selected table.",
+            "fieldConfig": {
+               "defaults": {
+                  "color": {
+                     "mode": "palette-classic"
+                  },
+                  "custom": {
+                     "axisCenteredZero": false,
+                     "axisColorMode": "text",
+                     "axisLabel": "",
+                     "axisPlacement": "auto",
+                     "barAlignment": 0,
+                     "drawStyle": "line",
+                     "fillOpacity": 0,
+                     "gradientMode": "none",
+                     "hideFrom": {
+                        "legend": false,
+                        "tooltip": false,
+                        "viz": false
+                     },
+                     "lineInterpolation": "linear",
+                     "lineWidth": 1,
+                     "pointSize": 5,
+                     "scaleDistribution": {
+                        "type": "linear"
+                     },
+                     "showPoints": "auto",
+                     "spanNulls": 3600000,
+                     "stacking": {
+                        "group": "A",
+                        "mode": "none"
+                     },
+                     "thresholdsStyle": {
+                        "mode": "off"
+                     }
+                  },
+                  "mappings": [ ],
+                  "unit": "bytes"
+               },
+               "overrides": [ ]
+            },
+            "gridPos": {
+               "h": 8,
+               "w": 12,
+               "x": 0,
+               "y": 24
+            },
+            "id": 11,
+            "options": {
+               "legend": {
+                  "calcs": [ ],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true
+               },
+               "tooltip": {
+                  "mode": "single",
+                  "sort": "none"
+               }
+            },
+            "targets": [
+               {
+                  "datasource": {
+                     "uid": "${prometheus_datasource}"
+                  },
+                  "expr": "sum by (instance, database_name, schema_name, table_name) (last_over_time(snowflake_table_time_travel_bytes{job=~\"$job\", instance=~\"$instance\", database_name=~\"$database\", schema_name=~\"$schema\", table_name=~\"$table\"}[24h]))",
+                  "format": "time_series",
+                  "intervalFactor": 2,
+                  "legendFormat": "{{instance}} - {{database_name}} - {{schema_name}} - {{table_name}}"
+               }
+            ],
+            "title": "Time travel table owned data",
+            "type": "timeseries"
+         },
+         {
+            "datasource": {
+               "uid": "${prometheus_datasource}"
+            },
+            "description": "Amount of clone data owned by the selected table.",
+            "fieldConfig": {
+               "defaults": {
+                  "color": {
+                     "mode": "palette-classic"
+                  },
+                  "custom": {
+                     "axisCenteredZero": false,
+                     "axisColorMode": "text",
+                     "axisLabel": "",
+                     "axisPlacement": "auto",
+                     "barAlignment": 0,
+                     "drawStyle": "line",
+                     "fillOpacity": 0,
+                     "gradientMode": "none",
+                     "hideFrom": {
+                        "legend": false,
+                        "tooltip": false,
+                        "viz": false
+                     },
+                     "lineInterpolation": "linear",
+                     "lineWidth": 1,
+                     "pointSize": 5,
+                     "scaleDistribution": {
+                        "type": "linear"
+                     },
+                     "showPoints": "auto",
+                     "spanNulls": 3600000,
+                     "stacking": {
+                        "group": "A",
+                        "mode": "none"
+                     },
+                     "thresholdsStyle": {
+                        "mode": "off"
+                     }
+                  },
+                  "mappings": [ ],
+                  "unit": "bytes"
+               },
+               "overrides": [ ]
+            },
+            "gridPos": {
+               "h": 8,
+               "w": 12,
+               "x": 12,
+               "y": 24
+            },
+            "id": 12,
+            "options": {
+               "legend": {
+                  "calcs": [ ],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true
+               },
+               "tooltip": {
+                  "mode": "single",
+                  "sort": "none"
+               }
+            },
+            "targets": [
+               {
+                  "datasource": {
+                     "uid": "${prometheus_datasource}"
+                  },
+                  "expr": "sum by (instance, database_name, schema_name, table_name) (last_over_time(snowflake_table_clone_bytes{job=~\"$job\", instance=~\"$instance\", database_name=~\"$database\", schema_name=~\"$schema\", table_name=~\"$table\"}[24h]))",
+                  "format": "time_series",
+                  "intervalFactor": 2,
+                  "legendFormat": "{{instance}} - {{database_name}} - {{schema_name}} - {{table_name}}"
+               }
+            ],
+            "title": "Clone table owned data",
+            "type": "timeseries"
+         }
+      ],
+      "refresh": "30m",
+      "rows": [ ],
+      "schemaVersion": 14,
+      "style": "dark",
+      "tags": [
+         "snowflake-mixin"
+      ],
+      "templating": {
+         "list": [
+            {
+               "current": { },
+               "hide": 0,
+               "label": "Data Source",
+               "name": "prometheus_datasource",
+               "options": [ ],
+               "query": "prometheus",
+               "refresh": 1,
+               "regex": "",
+               "type": "datasource"
+            },
+            {
+               "allValue": ".+",
+               "current": { },
+               "datasource": {
+                  "uid": "${prometheus_datasource}"
+               },
+               "hide": 0,
+               "includeAll": true,
+               "label": "Job",
+               "multi": true,
+               "name": "job",
+               "options": [ ],
+               "query": "label_values(snowflake_up{}, job)",
+               "refresh": 2,
+               "regex": "",
+               "sort": 2,
+               "tagValuesQuery": "",
+               "tags": [ ],
+               "tagsQuery": "",
+               "type": "query",
+               "useTags": false
+            },
+            {
+               "allValue": ".+",
+               "current": { },
+               "datasource": {
+                  "uid": "${prometheus_datasource}"
+               },
+               "hide": 0,
+               "includeAll": true,
+               "label": "Instance",
+               "multi": true,
+               "name": "instance",
+               "options": [ ],
+               "query": "label_values(snowflake_up{job=~\"$job\"}, instance)",
+               "refresh": 2,
+               "regex": "",
+               "sort": 2,
+               "tagValuesQuery": "",
+               "tags": [ ],
+               "tagsQuery": "",
+               "type": "query",
+               "useTags": false
+            },
+            {
+               "allValue": ".+",
+               "current": { },
+               "datasource": {
+                  "uid": "${prometheus_datasource}"
+               },
+               "hide": 0,
+               "includeAll": true,
+               "label": "Database",
+               "multi": true,
+               "name": "database",
+               "options": [ ],
+               "query": "label_values(snowflake_table_active_bytes{job=~\"$job\", instance=~\"$instance\"}, database_name)",
+               "refresh": 2,
+               "regex": "",
+               "sort": 2,
+               "tagValuesQuery": "",
+               "tags": [ ],
+               "tagsQuery": "",
+               "type": "query",
+               "useTags": false
+            },
+            {
+               "allValue": ".+",
+               "current": { },
+               "datasource": {
+                  "uid": "${prometheus_datasource}"
+               },
+               "hide": 0,
+               "includeAll": true,
+               "label": "Schema",
+               "multi": true,
+               "name": "schema",
+               "options": [ ],
+               "query": "label_values(snowflake_table_active_bytes{job=~\"$job\", instance=~\"$instance\", database_name=~\"$database\"}, schema_name)",
+               "refresh": 2,
+               "regex": "",
+               "sort": 2,
+               "tagValuesQuery": "",
+               "tags": [ ],
+               "tagsQuery": "",
+               "type": "query",
+               "useTags": false
+            },
+            {
+               "allValue": ".+",
+               "current": { },
+               "datasource": {
+                  "uid": "${prometheus_datasource}"
+               },
+               "hide": 0,
+               "includeAll": true,
+               "label": "Table",
+               "multi": true,
+               "name": "table",
+               "options": [ ],
+               "query": "label_values(snowflake_table_active_bytes{job=~\"$job\", instance=~\"$instance\", database_name=~\"$database\",  schema_name=~\"$schema\"}, table_name)",
+               "refresh": 2,
+               "regex": "",
+               "sort": 2,
+               "tagValuesQuery": "",
+               "tags": [ ],
+               "tagsQuery": "",
+               "type": "query",
+               "useTags": false
+            }
+         ]
+      },
+      "time": {
+         "from": "now-8h",
+         "to": "now"
+      },
+      "timepicker": {
+         "refresh_intervals": [
+            "5s",
+            "10s",
+            "30s",
+            "1m",
+            "5m",
+            "15m",
+            "30m",
+            "1h",
+            "2h",
+            "1d"
+         ],
+         "time_options": [
+            "5m",
+            "15m",
+            "1h",
+            "6h",
+            "12h",
+            "24h",
+            "2d",
+            "7d",
+            "30d"
+         ]
+      },
+      "timezone": "default",
+      "title": "Snowflake data ownership",
+      "uid": "snowflake-data-ownership",
+      "version": 0
+   }

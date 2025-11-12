@@ -1,0 +1,61 @@
+groups:
+    - name: SnowflakeAlerts
+      rules:
+        - alert: SnowflakeWarnHighLoginFailures
+          annotations:
+            description: '{{ printf "%.2f" $value }}% of logins have failed on {{$labels.instance}}, which is above threshold of 30%.'
+            summary: Large login failure rate.
+          expr: |
+            100 * sum by (job, instance) (last_over_time(snowflake_failed_login_rate{}[1h])) / sum by (job, instance) (last_over_time(snowflake_login_rate{}[30m]))
+            > 30
+          for: 5m
+          labels:
+            severity: warning
+        - alert: SnowflakeWarnHighComputeCreditUsage
+          annotations:
+            description: Compute credit usage is {{ printf "%.2f" $value }} credits/hr for {{$labels.instance}}, which is within 20% of 5 credits/hr.
+            summary: Compute credit usage is within 20% of the configured limit.
+          expr: |
+            sum by (job, instance) (last_over_time(snowflake_used_compute_credits{}[1h]))
+            > 0.8 * 5
+          for: 5m
+          labels:
+            severity: warning
+        - alert: SnowflakeCriticalHighComputeCreditUsage
+          annotations:
+            description: Compute credit usage is {{ printf "%.2f" $value }} credits/hr for {{$labels.instance}}, which is over 5 credits/hr.
+            summary: Compute credit usage is over the configured limit.
+          expr: |
+            sum by (job, instance) (last_over_time(snowflake_used_compute_credits{}[1h]))
+            > 5
+          for: 5m
+          labels:
+            severity: critical
+        - alert: SnowflakeWarnHighServiceCreditUsage
+          annotations:
+            description: Cloud services credit usage is {{ printf "%.2f" $value }} credits/hr for {{$labels.instance}}, which is within 20% of 1 credits/hr.
+            summary: Cloud services credit usage is within 20% of the configured limit.
+          expr: |
+            sum by (job, instance) (last_over_time(snowflake_used_cloud_services_credits{}[1h]))
+            > 0.8 * 1
+          for: 5m
+          labels:
+            severity: warning
+        - alert: SnowflakeCriticalHighServiceCreditUsage
+          annotations:
+            description: Cloud services credit usage is {{ printf "%.2f" $value }} credits/hr for {{$labels.instance}}, which is over 1 credits/hr.
+            summary: Compute credit usage is over the configured limit.
+          expr: |
+            sum by (job, instance) (last_over_time(snowflake_used_cloud_services_credits{}[1h]))
+            > 1
+          for: 5m
+          labels:
+            severity: critical
+        - alert: SnowflakeDown
+          annotations:
+            description: The Snowflake exporter failed to scrape one or more metrics for instance {{$labels.instance}}.
+            summary: Snowflake exporter failed to scrape.
+          expr: last_over_time(snowflake_up{}[1h]) == 0
+          for: 5m
+          labels:
+            severity: warning
