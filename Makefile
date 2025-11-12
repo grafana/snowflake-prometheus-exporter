@@ -25,7 +25,7 @@ fmt:
 
 lint-fmt:
 	@RESULT=0; \
-	for f in $$(find . -name '*.libsonnet' -print -o -name '*.jsonnet' -print); do \
+	for f in $$(find . -type f \( -name '*.libsonnet' -o -name '*.jsonnet' \) -not -path '*/vendor/*'); do \
 			$(JSONNET_FMT) -- "$$f" | diff -u "$$f" -; \
 			if [ $$? -ne 0 ]; then \
 				RESULT=1; \
