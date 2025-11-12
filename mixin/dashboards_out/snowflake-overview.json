@@ -413,7 +413,7 @@
                "type": "prometheus",
                "uid": "${datasource}"
             },
-            "description": "Billing usage for the account.",
+            "description": "Compute billing usage for the account.",
             "fieldConfig": {
                "defaults": {
                   "custom": {
@@ -474,7 +474,7 @@
                   "refId": "Compute credit usage percentage"
                }
             ],
-            "title": "Billing usage",
+            "title": "Compute billing usage",
             "type": "timeseries"
          },
          {

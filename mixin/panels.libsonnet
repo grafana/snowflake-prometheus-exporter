@@ -91,12 +91,12 @@ local commonlib = import 'common-lib/common/main.libsonnet';
       // Billing panels
       computeBillingUsage:
         commonlib.panels.generic.timeSeries.base.new(
-          'Billing usage',
+          'Compute billing usage',
           targets=[
             signals.overview.computeCreditUsagePercentage.asTarget(),
           ],
         )
-        + g.panel.timeSeries.panelOptions.withDescription('Billing usage for the account.')
+        + g.panel.timeSeries.panelOptions.withDescription('Compute billing usage for the account.')
         + g.panel.timeSeries.standardOptions.withUnit('percent')
         + g.panel.timeSeries.standardOptions.thresholds.withSteps([
           g.panel.timeSeries.thresholdStep.withColor('transparent')
