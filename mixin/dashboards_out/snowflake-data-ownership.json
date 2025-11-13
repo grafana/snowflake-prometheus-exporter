@@ -673,7 +673,7 @@
                   "uid": "${datasource}"
                },
                "includeAll": true,
-               "label": "Instance",
+               "label": "Exporter instance",
                "multi": true,
                "name": "instance",
                "query": "label_values(snowflake_successful_login_rate{job=\"integrations/snowflake\",job=~\"$job\"}, instance)",

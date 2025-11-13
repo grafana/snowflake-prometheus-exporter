@@ -17,6 +17,9 @@ local optional_labels = {
     label: 'Warehouse',
     allValue: '.*',
   },
+  instance+: {
+    label: 'Exporter instance',
+  }
 };
 
 {
