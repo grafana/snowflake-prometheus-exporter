@@ -19,7 +19,7 @@ local optional_labels = {
   },
   instance+: {
     label: 'Exporter instance',
-  }
+  },
 };
 
 {
