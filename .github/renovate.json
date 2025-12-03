@@ -1,0 +1,30 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "timezone": "Europe/Amsterdam",
+  "schedule": ["before 3am on Monday"],
+  "prConcurrentLimit": 10,
+  "minimumReleaseAge": "3 days",
+  "prCreation": "not-pending",
+  "updateNotScheduled": false,
+  "packageRules": [
+    {
+      "description": "Group all Dockerfile updates",
+      "matchManagers": ["dockerfile", "docker-compose"],
+      "groupName": "Dockerfile updates",
+      "groupSlug": "dockerfile-updates"
+    },
+    {
+      "description": "Group all Golang module updates together",
+      "matchManagers": ["gomod"],
+      "groupName": "Gomod updates",
+      "groupSlug": "gomod-updates"
+    }
+    {
+      "description": "Group all Helm updates",
+      "matchManagers": ["helmv3", "helm-values", "helmfile"],
+      "groupName": "Helm updates",
+      "groupSlug": "helm-updates"
+    }
+  ]
+}
