@@ -20,6 +20,10 @@
 # build artifacts from `promu crossbuild`
 .build
 
+
+# MacOS specific files
+.DS_Store
+
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 
