@@ -12,7 +12,7 @@ require (
 	github.com/prometheus/exporter-toolkit v0.8.2
 	github.com/snowflakedb/gosnowflake v1.14.0
 	github.com/stretchr/testify v1.9.0
-	github.com/youmark/pkcs8 v0.0.0-20240424034433-3c2c7870ae76
+	github.com/youmark/pkcs8 v0.0.0-20240726163527-a2c0da244d78
 	gopkg.in/alecthomas/kingpin.v2 v2.2.6
 )
 
