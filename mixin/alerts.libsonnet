@@ -92,7 +92,7 @@
           },
           {
             alert: 'SnowflakeDown',
-            expr: 'last_over_time(snowflake_up{%(filteringSelector)s}[1h]) == 0',
+            expr: 'last_over_time(snowflake_up{%(filteringSelector)s}[1h]) == 0' % this.config, 
             'for': '5m',
             labels: {
               severity: 'warning',
