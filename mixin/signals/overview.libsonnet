@@ -1,3 +1,6 @@
+// For dashboard signals we use last_over_time(metric{}[24h]) to use only the most recent, complete data; this helps users who have long time between scrape intervals to see data.
+// Alerts aggregate and evaluate last_over_time(metric{}[1h]) to use only the most recent, complete data; this helps avoid alerts based on outdated, missing, or partial datapoints due to scrape intervals or service interruptions.
+
 function(this) {
   local legendCustomTemplate = '{{instance}}',
   local aggregationLabels = std.join(',', ['job', 'instance']),

@@ -1,4 +1,5 @@
 {
+// Alerts aggregate and evaluate last_over_time(metric{}[1h]) to use only the most recent, complete data; this helps avoid alerts based on outdated, missing, or partial datapoints due to scrape intervals or service interruptions.
   new(this): {
     groups: [
       {
@@ -7,7 +8,7 @@
           {
             alert: 'SnowflakeWarnHighLoginFailures',
             expr: |||
-              100 * sum by (job, instance) (last_over_time(snowflake_failed_login_rate{}[1h])) / sum by (job, instance) (last_over_time(snowflake_login_rate{}[1h]))
+              100 * sum by (job, instance) (last_over_time(snowflake_failed_login_rate{%(filteringSelector)s}[1h])) / sum by (job, instance) (last_over_time(snowflake_login_rate{%(filteringSelector)s}[1h]))
               > %(alertsWarningLoginFailures)s
             ||| % this.config,
             'for': '5m',
@@ -24,7 +25,7 @@
           {
             alert: 'SnowflakeWarnHighComputeCreditUsage',
             expr: |||
-              sum by (job, instance) (last_over_time(snowflake_used_compute_credits{}[1h]))
+              sum by (job, instance) (last_over_time(snowflake_used_compute_credits{%(filteringSelector)s}[1h]))
               > 0.8 * %(alertsComputeCreditUsageLimit)s
             ||| % this.config,
             'for': '5m',
@@ -41,7 +42,7 @@
           {
             alert: 'SnowflakeCriticalHighComputeCreditUsage',
             expr: |||
-              sum by (job, instance) (last_over_time(snowflake_used_compute_credits{}[1h]))
+              sum by (job, instance) (last_over_time(snowflake_used_compute_credits{%(filteringSelector)s}[1h]))
               > %(alertsComputeCreditUsageLimit)s
             ||| % this.config,
             'for': '5m',
@@ -58,7 +59,7 @@
           {
             alert: 'SnowflakeWarnHighServiceCreditUsage',
             expr: |||
-              sum by (job, instance) (last_over_time(snowflake_used_cloud_services_credits{}[1h]))
+              sum by (job, instance) (last_over_time(snowflake_used_cloud_services_credits{%(filteringSelector)s}[1h]))
               > 0.8 * %(alertsServiceCreditUsageLimit)s
             ||| % this.config,
             'for': '5m',
@@ -75,7 +76,7 @@
           {
             alert: 'SnowflakeCriticalHighServiceCreditUsage',
             expr: |||
-              sum by (job, instance) (last_over_time(snowflake_used_cloud_services_credits{}[1h]))
+              sum by (job, instance) (last_over_time(snowflake_used_cloud_services_credits{%(filteringSelector)s}[1h]))
               > %(alertsServiceCreditUsageLimit)s
             ||| % this.config,
             'for': '5m',
@@ -91,7 +92,7 @@
           },
           {
             alert: 'SnowflakeDown',
-            expr: 'last_over_time(snowflake_up{}[1h]) == 0',
+            expr: 'last_over_time(snowflake_up{%(filteringSelector)s}[1h]) == 0',
             'for': '5m',
             labels: {
               severity: 'warning',
