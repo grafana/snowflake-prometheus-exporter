@@ -1,5 +1,5 @@
 {
-// Alerts aggregate and evaluate last_over_time(metric{}[1h]) to use only the most recent, complete data; this helps avoid alerts based on outdated, missing, or partial datapoints due to scrape intervals or service interruptions.
+  // Alerts aggregate and evaluate last_over_time(metric{}[1h]) to use only the most recent, complete data; this helps avoid alerts based on outdated, missing, or partial datapoints due to scrape intervals or service interruptions.
   new(this): {
     groups: [
       {
