@@ -24,7 +24,7 @@
           {
             alert: 'SnowflakeWarnHighComputeCreditUsage',
             expr: |||
-              sum by (job, instance) (last_over_time(snowflake_used_compute_credits{}[24h]))
+              sum by (job, instance) (last_over_time(snowflake_used_compute_credits{}[1h]))
               > 0.8 * %(alertsComputeCreditUsageLimit)s
             ||| % this.config,
             'for': '5m',
