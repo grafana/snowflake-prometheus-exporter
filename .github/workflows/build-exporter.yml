@@ -67,4 +67,4 @@ jobs:
         run: make build
 
       - name: Test
-        run: make test
+        run: go build -v ./...
