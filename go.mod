@@ -2,18 +2,18 @@ module github.com/grafana/snowflake-prometheus-exporter
 
 go 1.23.0
 
-toolchain go1.24.1
+toolchain go1.26.2
 
 require (
-	github.com/DATA-DOG/go-sqlmock v1.5.0
+	github.com/DATA-DOG/go-sqlmock v1.5.2
 	github.com/go-kit/log v0.2.1
-	github.com/prometheus/client_golang v1.14.0
-	github.com/prometheus/common v0.37.0
-	github.com/prometheus/exporter-toolkit v0.8.2
-	github.com/snowflakedb/gosnowflake v1.14.0
-	github.com/stretchr/testify v1.9.0
-	github.com/youmark/pkcs8 v0.0.0-20240424034433-3c2c7870ae76
-	gopkg.in/alecthomas/kingpin.v2 v2.2.6
+	github.com/prometheus/client_golang v1.23.2
+	github.com/prometheus/common v0.67.5
+	github.com/prometheus/exporter-toolkit v0.16.0
+	github.com/snowflakedb/gosnowflake v1.19.1
+	github.com/stretchr/testify v1.11.1
+	github.com/youmark/pkcs8 a2c0da244d78
+	gopkg.in/alecthomas/kingpin.v2 v2.4.0
 )
 
 require (
