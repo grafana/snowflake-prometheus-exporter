@@ -1,4 +1,4 @@
-name: PR Checks
+name: Build Exporter
 
 on:
   pull_request:
