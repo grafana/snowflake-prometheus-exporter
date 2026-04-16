@@ -5,13 +5,41 @@ permissions:
   contents: read
 
 on:
+  # To conserve resources we only run tests against main in PRs
   pull_request:
     branches:
       - main
 
 jobs:
+  setup:
+    name: Setup tools
+    runs-on: ubuntu-latest
+    outputs:
+      cache-hit: ${{ steps.tools-cache.outputs.cache-hit }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Setup Go
+        uses: actions/setup-go@4dc6199c7b1a012772edbd06daecab0f50c9053c # v6
+        with:
+          go-version: 1.23
+      - name: Tools cache
+        id: tools-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/go/bin
+          key: ${{ runner.os }}-tools-${{ hashFiles('Makefile') }}
+      - name: Install CI dependencies
+        if: steps.tools-cache.outputs.cache-hit != 'true'
+        run: make install-ci-deps
+
   lint-mixin:
     name: Test mixin
+    needs: setup
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
