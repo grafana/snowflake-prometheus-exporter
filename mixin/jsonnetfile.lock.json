@@ -8,7 +8,7 @@
           "subdir": "grafonnet"
         }
       },
-      "version": "30280196507e0fe6fa978a3e0eaca3a62844f817",
+      "version": "a1d61cce1da59c71409b99b5c7568511fec661ea",
       "sum": "342u++/7rViR/zj2jeJOjshzglkZ1SY+hFNuyCBFMdc="
     },
     {
@@ -18,18 +18,8 @@
           "subdir": "gen/grafonnet-latest"
         }
       },
-      "version": "42d098fae987f25f08480e203ca6ddc548c6efbf",
+      "version": "7380c9c64fb973f34c3ec46265621a2b0dee0058",
       "sum": "V9vAj21qJOc2DlMPDgB1eEjSQU4A+sAA4AXuJ6bd4xc="
-    },
-    {
-      "source": {
-        "git": {
-          "remote": "https://github.com/grafana/grafonnet.git",
-          "subdir": "gen/grafonnet-v11.0.0"
-        }
-      },
-      "version": "42d098fae987f25f08480e203ca6ddc548c6efbf",
-      "sum": "0BvzR0i4bS4hc2O3xDv6i9m52z7mPrjvqxtcPrGhynA="
     },
     {
       "source": {
@@ -38,7 +28,7 @@
           "subdir": "gen/grafonnet-v11.4.0"
         }
       },
-      "version": "42d098fae987f25f08480e203ca6ddc548c6efbf",
+      "version": "7380c9c64fb973f34c3ec46265621a2b0dee0058",
       "sum": "aVAX09paQYNOoCSKVpuk1exVIyBoMt/C50QJI+Q/3nA="
     },
     {
@@ -48,8 +38,8 @@
           "subdir": "common-lib"
         }
       },
-      "version": "54a1543d797d49814d2f9c05b9c222b9f1e4f6e7",
-      "sum": "XnpzeZC2Pa1aEtDOqy+KTndcUTnwFMlj6XlZmv3XBj0="
+      "version": "79479da035ec06f1d0193b0a80141e224c0e8cd7",
+      "sum": "Hn81E9kBS4wI2XQ8FQN9rCpE6zfghEmfW5ToC9LpB7k="
     },
     {
       "source": {
@@ -58,7 +48,7 @@
           "subdir": "grafana-cloud-integration-utils"
         }
       },
-      "version": "54a1543d797d49814d2f9c05b9c222b9f1e4f6e7",
+      "version": "79479da035ec06f1d0193b0a80141e224c0e8cd7",
       "sum": "f4RYXgxayzDyeBjedbcUWaxIk3WN+y+wsEwcn+cWnJw="
     },
     {
@@ -68,7 +58,7 @@
           "subdir": "doc-util"
         }
       },
-      "version": "6ac6c69685b8c29c54515448eaca583da2d88150",
+      "version": "bf6f08ae02a51c48bdcec4629b1c1a5a62c6f803",
       "sum": "BrAL/k23jq+xy9oA7TWIhUx07dsA/QLm3g7ktCwe//U="
     },
     {
@@ -78,8 +68,8 @@
           "subdir": ""
         }
       },
-      "version": "4eee017d21cb63a303925d1dcd9fc5c496809b46",
-      "sum": "Kh0GbIycNmJPzk6IOMXn1BbtLNyaiiimclYk7+mvsns="
+      "version": "4d7f8cb24d613430799f9d56809cc6964f35cea9",
+      "sum": "hOrwkOx34tOXqoDVnwuI/Uf/dr9HFFSPWpDPOvnEGrk="
     },
     {
       "source": {
