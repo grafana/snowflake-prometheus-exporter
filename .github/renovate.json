@@ -7,6 +7,9 @@
   "minimumReleaseAge": "3 days",
   "prCreation": "not-pending",
   "updateNotScheduled": false,
+  "lockFileMaintenance": {
+    "enabled": false
+  },
   "packageRules": [
     {
       "description": "Group all Dockerfile updates",
