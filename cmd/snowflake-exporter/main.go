@@ -23,6 +23,7 @@ import (
 	"github.com/alecthomas/kingpin/v2"
 	"github.com/grafana/snowflake-prometheus-exporter/collector"
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/collectors"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/prometheus/common/promslog"
 	promslogflag "github.com/prometheus/common/promslog/flag"
@@ -91,6 +92,9 @@ func main() {
 
 	// Register collector with prometheus client library
 	prometheus.MustRegister(col)
+
+	// Add build-info collector
+	prometheus.MustRegister(collectors.NewBuildInfoCollector())
 
 	serveMetrics(logger)
 }
