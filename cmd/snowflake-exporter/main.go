@@ -86,7 +86,7 @@ func main() {
 	}
 
 	// Add component prefix to logger for better log correlation
-	collectorLogger := logger.With("component", "ibm-db2-exporter")
+	collectorLogger := logger.With("component", "snowflake-exporter")
 	col := collector.NewCollector(collectorLogger, c)
 
 	// Register collector with prometheus client library
