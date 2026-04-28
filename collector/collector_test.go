@@ -25,9 +25,9 @@ import (
 	"time"
 
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/go-kit/log"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/testutil"
+	"github.com/prometheus/common/promslog"
 	"github.com/stretchr/testify/require"
 )
 
@@ -44,7 +44,7 @@ func TestCollector_Collect(t *testing.T) {
 		db, mock := createMockDB(t)
 		mock.MatchExpectationsInOrder(false)
 
-		col := NewCollector(log.NewJSONLogger(os.Stdout), ExampleConfig)
+		col := NewCollector(promslog.NewNopLogger(), ExampleConfig)
 		col.openDatabase = func(_ string) (*sql.DB, error) { return db, nil }
 
 		f, err := os.Open(filepath.Join("testdata", "all_metrics.prom"))
@@ -60,7 +60,7 @@ func TestCollector_Collect(t *testing.T) {
 		db, mock := createMockDB(t)
 		mock.MatchExpectationsInOrder(false)
 
-		col := NewCollector(log.NewJSONLogger(os.Stdout), ExampleConfig)
+		col := NewCollector(promslog.NewNopLogger(), ExampleConfig)
 		col.openDatabase = func(_ string) (*sql.DB, error) { return db, nil }
 
 		p, err := testutil.CollectAndLint(col)
@@ -74,7 +74,7 @@ func TestCollector_Collect(t *testing.T) {
 		db, mock := createQueryErrMockDB(t)
 		mock.MatchExpectationsInOrder(false)
 
-		col := NewCollector(log.NewJSONLogger(os.Stdout), ExampleConfig)
+		col := NewCollector(promslog.NewNopLogger(), ExampleConfig)
 		col.openDatabase = func(_ string) (*sql.DB, error) { return db, nil }
 
 		f, err := os.Open(filepath.Join("testdata", "query_failure.prom"))
@@ -91,7 +91,7 @@ func TestCollector_Collect(t *testing.T) {
 	})
 
 	t.Run("Database connection fails", func(t *testing.T) {
-		col := NewCollector(log.NewJSONLogger(os.Stdout), ExampleConfig)
+		col := NewCollector(promslog.NewNopLogger(), ExampleConfig)
 
 		openErr := errors.New("failed to open database")
 		col.openDatabase = func(_ string) (*sql.DB, error) { return nil, openErr }
@@ -121,7 +121,7 @@ func TestCollector_collectStorageMetrics(t *testing.T) {
 			).
 			RowsWillBeClosed()
 
-		col := NewCollector(log.NewJSONLogger(os.Stdout), ExampleConfig)
+		col := NewCollector(promslog.NewNopLogger(), ExampleConfig)
 		col.openDatabase = func(_ string) (*sql.DB, error) { return db, nil }
 
 		metricChan := make(chan prometheus.Metric, 3)
@@ -151,7 +151,7 @@ func TestCollector_collectStorageMetrics(t *testing.T) {
 			).
 			RowsWillBeClosed()
 
-		col := NewCollector(log.NewJSONLogger(os.Stdout), ExampleConfig)
+		col := NewCollector(promslog.NewNopLogger(), ExampleConfig)
 		col.openDatabase = func(_ string) (*sql.DB, error) { return db, nil }
 
 		metricChan := make(chan prometheus.Metric, 3)
