@@ -21,7 +21,7 @@ import (
 	"sync"
 
 	"github.com/prometheus/client_golang/prometheus"
-	_ "github.com/snowflakedb/gosnowflake" // Import the snowflake DB driver
+	_ "github.com/snowflakedb/gosnowflake/v2" // Import the snowflake DB driver
 )
 
 const (
