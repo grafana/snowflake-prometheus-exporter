@@ -32,3 +32,6 @@ mixin/vendor
 
 # IDE specifics
 .idea/
+
+# Local SDLC / planning artifacts (keep out of commits and GitHub)
+.sdlc/

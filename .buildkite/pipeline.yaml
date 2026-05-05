@@ -1,0 +1,25 @@
+steps:
+  - label: Build and push to ECR
+    key: "build-and-push-to-ecr"
+    branches: "main production"
+    commands:
+      - bash .buildkite/build-push-ecr.sh
+    timeout_in_minutes: 5
+    plugins:
+      - ecr#89b335a:
+          login: true
+          region: "us-east-1"
+          account-ids:
+            - 460210468233
+  # - label: Update the latest image tag/ sha in the k8s deployment in repo audit-events-api-ops
+  #   branches: "main"
+  #   command:
+  #     - .buildkite/updateimage.sh $BUILDKITE_COMMIT latest
+  #   depends_on: "build-and-push-to-ecr"
+  #   timeout_in_minutes: 5
+  # - label: Update the production image tag/sha in the k8s deployment in repo audit-events-api-ops
+  #   branches: "production"
+  #   command:
+  #     - .buildkite/updateimage.sh $BUILDKITE_COMMIT production
+  #   depends_on: "build-and-push-to-ecr"
+  #   timeout_in_minutes: 5
