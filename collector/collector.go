@@ -314,7 +314,7 @@ func (c *Collector) Collect(metrics chan<- prometheus.Metric) {
 		metrics <- prometheus.MustNewConstMetric(c.up, prometheus.GaugeValue, 0)
 		return
 	}
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	wg.Add(1)
 	go func() {
@@ -420,7 +420,7 @@ func (c *Collector) collectStorageMetrics(db *sql.DB, metrics chan<- prometheus.
 	if err != nil {
 		return fmt.Errorf("failed to query metrics: %w", err)
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	if !rows.Next() {
 		if err := rows.Err(); err != nil {
@@ -455,7 +455,7 @@ func (c *Collector) collectDatabaseStorageMetrics(db *sql.DB, metrics chan<- pro
 	if err != nil {
 		return fmt.Errorf("failed to query metrics: %w", err)
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	for rows.Next() {
 		var dbName, dbID sql.NullString
@@ -483,7 +483,7 @@ func (c *Collector) collectCreditMetrics(db *sql.DB, metrics chan<- prometheus.M
 	if err != nil {
 		return fmt.Errorf("failed to query metrics: %w", err)
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	for rows.Next() {
 		var serviceType, serviceName sql.NullString
@@ -511,7 +511,7 @@ func (c *Collector) collectWarehouseCreditMetrics(db *sql.DB, metrics chan<- pro
 	if err != nil {
 		return fmt.Errorf("failed to query metrics: %w", err)
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	for rows.Next() {
 		var warehouseName, warehouseID sql.NullString
@@ -539,7 +539,7 @@ func (c *Collector) collectLoginMetrics(db *sql.DB, metrics chan<- prometheus.Me
 	if err != nil {
 		return fmt.Errorf("failed to query metrics: %w", err)
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	for rows.Next() {
 		var clientType, clientVersion sql.NullString
@@ -571,7 +571,7 @@ func (c *Collector) collectWarehouseLoadMetrics(db *sql.DB, metrics chan<- prome
 	if err != nil {
 		return fmt.Errorf("failed to query metrics: %w", err)
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	for rows.Next() {
 		var warehouseName, warehouseID sql.NullString
@@ -605,7 +605,7 @@ func (c *Collector) collectAutoClusteringMetrics(db *sql.DB, metrics chan<- prom
 	if err != nil {
 		return fmt.Errorf("failed to query metrics: %w", err)
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	for rows.Next() {
 		var tableName, tableID, databaseName, databaseID, schemaName, schemaID sql.NullString
@@ -650,7 +650,7 @@ func (c *Collector) collectTableStorageMetrics(db *sql.DB, metrics chan<- promet
 		}
 	}
 	c.logger.Debug("Done querying table storage metrics.")
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	for rows.Next() {
 		var tableName, tableID, databaseName, databaseID, schemaName, schemaID sql.NullString
@@ -689,7 +689,7 @@ func (c *Collector) collectDeletedTablesMetrics(db *sql.DB, metrics chan<- prome
 	if err != nil {
 		return fmt.Errorf("failed to query metrics: %w", err)
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	for rows.Next() {
 		var deletedTables sql.NullFloat64
@@ -713,7 +713,7 @@ func (c *Collector) collectReplicationMetrics(db *sql.DB, metrics chan<- prometh
 	if err != nil {
 		return fmt.Errorf("failed to query metrics: %w", err)
 	}
-	defer rows.Close()
+	defer func() { _ = rows.Close() }()
 
 	for rows.Next() {
 		var databaseName, databaseID sql.NullString
