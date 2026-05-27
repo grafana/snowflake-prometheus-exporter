@@ -84,18 +84,18 @@ func (c Config) decryptPrivateKey() (*rsa.PrivateKey, error) {
 	var parsedPrivateKey *rsa.PrivateKey
 	pk, err := os.ReadFile(c.PrivateKeyPath)
 	if err != nil {
-		return nil, fmt.Errorf("Failed to open private key file at %s: %s", c.PrivateKeyPath, err)
+		return nil, fmt.Errorf("failed to open private key file at %s: %s", c.PrivateKeyPath, err)
 	}
 	block, _ := pem.Decode(pk)
 	if block == nil {
-		return nil, fmt.Errorf("Error reading PEM data from file %s: %s", c.PrivateKeyPath, errDecodingPEM)
+		return nil, fmt.Errorf("error reading PEM data from file %s: %s", c.PrivateKeyPath, errDecodingPEM)
 	}
 
 	if c.PrivateKeyPassword != "" {
 		// encrypted private key
 		decryptedKey, err := pkcs8.ParsePKCS8PrivateKeyRSA(block.Bytes, []byte(c.PrivateKeyPassword))
 		if err != nil {
-			return nil, fmt.Errorf("Failed to parse encrypted private key at %s: %s", c.PrivateKeyPath, err)
+			return nil, fmt.Errorf("failed to parse encrypted private key at %s: %s", c.PrivateKeyPath, err)
 		}
 		parsedPrivateKey = decryptedKey
 	} else {
@@ -103,7 +103,7 @@ func (c Config) decryptPrivateKey() (*rsa.PrivateKey, error) {
 		var ok bool
 		unencryptedKey, err := x509.ParsePKCS8PrivateKey(block.Bytes)
 		if err != nil {
-			return nil, fmt.Errorf("Failed to parse unencrypted private key at %s: %s", c.PrivateKeyPath, err)
+			return nil, fmt.Errorf("failed to parse unencrypted private key at %s: %s", c.PrivateKeyPath, err)
 		}
 		parsedPrivateKey, ok = unencryptedKey.(*rsa.PrivateKey)
 		if !ok {
@@ -127,7 +127,9 @@ func (c Config) snowflakeConnectionString() (string, error) {
 	}
 
 	if c.EnableTracing {
-		sf.Tracing = "trace"
+		// gosnowflake.Config.Tracing is marked deprecated but no replacement preserves
+		// the DSN-embedded `tracing=...` parameter in v1. Revisit when implementing v2.
+		sf.Tracing = "trace" //nolint:staticcheck
 	}
 
 	if c.Password != "" {
