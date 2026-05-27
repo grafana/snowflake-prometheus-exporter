@@ -80,6 +80,9 @@ jobs:
       - name: vuln-check
         run: make vuln-check
 
+      - name: lint style
+        run: make lint
+
   build:
     name: Build and test Go exporter
     needs: [setup, lint]
