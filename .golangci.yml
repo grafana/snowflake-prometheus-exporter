@@ -14,6 +14,21 @@ linters:
     - misspell
     - revive
   settings:
+    depguard:
+      rules:
+        main:
+          list-mode: strict
+          allow:
+            - $gostd
+            - github.com/grafana/snowflake-prometheus-exporter
+            - github.com/DATA-DOG/go-sqlmock
+            - github.com/alecthomas/kingpin/v2
+            - github.com/prometheus/client_golang
+            - github.com/prometheus/common
+            - github.com/prometheus/exporter-toolkit
+            - github.com/snowflakedb/gosnowflake
+            - github.com/stretchr/testify
+            - github.com/youmark/pkcs8
     gosec:
       severity: medium
       confidence: medium
