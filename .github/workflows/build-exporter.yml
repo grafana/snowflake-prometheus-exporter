@@ -16,7 +16,7 @@ jobs:
     name: Detect changes
     runs-on: ubuntu-latest
     outputs:
-      backend-changed: ${{ steps.changes.outputs.backend_any_changed == 'true' }}
+      exporter-changed: ${{ steps.changes.outputs.exporter_any_changed == 'true' }}
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
@@ -29,7 +29,7 @@ jobs:
         uses: step-security/changed-files@2e07db73e5ccdb319b9a6c7766bd46d39d304bad # v47.0.5
         with:
           files_yaml: |
-            backend:
+            exporter:
               - '**/*.go'
               - 'go.mod'
               - 'go.sum'
@@ -41,12 +41,13 @@ jobs:
   setup:
     name: Setup
     needs: [detect-changes]
-    if: needs.detect-changes.outputs.backend-changed == 'true'
+    if: needs.detect-changes.outputs.exporter-changed == 'true'
     uses: ./.github/workflows/setup.yml
 
-  build:
-    name: Build and test Go exporter
-    needs: [setup]
+  lint:
+    name: Lint exporter
+    needs: [detect-changes, setup]
+    if: needs.detect-changes.outputs.exporter-changed == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -59,6 +60,42 @@ jobs:
         uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c # v6
         with:
           go-version-file: 'go.mod'
+          cache: true
+
+      - name: Download Go modules
+        run: go mod download
+
+      - name: Install govulncheck
+        run: go install golang.org/x/vuln/cmd/govulncheck@0782b76014f15f24e22a438f30f308df42899ba1 # v1.3.0
+
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@1e7e51e771db61008b38414a730f564565cf7c20 # v9.2.0
+        with:
+          version: v2.12.2
+          args: --enable-only gosec
+
+      - name: gosec-check
+        run: make gosec-check
+
+      - name: vuln-check
+        run: make vuln-check
+
+  build:
+    name: Build and test Go exporter
+    needs: [setup, lint]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup Go
+        uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c # v6
+        with:
+          go-version-file: 'go.mod'
+          cache: true
 
       - name: Download Go modules
         run: go mod download

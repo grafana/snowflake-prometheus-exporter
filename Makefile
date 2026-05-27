@@ -7,7 +7,7 @@ ALL_SRC := $(shell find . -name '*.go' -o -name 'Dockerfile*' -type f | sort)
 # Must precede `include Makefile.common` as it'll otherwise get overwritten
 GOLANGCI_LINT_VERSION := v2.12.2
 GOVULNCHECK_VERSION ?= 0782b76014f15f24e22a438f30f308df42899ba1 # v1.3.0
-GOVULNCHECK         := $(FIRST_GOPATH)/bin/govulncheck
+GOVULNCHECK          = $(FIRST_GOPATH)/bin/govulncheck
 
 all:: vet common-all security-check
 
