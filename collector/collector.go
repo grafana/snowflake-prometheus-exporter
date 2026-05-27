@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Package collector implements the Prometheus collector that queries Snowflake
+// for account, warehouse, database, and table metrics.
 package collector
 
 import (

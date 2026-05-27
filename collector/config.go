@@ -26,6 +26,9 @@ import (
 	"github.com/youmark/pkcs8"
 )
 
+// Config holds the connection and authentication setting.
+// Use Validate to check required fields before constructing a
+// connection string.
 type Config struct {
 	AccountName        string
 	Username           string
@@ -49,6 +52,7 @@ var (
 	errFileNotRSAType = errors.New("type assertion failed, expected type *rsa.PrivateKey")
 )
 
+// Validate returns an error if any required Config field is missing.
 func (c Config) Validate() error {
 	if c.AccountName == "" {
 		return errNoAccountName
@@ -134,7 +138,7 @@ func (c Config) snowflakeConnectionString() (string, error) {
 	}
 
 	// key-pair authentication
-	var pk, err = c.decryptPrivateKey()
+	pk, err := c.decryptPrivateKey()
 	if err != nil {
 		return "", err
 	}
@@ -142,5 +146,4 @@ func (c Config) snowflakeConnectionString() (string, error) {
 	sf.PrivateKey = pk
 	dsn, err := gosnowflake.DSN(sf)
 	return dsn, err
-
 }

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Package main is the entrypoint for the Snowflake Prometheus exporter.
 package main
 
 import (
@@ -49,7 +50,7 @@ var (
 const (
 	// The name of the exporter.
 	exporterName    = "snowflake_exporter"
-	landingPageHtml = `<html>
+	landingPageHTML = `<html>
 <head><title>Snowflake exporter</title></head>
 	<body>
 		<h1>Snowflake exporter</h1>
@@ -100,10 +101,10 @@ func main() {
 }
 
 func serveMetrics(logger *slog.Logger) {
-	landingPage := []byte(fmt.Sprintf(landingPageHtml, *metricPath))
+	landingPage := []byte(fmt.Sprintf(landingPageHTML, *metricPath))
 
 	http.Handle(*metricPath, promhttp.Handler())
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/", func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "text/html; charset=UTF-8") // nolint: errcheck
 		w.Write(landingPage)                                       // nolint: errcheck
 	})
