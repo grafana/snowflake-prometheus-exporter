@@ -4,9 +4,6 @@ version: "2"
 run:
   timeout: 5m
 
-output:
-  sort-results: true
-
 linters:
   enable:
     - depguard
