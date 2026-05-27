@@ -1,6 +1,8 @@
 ---
+version: "2"
+
 run:
-  deadline: 5m
+  timeout: 5m
 
 output:
   sort-results: true
@@ -8,15 +10,21 @@ output:
 linters:
   enable:
     - depguard
+    - gosec
+    - misspell
+    - revive
+  settings:
+    gosec:
+      severity: medium
+      confidence: medium
+
+formatters:
+  enable:
     - gofumpt
     - goimports
-    - revive
-    - misspell
-
-linters-settings:
-  errcheck:
-    exclude: errcheck_excludes.txt
-  goimports:
-    local-prefixes: github.com/prometheus/prometheus
-  gofumpt:
-    extra-rules: true
+  settings:
+    goimports:
+      local-prefixes:
+        - github.com/prometheus/prometheus
+    gofumpt:
+      extra-rules: true
