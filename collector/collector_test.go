@@ -49,7 +49,7 @@ func TestCollector_Collect(t *testing.T) {
 
 		f, err := os.Open(filepath.Join("testdata", "all_metrics.prom"))
 		require.NoError(t, err)
-		defer f.Close()
+		defer func() { _ = f.Close() }()
 
 		require.NoError(t, testutil.CollectAndCompare(col, f))
 
@@ -79,7 +79,7 @@ func TestCollector_Collect(t *testing.T) {
 
 		f, err := os.Open(filepath.Join("testdata", "query_failure.prom"))
 		require.NoError(t, err)
-		defer f.Close()
+		defer func() { _ = f.Close() }()
 
 		// No metrics should be collected; An empty buffer should match the output
 		// of the scraped metrics
@@ -98,7 +98,7 @@ func TestCollector_Collect(t *testing.T) {
 
 		f, err := os.Open(filepath.Join("testdata", "query_failure.prom"))
 		require.NoError(t, err)
-		defer f.Close()
+		defer func() { _ = f.Close() }()
 
 		// No metrics should be scraped if the database fails to open
 		err = testutil.CollectAndCompare(col, f)

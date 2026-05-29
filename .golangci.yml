@@ -1,22 +1,42 @@
 ---
-run:
-  deadline: 5m
+version: "2"
 
-output:
-  sort-results: true
+run:
+  timeout: 5m
 
 linters:
   enable:
     - depguard
+    - gosec
+    - misspell
+    - revive
+  settings:
+    depguard:
+      rules:
+        main:
+          list-mode: strict
+          allow:
+            - $gostd
+            - github.com/grafana/snowflake-prometheus-exporter
+            - github.com/DATA-DOG/go-sqlmock
+            - github.com/alecthomas/kingpin/v2
+            - github.com/prometheus/client_golang
+            - github.com/prometheus/common
+            - github.com/prometheus/exporter-toolkit
+            - github.com/snowflakedb/gosnowflake
+            - github.com/stretchr/testify
+            - github.com/youmark/pkcs8
+    gosec:
+      severity: medium
+      confidence: medium
+
+formatters:
+  enable:
     - gofumpt
     - goimports
-    - revive
-    - misspell
-
-linters-settings:
-  errcheck:
-    exclude: errcheck_excludes.txt
-  goimports:
-    local-prefixes: github.com/prometheus/prometheus
-  gofumpt:
-    extra-rules: true
+  settings:
+    goimports:
+      local-prefixes:
+        - github.com/prometheus/prometheus
+    gofumpt:
+      extra-rules: true
