@@ -36,9 +36,9 @@ install-ci-deps:
 	go install github.com/google/go-jsonnet/cmd/jsonnet@v0.20.0
 	go install github.com/google/go-jsonnet/cmd/jsonnetfmt@v0.20.0
 	go install github.com/google/go-jsonnet/cmd/jsonnet-lint@v0.20.0
-	go install github.com/monitoring-mixins/mixtool/cmd/mixtool@main
+	go install github.com/monitoring-mixins/mixtool/cmd/mixtool@ea35232b9d85b4cd7943b481c6f90fd94f1ec0ca # main, 2026-05-04 (no release tags published)
 	go install github.com/jsonnet-bundler/jsonnet-bundler/cmd/jb@v0.5.1
-	go install github.com/grafana/grizzly/cmd/grr@latest
+	go install github.com/grafana/grizzly/cmd/grr@v0.7.1 # latest release, 2025-01-22
 
 fmt:
 	@find . -name '*.libsonnet' -print -o -name '*.jsonnet' -print | \
