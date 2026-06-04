@@ -1,6 +1,6 @@
 module github.com/grafana/snowflake-prometheus-exporter
 
-go 1.25.10
+go 1.26.4
 
 require (
 	github.com/DATA-DOG/go-sqlmock v1.5.2
