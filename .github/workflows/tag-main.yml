@@ -1,0 +1,45 @@
+name: Tag main
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: tag-main
+  cancel-in-progress: false
+
+permissions: {}
+
+jobs:
+  move-tag:
+    name: Move latest tag
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # needed for actions/github-script
+    steps:
+      - name: Move latest tag to HEAD
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          script: |
+            const tag = 'latest';
+            const sha = context.sha;
+            try {
+              await github.rest.git.updateRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: `tags/${tag}`,
+                sha,
+                force: true,
+              });
+            } catch (e) {
+              if (e.status === 422) {
+                await github.rest.git.createRef({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  ref: `refs/tags/${tag}`,
+                  sha,
+                });
+              } else {
+                throw e;
+              }
+            }
