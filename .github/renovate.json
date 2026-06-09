@@ -45,9 +45,7 @@
       "description": "Disable minimum release age for specific images in container registries that don't provide release timestamps (ghcr.io, quay.io).",
       "matchDatasources": ["docker"],
       "matchPackageNames": [
-        "ghcr.io/observiq/varnish-exporter",
-        "ghcr.io/oracle/oraclelinux9-instantclient",
-        "quay.io/prometheus/statsd-exporter"
+        "quay.io/prometheus/busybox"
       ],
       "minimumReleaseAge": null
     }
