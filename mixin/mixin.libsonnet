@@ -20,6 +20,12 @@ local optional_labels = {
   instance+: {
     label: 'Exporter instance',
   },
+  database_name+: {
+    label: 'Database',
+  },
+  schema_name+: {
+    label: 'Schema',
+  },
 };
 
 {

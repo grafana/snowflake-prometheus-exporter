@@ -1369,6 +1369,20 @@
                "refresh": 2,
                "sort": 1,
                "type": "query"
+            },
+            {
+               "allValue": ".*",
+               "datasource": {
+                  "type": "prometheus",
+                  "uid": "${datasource}"
+               },
+               "includeAll": true,
+               "label": "Warehouse",
+               "multi": true,
+               "name": "warehouse",
+               "query": "label_values(snowflake_table_active_bytes{job=\"integrations/snowflake\",job=~\"$job\",instance=~\"$instance\"}, warehouse)",
+               "refresh": 2,
+               "type": "query"
             }
          ]
       },

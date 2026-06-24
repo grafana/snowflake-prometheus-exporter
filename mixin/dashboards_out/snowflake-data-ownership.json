@@ -687,6 +687,7 @@
                   "uid": "${datasource}"
                },
                "includeAll": true,
+               "label": "Database",
                "multi": true,
                "name": "database_name",
                "query": "label_values(snowflake_table_active_bytes{job=\"integrations/snowflake\",job=~\"$job\",instance=~\"$instance\"}, database_name)",
@@ -699,6 +700,7 @@
                   "uid": "${datasource}"
                },
                "includeAll": true,
+               "label": "Schema",
                "multi": true,
                "name": "schema_name",
                "query": "label_values(snowflake_table_active_bytes{job=\"integrations/snowflake\",job=~\"$job\",instance=~\"$instance\", database_name=~\"$database_name\"}, schema_name)",
