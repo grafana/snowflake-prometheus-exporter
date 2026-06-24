@@ -27,6 +27,14 @@ local commonlib = import 'common-lib/common/main.libsonnet';
           )
         ) + root.applyCommon(
           vars.multiInstance + [
+            g.dashboard.variable.query.new(
+              'warehouse',
+            )
+            + g.dashboard.variable.custom.selectionOptions.withMulti(true)
+            + g.dashboard.variable.custom.selectionOptions.withIncludeAll(true)
+            + g.dashboard.variable.query.queryTypes.withLabelValues(label='warehouse', metric='snowflake_table_active_bytes{%(queriesSelector)s}' % vars)
+            + g.dashboard.variable.query.withDatasourceFromVariable(vars.datasources.prometheus)
+            + g.dashboard.variable.query.refresh.onTime(),
           ],
           uid + '_overview',
           tags,
