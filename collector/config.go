@@ -22,7 +22,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/snowflakedb/gosnowflake"
+	"github.com/snowflakedb/gosnowflake/v2"
 	"github.com/youmark/pkcs8"
 )
 
