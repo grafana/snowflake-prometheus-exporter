@@ -1,7 +1,7 @@
 ARG ARCH="amd64"
 ARG OS="linux"
 # We pin the SHA to the default args, may need to revisit this in the future
-FROM quay.io/prometheus/busybox-${OS}-${ARCH}:latest@sha256:22334508ab30428b42b6ac8c8fae1e12fda864f84fa6fb5b62fb86d9b9b08887
+FROM quay.io/prometheus/busybox-${OS}-${ARCH}:latest@sha256:d86ce8f332fdb3b84f73d2fb0953f61bc77374668bac32a15a8a79ec2ed8f0a9
 
 ARG ARCH="amd64"
 ARG OS="linux"
