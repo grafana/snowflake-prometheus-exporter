@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"log/slog"
 	"sync"
+	"sync/atomic"
 
 	"github.com/prometheus/client_golang/prometheus"
 	_ "github.com/snowflakedb/gosnowflake/v2" // Import the snowflake DB driver
@@ -298,7 +299,8 @@ func (c *Collector) Collect(metrics chan<- prometheus.Metric) {
 	// Create a WaitGroup to block closing the database until all goroutines are done
 	var wg sync.WaitGroup
 
-	var up float64 = 1
+	var up atomic.Bool
+	up.Store(true)
 	// Open a new connection to the database each time; This makes the connection more robust to transient failures
 	connectionString, err := c.config.snowflakeConnectionString()
 	if err != nil {
@@ -320,7 +322,7 @@ func (c *Collector) Collect(metrics chan<- prometheus.Metric) {
 	go func() {
 		if err := c.collectStorageMetrics(db, metrics); err != nil {
 			c.logger.Error("Failed to collect storage metrics.", "err", err)
-			up = 0
+			up.Store(false)
 		}
 		wg.Done()
 	}()
@@ -329,7 +331,7 @@ func (c *Collector) Collect(metrics chan<- prometheus.Metric) {
 	go func() {
 		if err := c.collectDatabaseStorageMetrics(db, metrics); err != nil {
 			c.logger.Error("Failed to collect database storage metrics.", "err", err)
-			up = 0
+			up.Store(false)
 		}
 		wg.Done()
 	}()
@@ -338,7 +340,7 @@ func (c *Collector) Collect(metrics chan<- prometheus.Metric) {
 	go func() {
 		if err := c.collectCreditMetrics(db, metrics); err != nil {
 			c.logger.Error("Failed to collect credit metrics.", "err", err)
-			up = 0
+			up.Store(false)
 		}
 		wg.Done()
 	}()
@@ -347,7 +349,7 @@ func (c *Collector) Collect(metrics chan<- prometheus.Metric) {
 	go func() {
 		if err := c.collectWarehouseCreditMetrics(db, metrics); err != nil {
 			c.logger.Error("Failed to collect warehouse credit metrics.", "err", err)
-			up = 0
+			up.Store(false)
 		}
 		wg.Done()
 	}()
@@ -356,7 +358,7 @@ func (c *Collector) Collect(metrics chan<- prometheus.Metric) {
 	go func() {
 		if err := c.collectLoginMetrics(db, metrics); err != nil {
 			c.logger.Error("Failed to collect login metrics.", "err", err)
-			up = 0
+			up.Store(false)
 		}
 		wg.Done()
 	}()
@@ -365,7 +367,7 @@ func (c *Collector) Collect(metrics chan<- prometheus.Metric) {
 	go func() {
 		if err := c.collectWarehouseLoadMetrics(db, metrics); err != nil {
 			c.logger.Error("Failed to collect warehouse load metrics.", "err", err)
-			up = 0
+			up.Store(false)
 		}
 		wg.Done()
 	}()
@@ -374,7 +376,7 @@ func (c *Collector) Collect(metrics chan<- prometheus.Metric) {
 	go func() {
 		if err := c.collectAutoClusteringMetrics(db, metrics); err != nil {
 			c.logger.Error("Failed to collect autoclustering metrics.", "err", err)
-			up = 0
+			up.Store(false)
 		}
 		wg.Done()
 	}()
@@ -383,7 +385,7 @@ func (c *Collector) Collect(metrics chan<- prometheus.Metric) {
 	go func() {
 		if err := c.collectTableStorageMetrics(db, metrics); err != nil {
 			c.logger.Error("Failed to collect table storage metrics.", "err", err)
-			up = 0
+			up.Store(false)
 		}
 		wg.Done()
 	}()
@@ -393,7 +395,7 @@ func (c *Collector) Collect(metrics chan<- prometheus.Metric) {
 		go func() {
 			if err := c.collectDeletedTablesMetrics(db, metrics); err != nil {
 				c.logger.Error("Failed to collect deleted tables metrics.", "err", err)
-				up = 0
+				up.Store(false)
 			}
 			wg.Done()
 		}()
@@ -403,13 +405,17 @@ func (c *Collector) Collect(metrics chan<- prometheus.Metric) {
 	go func() {
 		if err := c.collectReplicationMetrics(db, metrics); err != nil {
 			c.logger.Error("Failed to collect replication metrics.", "err", err)
-			up = 0
+			up.Store(false)
 		}
 		wg.Done()
 	}()
 
 	wg.Wait()
-	metrics <- prometheus.MustNewConstMetric(c.up, prometheus.GaugeValue, up)
+	upValue := 0.0
+	if up.Load() {
+		upValue = 1
+	}
+	metrics <- prometheus.MustNewConstMetric(c.up, prometheus.GaugeValue, upValue)
 	c.logger.Debug("Finished collecting metrics.")
 }
 
