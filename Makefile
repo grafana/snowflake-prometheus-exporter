@@ -5,13 +5,21 @@ DOCKER_IMAGE_NAME ?= snowflake-exporter
 ALL_SRC := $(shell find . -name '*.go' -o -name 'Dockerfile*' -type f | sort)
 
 # Must precede `include Makefile.common` as it'll otherwise get overwritten
-GOLANGCI_LINT_VERSION := v2.12.2
-GOVULNCHECK_VERSION ?= 0782b76014f15f24e22a438f30f308df42899ba1 # v1.3.0
+GOLANGCI_LINT_VERSION := c0d3ddc9cf3faa61a4e378e879ece580256d76e5 # v2.12.2
+GOVULNCHECK_VERSION ?= 617f44b718537dccdea1915395650e0529e3b72e # v1.7.0
 GOVULNCHECK          = $(FIRST_GOPATH)/bin/govulncheck
 
 all:: vet common-all security-check
 
 include Makefile.common
+
+# Makefile.common's default $(GOLANGCI_LINT) recipe installs via install.sh,
+# which resolves GOLANGCI_LINT_VERSION as a GitHub Release tag and can't take
+# a commit SHA. Override it to install via `go install` instead, which resolves
+# any commit SHA directly, so the version above can be pinned by SHA.
+$(GOLANGCI_LINT):
+	mkdir -p $(FIRST_GOPATH)/bin
+	GOBIN=$(FIRST_GOPATH)/bin go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@$(GOLANGCI_LINT_VERSION)
 
 .PHONY: vuln-check
 vuln-check:
