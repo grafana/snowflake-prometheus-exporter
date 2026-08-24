@@ -39,7 +39,7 @@ type Config struct {
 	PrivateKeyPassword string
 	PrivateKey         *rsa.PrivateKey
 	ExcludeDeleted     bool
-	ExcludeTaskHistory bool
+	EnableTaskHistory  bool
 	EnableTracing      bool
 }
 

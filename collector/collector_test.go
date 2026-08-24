@@ -32,16 +32,17 @@ import (
 )
 
 var ExampleConfig = &Config{
-	AccountName: "defaultaccount",
-	Username:    "defaultuser",
-	Password:    "defaultpassword",
-	Warehouse:   "defaultwarehouse",
-	Role:        "ACCOUNTADMIN",
+	AccountName:       "defaultaccount",
+	Username:          "defaultuser",
+	Password:          "defaultpassword",
+	Warehouse:         "defaultwarehouse",
+	Role:              "ACCOUNTADMIN",
+	EnableTaskHistory: true,
 }
 
 func TestCollector_Collect(t *testing.T) {
 	t.Run("Metrics match expected", func(t *testing.T) {
-		db, mock := createMockDB(t)
+		db, mock := createMockDB(t, true)
 		mock.MatchExpectationsInOrder(false)
 
 		col := NewCollector(promslog.NewNopLogger(), ExampleConfig)
@@ -57,7 +58,7 @@ func TestCollector_Collect(t *testing.T) {
 	})
 
 	t.Run("Metrics have no lint errors", func(t *testing.T) {
-		db, mock := createMockDB(t)
+		db, mock := createMockDB(t, true)
 		mock.MatchExpectationsInOrder(false)
 
 		col := NewCollector(promslog.NewNopLogger(), ExampleConfig)
@@ -71,7 +72,7 @@ func TestCollector_Collect(t *testing.T) {
 	})
 
 	t.Run("All queries fail", func(t *testing.T) {
-		db, mock := createQueryErrMockDB(t)
+		db, mock := createQueryErrMockDB(t, true)
 		mock.MatchExpectationsInOrder(false)
 
 		col := NewCollector(promslog.NewNopLogger(), ExampleConfig)
@@ -103,6 +104,37 @@ func TestCollector_Collect(t *testing.T) {
 		// No metrics should be scraped if the database fails to open
 		err = testutil.CollectAndCompare(col, f)
 		require.NoError(t, err)
+	})
+
+	t.Run("Task history metrics are skipped when disabled", func(t *testing.T) {
+		// Deliberately does not register taskHistoryMetricQuery/taskLastCompletedMetricQuery
+		// with sqlmock: if the collector queried them anyway despite EnableTaskHistory being
+		// false, those calls would fail with "call to Query ... was not expected", which would
+		// surface as a scan/query error rather than silently succeeding.
+		db, mock := createMockDB(t, false)
+		mock.MatchExpectationsInOrder(false)
+
+		configWithoutTaskHistory := &Config{
+			AccountName: "defaultaccount",
+			Username:    "defaultuser",
+			Password:    "defaultpassword",
+			Warehouse:   "defaultwarehouse",
+			Role:        "ACCOUNTADMIN",
+		}
+		col := NewCollector(promslog.NewNopLogger(), configWithoutTaskHistory)
+		col.openDatabase = func(_ string) (*sql.DB, error) { return db, nil }
+
+		reg := prometheus.NewPedanticRegistry()
+		require.NoError(t, reg.Register(col))
+
+		families, err := reg.Gather()
+		require.NoError(t, err)
+
+		for _, f := range families {
+			require.NotContains(t, f.GetName(), "task", "task metrics should not be collected when EnableTaskHistory is false")
+		}
+
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 }
 
@@ -207,7 +239,7 @@ func newRows(t *testing.T, rows [][]*string) *sqlmock.Rows {
 	return sqlRows
 }
 
-func createMockDB(t *testing.T) (*sql.DB, sqlmock.Sqlmock) {
+func createMockDB(t *testing.T, enableTaskHistory bool) (*sql.DB, sqlmock.Sqlmock) {
 	t.Helper()
 
 	testDB1Name := "mock_db"
@@ -376,38 +408,40 @@ func createMockDB(t *testing.T) (*sql.DB, sqlmock.Sqlmock) {
 		).
 		RowsWillBeClosed()
 
-	testTaskName := "mock_task"
+	if enableTaskHistory {
+		testTaskName := "mock_task"
 
-	mock.ExpectQuery(taskHistoryMetricQuery).
-		WillReturnRows(
-			newRows(t, [][]*string{
-				{
-					&testTaskName, &testDB1Name, &testDB1ID, &testSchemaName, &testSchemaID,
-					&val18, &val19, &val17, &val20,
-				},
-			}),
-		).
-		RowsWillBeClosed()
+		mock.ExpectQuery(taskHistoryMetricQuery).
+			WillReturnRows(
+				newRows(t, [][]*string{
+					{
+						&testTaskName, &testDB1Name, &testDB1ID, &testSchemaName, &testSchemaID,
+						&val18, &val19, &val17, &val20,
+					},
+				}),
+			).
+			RowsWillBeClosed()
 
-	testLastCompleted := "2024-01-01T00:00:00Z"
+		testLastCompleted := "2024-01-01T00:00:00Z"
 
-	mock.ExpectQuery(taskLastCompletedMetricQuery).
-		WillReturnRows(
-			newRows(t, [][]*string{
-				{
-					&testTaskName, &testDB1Name, &testDB1ID, &testSchemaName, &testSchemaID,
-					&testLastCompleted,
-				},
-			}),
-		).
-		RowsWillBeClosed()
+		mock.ExpectQuery(taskLastCompletedMetricQuery).
+			WillReturnRows(
+				newRows(t, [][]*string{
+					{
+						&testTaskName, &testDB1Name, &testDB1ID, &testSchemaName, &testSchemaID,
+						&testLastCompleted,
+					},
+				}),
+			).
+			RowsWillBeClosed()
+	}
 
 	mock.ExpectClose()
 
 	return db, mock
 }
 
-func createQueryErrMockDB(t *testing.T) (*sql.DB, sqlmock.Sqlmock) {
+func createQueryErrMockDB(t *testing.T, enableTaskHistory bool) (*sql.DB, sqlmock.Sqlmock) {
 	t.Helper()
 
 	queryErr := errors.New("the query failed for inexplicable reasons")
@@ -425,8 +459,10 @@ func createQueryErrMockDB(t *testing.T) (*sql.DB, sqlmock.Sqlmock) {
 	mock.ExpectQuery(tableStorageMetricQuery).WillReturnError(queryErr)
 	mock.ExpectQuery(deletedTablesMetricQuery).WillReturnError(queryErr)
 	mock.ExpectQuery(replicationMetricQuery).WillReturnError(queryErr)
-	mock.ExpectQuery(taskHistoryMetricQuery).WillReturnError(queryErr)
-	mock.ExpectQuery(taskLastCompletedMetricQuery).WillReturnError(queryErr)
+	if enableTaskHistory {
+		mock.ExpectQuery(taskHistoryMetricQuery).WillReturnError(queryErr)
+		mock.ExpectQuery(taskLastCompletedMetricQuery).WillReturnError(queryErr)
+	}
 
 	mock.ExpectClose()
 

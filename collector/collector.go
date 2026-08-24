@@ -451,7 +451,10 @@ func (c *Collector) Collect(metrics chan<- prometheus.Metric) {
 		wg.Done()
 	}()
 
-	if !c.config.ExcludeTaskHistory {
+	// Opt-in, unlike the exclude-* flags: this is a brand new query family, so
+	// existing deployments shouldn't get an extra TASK_HISTORY scan against
+	// their warehouse just from upgrading.
+	if c.config.EnableTaskHistory {
 		wg.Add(1)
 		go func() {
 			if err := c.collectTaskHistoryMetrics(db, metrics); err != nil {
