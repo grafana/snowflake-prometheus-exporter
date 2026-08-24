@@ -76,8 +76,25 @@ const (
 	WHERE DELETED = TRUE;`
 
 	// https://docs.snowflake.com/en/sql-reference/account-usage/replication_usage_history.html
-	replicationMetricQuery = `SELECT DATABASE_NAME, DATABASE_ID, sum(CREDITS_USED), sum(BYTES_TRANSFERRED) 
+	replicationMetricQuery = `SELECT DATABASE_NAME, DATABASE_ID, sum(CREDITS_USED), sum(BYTES_TRANSFERRED)
 	FROM ACCOUNT_USAGE.REPLICATION_USAGE_HISTORY
 	WHERE START_TIME >= dateadd(hour, -24, current_timestamp())
 	GROUP BY DATABASE_NAME, DATABASE_ID;`
+
+	// https://docs.snowflake.com/en/sql-reference/account-usage/task_history.html
+	taskHistoryMetricQuery = `SELECT NAME, DATABASE_NAME, DATABASE_ID, SCHEMA_NAME, SCHEMA_ID,
+		sum(iff(STATE = 'SUCCEEDED', 1, 0)), sum(iff(STATE = 'FAILED', 1, 0)), sum(iff(STATE = 'SKIPPED', 1, 0)), count(*)
+	FROM ACCOUNT_USAGE.TASK_HISTORY
+	WHERE SCHEDULED_TIME >= dateadd(hour, -24, current_timestamp()) AND STATE != 'SCHEDULED'
+	GROUP BY NAME, DATABASE_NAME, DATABASE_ID, SCHEMA_NAME, SCHEMA_ID;`
+
+	// https://docs.snowflake.com/en/sql-reference/account-usage/task_history.html
+	// Looks back further than the rate query above so that infrequently-scheduled
+	// tasks (e.g. daily/weekly) still report a last-completed time instead of
+	// going missing from this metric between runs.
+	taskLastCompletedMetricQuery = `SELECT NAME, DATABASE_NAME, DATABASE_ID, SCHEMA_NAME, SCHEMA_ID,
+		max(COMPLETED_TIME)
+	FROM ACCOUNT_USAGE.TASK_HISTORY
+	WHERE SCHEDULED_TIME >= dateadd(day, -7, current_timestamp()) AND STATE IN ('SUCCEEDED', 'FAILED')
+	GROUP BY NAME, DATABASE_NAME, DATABASE_ID, SCHEMA_NAME, SCHEMA_ID;`
 )

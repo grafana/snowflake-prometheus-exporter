@@ -22,6 +22,7 @@ import (
 	"log/slog"
 	"sync"
 	"sync/atomic"
+	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
 	_ "github.com/snowflakedb/gosnowflake/v2" // Import the snowflake DB driver
@@ -83,6 +84,11 @@ type Collector struct {
 	tableDeletedTables                *prometheus.Desc
 	replicationUsedCredits            *prometheus.Desc
 	replicationTransferredBytes       *prometheus.Desc
+	taskExecutedRate                  *prometheus.Desc
+	taskSucceededRate                 *prometheus.Desc
+	taskFailedRate                    *prometheus.Desc
+	taskSkippedRate                   *prometheus.Desc
+	taskLastCompletedTimestampSeconds *prometheus.Desc
 	up                                *prometheus.Desc
 }
 
@@ -249,6 +255,36 @@ func NewCollector(logger *slog.Logger, c *Config) *Collector {
 			[]string{labelDatabaseName, labelDatabaseID},
 			nil,
 		),
+		taskExecutedRate: prometheus.NewDesc(
+			prometheus.BuildFQName(namespace, "task", "executed_rate"),
+			"Rate of task executions per-hour over the last 24 hours (all terminal states except SCHEDULED).",
+			[]string{labelName, labelDatabaseName, labelDatabaseID, labelSchemaName, labelSchemaID},
+			nil,
+		),
+		taskSucceededRate: prometheus.NewDesc(
+			prometheus.BuildFQName(namespace, "task", "succeeded_rate"),
+			"Rate of successful task executions per-hour over the last 24 hours.",
+			[]string{labelName, labelDatabaseName, labelDatabaseID, labelSchemaName, labelSchemaID},
+			nil,
+		),
+		taskFailedRate: prometheus.NewDesc(
+			prometheus.BuildFQName(namespace, "task", "failed_rate"),
+			"Rate of failed task executions per-hour over the last 24 hours.",
+			[]string{labelName, labelDatabaseName, labelDatabaseID, labelSchemaName, labelSchemaID},
+			nil,
+		),
+		taskSkippedRate: prometheus.NewDesc(
+			prometheus.BuildFQName(namespace, "task", "skipped_rate"),
+			"Rate of skipped task executions per-hour over the last 24 hours.",
+			[]string{labelName, labelDatabaseName, labelDatabaseID, labelSchemaName, labelSchemaID},
+			nil,
+		),
+		taskLastCompletedTimestampSeconds: prometheus.NewDesc(
+			prometheus.BuildFQName(namespace, "task", "last_completed_timestamp_seconds"),
+			"Unix timestamp of the most recent completed (succeeded or failed) execution of the task, looking back 7 days.",
+			[]string{labelName, labelDatabaseName, labelDatabaseID, labelSchemaName, labelSchemaID},
+			nil,
+		),
 		up: prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, "", "up"),
 			"Metric indicating the status of the exporter collection. 1 indicates that the connection Snowflake was successful, and all available metrics were collected. "+
@@ -288,6 +324,11 @@ func (c *Collector) Describe(descs chan<- *prometheus.Desc) {
 	descs <- c.tableDeletedTables
 	descs <- c.replicationUsedCredits
 	descs <- c.replicationTransferredBytes
+	descs <- c.taskExecutedRate
+	descs <- c.taskSucceededRate
+	descs <- c.taskFailedRate
+	descs <- c.taskSkippedRate
+	descs <- c.taskLastCompletedTimestampSeconds
 	descs <- c.up
 }
 
@@ -409,6 +450,26 @@ func (c *Collector) Collect(metrics chan<- prometheus.Metric) {
 		}
 		wg.Done()
 	}()
+
+	if !c.config.ExcludeTaskHistory {
+		wg.Add(1)
+		go func() {
+			if err := c.collectTaskHistoryMetrics(db, metrics); err != nil {
+				c.logger.Error("Failed to collect task history metrics.", "err", err)
+				up.Store(false)
+			}
+			wg.Done()
+		}()
+
+		wg.Add(1)
+		go func() {
+			if err := c.collectTaskLastCompletedMetrics(db, metrics); err != nil {
+				c.logger.Error("Failed to collect task last-completed metrics.", "err", err)
+				up.Store(false)
+			}
+			wg.Done()
+		}()
+	}
 
 	wg.Wait()
 	upValue := 0.0
@@ -737,5 +798,77 @@ func (c *Collector) collectReplicationMetrics(db *sql.DB, metrics chan<- prometh
 	}
 
 	c.logger.Debug("Finished collecting replication metrics.")
+	return rows.Err()
+}
+
+func (c *Collector) collectTaskHistoryMetrics(db *sql.DB, metrics chan<- prometheus.Metric) error {
+	c.logger.Debug("Collecting task history metrics.")
+	rows, err := db.Query(taskHistoryMetricQuery)
+	c.logger.Debug("Done querying task history metrics.")
+	if err != nil {
+		return fmt.Errorf("failed to query metrics: %w", err)
+	}
+	defer func() { _ = rows.Close() }()
+
+	for rows.Next() {
+		var name, databaseName, databaseID, schemaName, schemaID sql.NullString
+		var succeeded, failed, skipped, total sql.NullFloat64
+		if err := rows.Scan(&name, &databaseName, &databaseID, &schemaName, &schemaID,
+			&succeeded, &failed, &skipped, &total); err != nil {
+			return fmt.Errorf("failed to scan row: %w", err)
+		}
+
+		// Divided by 24 to get the per-hour average, consistent with the login rate metrics above.
+		if total.Valid {
+			metrics <- prometheus.MustNewConstMetric(c.taskExecutedRate, prometheus.GaugeValue, total.Float64/24,
+				name.String, databaseName.String, databaseID.String, schemaName.String, schemaID.String)
+		}
+		if succeeded.Valid {
+			metrics <- prometheus.MustNewConstMetric(c.taskSucceededRate, prometheus.GaugeValue, succeeded.Float64/24,
+				name.String, databaseName.String, databaseID.String, schemaName.String, schemaID.String)
+		}
+		if failed.Valid {
+			metrics <- prometheus.MustNewConstMetric(c.taskFailedRate, prometheus.GaugeValue, failed.Float64/24,
+				name.String, databaseName.String, databaseID.String, schemaName.String, schemaID.String)
+		}
+		if skipped.Valid {
+			metrics <- prometheus.MustNewConstMetric(c.taskSkippedRate, prometheus.GaugeValue, skipped.Float64/24,
+				name.String, databaseName.String, databaseID.String, schemaName.String, schemaID.String)
+		}
+	}
+
+	c.logger.Debug("Finished collecting task history metrics.")
+	return rows.Err()
+}
+
+func (c *Collector) collectTaskLastCompletedMetrics(db *sql.DB, metrics chan<- prometheus.Metric) error {
+	c.logger.Debug("Collecting task last-completed metrics.")
+	rows, err := db.Query(taskLastCompletedMetricQuery)
+	c.logger.Debug("Done querying task last-completed metrics.")
+	if err != nil {
+		return fmt.Errorf("failed to query metrics: %w", err)
+	}
+	defer func() { _ = rows.Close() }()
+
+	for rows.Next() {
+		var name, databaseName, databaseID, schemaName, schemaID, lastCompleted sql.NullString
+		if err := rows.Scan(&name, &databaseName, &databaseID, &schemaName, &schemaID, &lastCompleted); err != nil {
+			return fmt.Errorf("failed to scan row: %w", err)
+		}
+
+		if lastCompleted.Valid {
+			// Scanned as a string rather than sql.NullTime: gosnowflake returns TIMESTAMP_LTZ
+			// columns as time.Time, which database/sql formats to RFC3339Nano when the scan
+			// destination is a string, so parsing it back here keeps this collector driver-agnostic.
+			t, err := time.Parse(time.RFC3339Nano, lastCompleted.String)
+			if err != nil {
+				return fmt.Errorf("failed to parse task last-completed time: %w", err)
+			}
+			metrics <- prometheus.MustNewConstMetric(c.taskLastCompletedTimestampSeconds, prometheus.GaugeValue,
+				float64(t.Unix()), name.String, databaseName.String, databaseID.String, schemaName.String, schemaID.String)
+		}
+	}
+
+	c.logger.Debug("Finished collecting task last-completed metrics.")
 	return rows.Err()
 }

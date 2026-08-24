@@ -376,6 +376,32 @@ func createMockDB(t *testing.T) (*sql.DB, sqlmock.Sqlmock) {
 		).
 		RowsWillBeClosed()
 
+	testTaskName := "mock_task"
+
+	mock.ExpectQuery(taskHistoryMetricQuery).
+		WillReturnRows(
+			newRows(t, [][]*string{
+				{
+					&testTaskName, &testDB1Name, &testDB1ID, &testSchemaName, &testSchemaID,
+					&val18, &val19, &val17, &val20,
+				},
+			}),
+		).
+		RowsWillBeClosed()
+
+	testLastCompleted := "2024-01-01T00:00:00Z"
+
+	mock.ExpectQuery(taskLastCompletedMetricQuery).
+		WillReturnRows(
+			newRows(t, [][]*string{
+				{
+					&testTaskName, &testDB1Name, &testDB1ID, &testSchemaName, &testSchemaID,
+					&testLastCompleted,
+				},
+			}),
+		).
+		RowsWillBeClosed()
+
 	mock.ExpectClose()
 
 	return db, mock
@@ -399,6 +425,8 @@ func createQueryErrMockDB(t *testing.T) (*sql.DB, sqlmock.Sqlmock) {
 	mock.ExpectQuery(tableStorageMetricQuery).WillReturnError(queryErr)
 	mock.ExpectQuery(deletedTablesMetricQuery).WillReturnError(queryErr)
 	mock.ExpectQuery(replicationMetricQuery).WillReturnError(queryErr)
+	mock.ExpectQuery(taskHistoryMetricQuery).WillReturnError(queryErr)
+	mock.ExpectQuery(taskLastCompletedMetricQuery).WillReturnError(queryErr)
 
 	mock.ExpectClose()
 

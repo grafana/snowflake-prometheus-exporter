@@ -63,6 +63,21 @@ snowflake_table_failsafe_bytes{database_id="2",database_name="another_mock_db",s
 # TYPE snowflake_table_time_travel_bytes gauge
 snowflake_table_time_travel_bytes{database_id="1",database_name="mock_db",schema_id="4",schema_name="mock_schema",table_id="3",table_name="mock_table"} 2048
 snowflake_table_time_travel_bytes{database_id="2",database_name="another_mock_db",schema_id="4",schema_name="",table_id="3",table_name="mock_table"} 32768
+# HELP snowflake_task_executed_rate Rate of task executions per-hour over the last 24 hours (all terminal states except SCHEDULED).
+# TYPE snowflake_task_executed_rate gauge
+snowflake_task_executed_rate{database_id="1",database_name="mock_db",name="mock_task",schema_id="4",schema_name="mock_schema"} 51.416666666666664
+# HELP snowflake_task_failed_rate Rate of failed task executions per-hour over the last 24 hours.
+# TYPE snowflake_task_failed_rate gauge
+snowflake_task_failed_rate{database_id="1",database_name="mock_db",name="mock_task",schema_id="4",schema_name="mock_schema"} 0.4166666666666667
+# HELP snowflake_task_last_completed_timestamp_seconds Unix timestamp of the most recent completed (succeeded or failed) execution of the task, looking back 7 days.
+# TYPE snowflake_task_last_completed_timestamp_seconds gauge
+snowflake_task_last_completed_timestamp_seconds{database_id="1",database_name="mock_db",name="mock_task",schema_id="4",schema_name="mock_schema"} 1.7040672e+09
+# HELP snowflake_task_skipped_rate Rate of skipped task executions per-hour over the last 24 hours.
+# TYPE snowflake_task_skipped_rate gauge
+snowflake_task_skipped_rate{database_id="1",database_name="mock_db",name="mock_task",schema_id="4",schema_name="mock_schema"} 1.6666666666666667
+# HELP snowflake_task_succeeded_rate Rate of successful task executions per-hour over the last 24 hours.
+# TYPE snowflake_task_succeeded_rate gauge
+snowflake_task_succeeded_rate{database_id="1",database_name="mock_db",name="mock_task",schema_id="4",schema_name="mock_schema"} 0.8333333333333334
 # HELP snowflake_table_deleted_tables Number of tables that have been purged from storage.
 # TYPE snowflake_table_deleted_tables gauge
 snowflake_table_deleted_tables 10
