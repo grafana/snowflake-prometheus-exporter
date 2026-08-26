@@ -1,6 +1,6 @@
 # snowflake-prometheus-exporter
 
-Exports [Snowflake](www.snowflake.com) warehouse, database, table, and replication statistics for a Snowflake account via HTTP for Prometheus consumption.
+Exports [Snowflake](www.snowflake.com) warehouse, database, table, task, and replication statistics for a Snowflake account via HTTP for Prometheus consumption.
 
 ## Configuration
 
@@ -20,6 +20,7 @@ The exporter may be configured through its command line flags:
       --role="ACCOUNTADMIN"           The role to use when querying metrics.
       --warehouse=WAREHOUSE           The warehouse to use when querying metrics.
       --exclude-deleted-tables        Exclude deleted tables when collecting table storage metrics.
+      --enable-task-history           Collect task execution metrics from TASK_HISTORY. Disabled by default.
       --enable-tracing                Enable trace logging for Snowflake connections.
       --version                       Show application version.
       --log.level=info                Only log messages with the given severity or above. One of: [debug, info, warn, error]
@@ -54,6 +55,7 @@ Alternatively, the exporter may be configured using environment variables:
 | SNOWFLAKE_EXPORTER_ROLE                 | The role to use when querying metrics.                                           |
 | SNOWFLAKE_EXPORTER_WAREHOUSE            | The warehouse to use when querying metrics.                                      |
 | SNOWFLAKE_EXPORTER_ENABLE_TRACING       | Enable trace logging for Snowflake connections.                                  |
+| SNOWFLAKE_EXPORTER_ENABLE_TASK_HISTORY  | Collect task execution metrics from TASK_HISTORY. Disabled by default.           |
 | SNOWFLAKE_EXPORTER_WEB_TELEMETRY_PATH   | Path under which to expose metrics.                                              |
 
 Example usage:

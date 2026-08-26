@@ -44,6 +44,7 @@ var (
 	role               = kingpin.Flag("role", "The role to use when querying metrics.").Default("ACCOUNTADMIN").Envar("SNOWFLAKE_EXPORTER_ROLE").String()
 	warehouse          = kingpin.Flag("warehouse", "The warehouse to use when querying metrics.").Envar("SNOWFLAKE_EXPORTER_WAREHOUSE").Required().String()
 	excludeDeleted     = kingpin.Flag("exclude-deleted-tables", "Exclude deleted tables when collecting table storage metrics.").Default("false").Bool()
+	enableTaskHistory  = kingpin.Flag("enable-task-history", "Collect task execution metrics from TASK_HISTORY. Disabled by default since it's a new query family and not every account runs tasks.").Default("false").Envar("SNOWFLAKE_EXPORTER_ENABLE_TASK_HISTORY").Bool()
 	enableTracing      = kingpin.Flag("enable-tracing", "Enable trace logging for Snowflake connections.").Default("false").Envar("SNOWFLAKE_EXPORTER_ENABLE_TRACING").Bool()
 )
 
@@ -79,6 +80,7 @@ func main() {
 		Role:               *role,
 		Warehouse:          *warehouse,
 		ExcludeDeleted:     *excludeDeleted,
+		EnableTaskHistory:  *enableTaskHistory,
 		EnableTracing:      *enableTracing,
 	}
 
