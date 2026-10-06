@@ -165,13 +165,13 @@ func TestConfig_snowflakeConnectionString(t *testing.T) {
 		{
 			name: "Connection string parts are escaped",
 			inputConfig: Config{
-				AccountName: "some%account",
+				AccountName: "some-account",
 				Username:    "some%user",
 				Password:    "some pass",
 				Role:        "ACCOUNTADMIN!",
 				Warehouse:   "some!warehouse",
 			},
-			expectedString: `some%25user:some+pass@some%account.snowflakecomputing.com:443?database=SNOWFLAKE&ocspFailOpen=true&role=ACCOUNTADMIN%21&validateDefaultParameters=true&warehouse=some%21warehouse`,
+			expectedString: `some%25user:some+pass@some-account.snowflakecomputing.com:443?database=SNOWFLAKE&ocspFailOpen=true&role=ACCOUNTADMIN%21&validateDefaultParameters=true&warehouse=some%21warehouse`,
 		},
 	}
 
