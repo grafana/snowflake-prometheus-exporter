@@ -30,17 +30,18 @@ import (
 // Use Validate to check required fields before constructing a
 // connection string.
 type Config struct {
-	AccountName        string
-	Username           string
-	Password           string
-	Role               string
-	Warehouse          string
-	PrivateKeyPath     string
-	PrivateKeyPassword string
-	PrivateKey         *rsa.PrivateKey
-	ExcludeDeleted     bool
-	EnableTaskHistory  bool
-	EnableTracing      bool
+	AccountName         string
+	Username            string
+	Password            string
+	Role                string
+	Warehouse           string
+	PrivateKeyPath      string
+	PrivateKeyPassword  string
+	PrivateKey          *rsa.PrivateKey
+	ExcludeDeleted      bool
+	EnableTaskHistory   bool
+	EnableTracing       bool
+	ExcludeDeletedTasks bool
 }
 
 var (

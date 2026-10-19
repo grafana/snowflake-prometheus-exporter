@@ -34,18 +34,19 @@ import (
 )
 
 var (
-	webConfig          = webflag.AddFlags(kingpin.CommandLine, ":9975")
-	metricPath         = kingpin.Flag("web.telemetry-path", "Path under which to expose metrics.").Default("/metrics").Envar("SNOWFLAKE_EXPORTER_WEB_TELEMETRY_PATH").String()
-	account            = kingpin.Flag("account", "The account to collect metrics for.").Envar("SNOWFLAKE_EXPORTER_ACCOUNT").Required().String()
-	username           = kingpin.Flag("username", "The username for the user used when querying metrics.").Envar("SNOWFLAKE_EXPORTER_USERNAME").Required().String()
-	password           = kingpin.Flag("password", "The password for the user used when querying metrics.").Envar("SNOWFLAKE_EXPORTER_PASSWORD").String()
-	privateKeyPath     = kingpin.Flag("private-key-path", "The path to the user's RSA private key").Envar("SNOWFLAKE_EXPORTER_PRIVATE_KEY_PATH").String()
-	privateKeyPassword = kingpin.Flag("private-key-password", "The password for the user's RSA private key.").Envar("SNOWFLAKE_EXPORTER_PRIVATE_KEY_PASSWORD").String()
-	role               = kingpin.Flag("role", "The role to use when querying metrics.").Default("ACCOUNTADMIN").Envar("SNOWFLAKE_EXPORTER_ROLE").String()
-	warehouse          = kingpin.Flag("warehouse", "The warehouse to use when querying metrics.").Envar("SNOWFLAKE_EXPORTER_WAREHOUSE").Required().String()
-	excludeDeleted     = kingpin.Flag("exclude-deleted-tables", "Exclude deleted tables when collecting table storage metrics.").Default("false").Bool()
-	enableTaskHistory  = kingpin.Flag("enable-task-history", "Collect task execution metrics from TASK_HISTORY. Disabled by default since it's a new query family and not every account runs tasks.").Default("false").Envar("SNOWFLAKE_EXPORTER_ENABLE_TASK_HISTORY").Bool()
-	enableTracing      = kingpin.Flag("enable-tracing", "Enable trace logging for Snowflake connections.").Default("false").Envar("SNOWFLAKE_EXPORTER_ENABLE_TRACING").Bool()
+	webConfig           = webflag.AddFlags(kingpin.CommandLine, ":9975")
+	metricPath          = kingpin.Flag("web.telemetry-path", "Path under which to expose metrics.").Default("/metrics").Envar("SNOWFLAKE_EXPORTER_WEB_TELEMETRY_PATH").String()
+	account             = kingpin.Flag("account", "The account to collect metrics for.").Envar("SNOWFLAKE_EXPORTER_ACCOUNT").Required().String()
+	username            = kingpin.Flag("username", "The username for the user used when querying metrics.").Envar("SNOWFLAKE_EXPORTER_USERNAME").Required().String()
+	password            = kingpin.Flag("password", "The password for the user used when querying metrics.").Envar("SNOWFLAKE_EXPORTER_PASSWORD").String()
+	privateKeyPath      = kingpin.Flag("private-key-path", "The path to the user's RSA private key").Envar("SNOWFLAKE_EXPORTER_PRIVATE_KEY_PATH").String()
+	privateKeyPassword  = kingpin.Flag("private-key-password", "The password for the user's RSA private key.").Envar("SNOWFLAKE_EXPORTER_PRIVATE_KEY_PASSWORD").String()
+	role                = kingpin.Flag("role", "The role to use when querying metrics.").Default("ACCOUNTADMIN").Envar("SNOWFLAKE_EXPORTER_ROLE").String()
+	warehouse           = kingpin.Flag("warehouse", "The warehouse to use when querying metrics.").Envar("SNOWFLAKE_EXPORTER_WAREHOUSE").Required().String()
+	excludeDeleted      = kingpin.Flag("exclude-deleted-tables", "Exclude deleted tables when collecting table storage metrics.").Default("false").Bool()
+	enableTaskHistory   = kingpin.Flag("enable-task-history", "Collect task execution metrics from TASK_HISTORY. Disabled by default since it's a new query family and not every account runs tasks.").Default("false").Envar("SNOWFLAKE_EXPORTER_ENABLE_TASK_HISTORY").Bool()
+	enableTracing       = kingpin.Flag("enable-tracing", "Enable trace logging for Snowflake connections.").Default("false").Envar("SNOWFLAKE_EXPORTER_ENABLE_TRACING").Bool()
+	excludeDeletedTasks = kingpin.Flag("exclude-deleted-tasks", "Exclude tasks that no longer exist when collecting task history metrics. Only applies with --enable-task-history, and needs the ACCOUNT_USAGE.TASKS view.").Default("false").Envar("SNOWFLAKE_EXPORTER_EXCLUDE_DELETED_TASKS").Bool()
 )
 
 const (
@@ -72,16 +73,17 @@ func main() {
 	logger := promslog.New(promslogConfig)
 
 	c := &collector.Config{
-		AccountName:        *account,
-		Username:           *username,
-		Password:           *password,
-		PrivateKeyPath:     *privateKeyPath,
-		PrivateKeyPassword: *privateKeyPassword,
-		Role:               *role,
-		Warehouse:          *warehouse,
-		ExcludeDeleted:     *excludeDeleted,
-		EnableTaskHistory:  *enableTaskHistory,
-		EnableTracing:      *enableTracing,
+		AccountName:         *account,
+		Username:            *username,
+		Password:            *password,
+		PrivateKeyPath:      *privateKeyPath,
+		PrivateKeyPassword:  *privateKeyPassword,
+		Role:                *role,
+		Warehouse:           *warehouse,
+		ExcludeDeleted:      *excludeDeleted,
+		EnableTaskHistory:   *enableTaskHistory,
+		EnableTracing:       *enableTracing,
+		ExcludeDeletedTasks: *excludeDeletedTasks,
 	}
 
 	if err := c.Validate(); err != nil {

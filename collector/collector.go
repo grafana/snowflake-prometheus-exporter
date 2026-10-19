@@ -829,8 +829,15 @@ func (c *Collector) collectReplicationMetrics(db *sql.DB, metrics chan<- prometh
 }
 
 func (c *Collector) collectTaskHistoryMetrics(db *sql.DB, metrics chan<- prometheus.Metric) error {
-	c.logger.Debug("Collecting task history metrics.")
-	rows, err := db.Query(taskHistoryMetricQuery)
+	var rows *sql.Rows
+	var err error
+	if c.config.ExcludeDeletedTasks {
+		c.logger.Debug("Collecting task history metrics excluding deleted tasks.")
+		rows, err = db.Query(taskHistoryExcludeDeletedMetricQuery)
+	} else {
+		c.logger.Debug("Collecting task history metrics.")
+		rows, err = db.Query(taskHistoryMetricQuery)
+	}
 	c.logger.Debug("Done querying task history metrics.")
 	if err != nil {
 		return fmt.Errorf("failed to query metrics: %w", err)
@@ -881,8 +888,15 @@ func (c *Collector) collectTaskHistoryMetrics(db *sql.DB, metrics chan<- prometh
 }
 
 func (c *Collector) collectTaskLastCompletedMetrics(db *sql.DB, metrics chan<- prometheus.Metric) error {
-	c.logger.Debug("Collecting task last-completed metrics.")
-	rows, err := db.Query(taskLastCompletedMetricQuery)
+	var rows *sql.Rows
+	var err error
+	if c.config.ExcludeDeletedTasks {
+		c.logger.Debug("Collecting task last-completed metrics excluding deleted tasks.")
+		rows, err = db.Query(taskLastCompletedExcludeDeletedMetricQuery)
+	} else {
+		c.logger.Debug("Collecting task last-completed metrics.")
+		rows, err = db.Query(taskLastCompletedMetricQuery)
+	}
 	c.logger.Debug("Done querying task last-completed metrics.")
 	if err != nil {
 		return fmt.Errorf("failed to query metrics: %w", err)
