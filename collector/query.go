@@ -107,29 +107,28 @@ const (
 	// Variants of the two task history queries above that only report tasks that still
 	// exist. TASK_HISTORY keeps the rows of dropped tasks, so without this a dropped task
 	// keeps reporting (with an ever older last-completed time) until its history ages out
-	// of the lookback window. EXISTS rather than a join so that a task which was dropped
-	// and created again (a new ID, same database, schema and name) is still reported once.
+	// of the lookback window.
+	//
+	// taskNotDeletedClause is shared by both queries. It uses EXISTS rather than a join so
+	// that a task which was dropped and created again (a new ID, same database, schema and
+	// name) is still reported once.
+	taskNotDeletedClause = `AND EXISTS (
+			SELECT 1 FROM ACCOUNT_USAGE.TASKS t
+			WHERE t.TASK_DATABASE_ID = h.TASK_DATABASE_ID AND t.TASK_SCHEMA_ID = h.TASK_SCHEMA_ID
+				AND t.TASK_NAME = h.NAME AND t.DELETED IS NULL
+		)`
+
 	taskHistoryExcludeDeletedMetricQuery = `SELECT h.NAME, h.DATABASE_NAME, h.TASK_DATABASE_ID, h.SCHEMA_NAME, h.TASK_SCHEMA_ID,
 		sum(iff(h.STATE = 'SUCCEEDED', 1, 0)), sum(iff(h.STATE = 'FAILED', 1, 0)), sum(iff(h.STATE = 'SKIPPED', 1, 0)),
 		sum(iff(h.STATE = 'CANCELLED', 1, 0)), sum(iff(h.STATE = 'FAILED_AND_AUTO_SUSPENDED', 1, 0)), sum(iff(h.STATE = 'SUSPENDED', 1, 0)),
 		count(*)
 	FROM ACCOUNT_USAGE.TASK_HISTORY h
-	WHERE h.SCHEDULED_TIME >= dateadd(hour, -24, current_timestamp()) AND h.STATE != 'SCHEDULED'
-		AND EXISTS (
-			SELECT 1 FROM ACCOUNT_USAGE.TASKS t
-			WHERE t.TASK_DATABASE_ID = h.TASK_DATABASE_ID AND t.TASK_SCHEMA_ID = h.TASK_SCHEMA_ID
-				AND t.TASK_NAME = h.NAME AND t.DELETED IS NULL
-		)
+	WHERE h.SCHEDULED_TIME >= dateadd(hour, -24, current_timestamp()) AND h.STATE != 'SCHEDULED' ` + taskNotDeletedClause + `
 	GROUP BY h.NAME, h.DATABASE_NAME, h.TASK_DATABASE_ID, h.SCHEMA_NAME, h.TASK_SCHEMA_ID;`
 
 	taskLastCompletedExcludeDeletedMetricQuery = `SELECT h.NAME, h.DATABASE_NAME, h.TASK_DATABASE_ID, h.SCHEMA_NAME, h.TASK_SCHEMA_ID,
 		max(h.COMPLETED_TIME)
 	FROM ACCOUNT_USAGE.TASK_HISTORY h
-	WHERE h.SCHEDULED_TIME >= dateadd(day, -7, current_timestamp()) AND h.STATE IN ('SUCCEEDED', 'FAILED')
-		AND EXISTS (
-			SELECT 1 FROM ACCOUNT_USAGE.TASKS t
-			WHERE t.TASK_DATABASE_ID = h.TASK_DATABASE_ID AND t.TASK_SCHEMA_ID = h.TASK_SCHEMA_ID
-				AND t.TASK_NAME = h.NAME AND t.DELETED IS NULL
-		)
+	WHERE h.SCHEDULED_TIME >= dateadd(day, -7, current_timestamp()) AND h.STATE IN ('SUCCEEDED', 'FAILED') ` + taskNotDeletedClause + `
 	GROUP BY h.NAME, h.DATABASE_NAME, h.TASK_DATABASE_ID, h.SCHEMA_NAME, h.TASK_SCHEMA_ID;`
 )
