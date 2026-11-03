@@ -21,6 +21,7 @@ The exporter may be configured through its command line flags:
       --warehouse=WAREHOUSE           The warehouse to use when querying metrics.
       --exclude-deleted-tables        Exclude deleted tables when collecting table storage metrics.
       --enable-task-history           Collect task execution metrics from TASK_HISTORY. Disabled by default.
+      --exclude-deleted-tasks         Exclude tasks that no longer exist when collecting task history metrics.
       --enable-tracing                Enable trace logging for Snowflake connections.
       --version                       Show application version.
       --log.level=info                Only log messages with the given severity or above. One of: [debug, info, warn, error]
@@ -41,6 +42,16 @@ Example usage (with private key):
 
 _If both password and private key file are specified, the private key takes precedence._
 
+### Required privileges
+
+The exporter reads views in the `SNOWFLAKE.ACCOUNT_USAGE` schema, so the role it uses needs access to the `SNOWFLAKE` database, for example `ACCOUNTADMIN` or a role that has been granted `IMPORTED PRIVILEGES` on it:
+
+```sql
+GRANT IMPORTED PRIVILEGES ON DATABASE SNOWFLAKE TO ROLE <role>;
+```
+
+`--exclude-deleted-tasks` additionally reads `ACCOUNT_USAGE.TASKS`, which needs the same access as `ACCOUNT_USAGE.TASK_HISTORY`. Note that `ACCOUNT_USAGE` views can lag behind real time, so a dropped task may keep being reported for a short while.
+
 ### Environment Variables
 
 Alternatively, the exporter may be configured using environment variables:
@@ -56,6 +67,7 @@ Alternatively, the exporter may be configured using environment variables:
 | SNOWFLAKE_EXPORTER_WAREHOUSE            | The warehouse to use when querying metrics.                                      |
 | SNOWFLAKE_EXPORTER_ENABLE_TRACING       | Enable trace logging for Snowflake connections.                                  |
 | SNOWFLAKE_EXPORTER_ENABLE_TASK_HISTORY  | Collect task execution metrics from TASK_HISTORY. Disabled by default.           |
+| SNOWFLAKE_EXPORTER_EXCLUDE_DELETED_TASKS | Exclude tasks that no longer exist when collecting task history metrics.         |
 | SNOWFLAKE_EXPORTER_WEB_TELEMETRY_PATH   | Path under which to expose metrics.                                              |
 
 Example usage:

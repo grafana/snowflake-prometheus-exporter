@@ -106,6 +106,26 @@ func TestCollector_Collect(t *testing.T) {
 		require.NoError(t, err)
 	})
 
+	t.Run("Task history metrics only cover existing tasks when deleted tasks are excluded", func(t *testing.T) {
+		// Registers only the exclude-deleted variants with sqlmock, so the plain task
+		// queries being used instead would fail the test.
+		db, mock := createMockDBWithTaskQueries(t, true,
+			taskHistoryExcludeDeletedMetricQuery, taskLastCompletedExcludeDeletedMetricQuery)
+		mock.MatchExpectationsInOrder(false)
+
+		cfg := *ExampleConfig
+		cfg.ExcludeDeletedTasks = true
+		col := NewCollector(promslog.NewNopLogger(), &cfg)
+		col.openDatabase = func(_ string) (*sql.DB, error) { return db, nil }
+
+		f, err := os.Open(filepath.Join("testdata", "all_metrics.prom"))
+		require.NoError(t, err)
+		defer func() { _ = f.Close() }()
+
+		require.NoError(t, testutil.CollectAndCompare(col, f))
+		require.NoError(t, mock.ExpectationsWereMet())
+	})
+
 	t.Run("Task history metrics are skipped when disabled", func(t *testing.T) {
 		// Deliberately does not register taskHistoryMetricQuery/taskLastCompletedMetricQuery
 		// with sqlmock, so that if EnableTaskHistory being false failed to gate them, the
@@ -142,6 +162,30 @@ func TestCollector_Collect(t *testing.T) {
 
 		require.NoError(t, mock.ExpectationsWereMet())
 	})
+}
+
+func TestTaskExcludeDeletedQueries(t *testing.T) {
+	for name, query := range map[string]string{
+		"history":        taskHistoryExcludeDeletedMetricQuery,
+		"last completed": taskLastCompletedExcludeDeletedMetricQuery,
+	} {
+		t.Run(name, func(t *testing.T) {
+			// Only tasks that were not dropped, matched by database, schema and name.
+			require.Contains(t, query, "ACCOUNT_USAGE.TASKS")
+			require.Contains(t, query, "t.DELETED IS NULL")
+			require.Contains(t, query, "t.TASK_DATABASE_ID = h.TASK_DATABASE_ID")
+			require.Contains(t, query, "t.TASK_SCHEMA_ID = h.TASK_SCHEMA_ID")
+			require.Contains(t, query, "t.TASK_NAME = h.NAME")
+			// EXISTS, not a join: a task that was dropped and created again has two TASKS
+			// rows and must still be counted once.
+			require.Contains(t, query, "EXISTS (")
+			require.NotContains(t, query, "JOIN")
+		})
+	}
+
+	// The default queries are unchanged and do not need the TASKS view.
+	require.NotContains(t, taskHistoryMetricQuery, "ACCOUNT_USAGE.TASKS")
+	require.NotContains(t, taskLastCompletedMetricQuery, "ACCOUNT_USAGE.TASKS")
 }
 
 func TestCollector_collectStorageMetrics(t *testing.T) {
@@ -246,6 +290,14 @@ func newRows(t *testing.T, rows [][]*string) *sqlmock.Rows {
 }
 
 func createMockDB(t *testing.T, enableTaskHistory bool) (*sql.DB, sqlmock.Sqlmock) {
+	t.Helper()
+
+	return createMockDBWithTaskQueries(t, enableTaskHistory, taskHistoryMetricQuery, taskLastCompletedMetricQuery)
+}
+
+// createMockDBWithTaskQueries is createMockDB with the task history queries it expects
+// given explicitly, so the exclude-deleted variants can be asserted.
+func createMockDBWithTaskQueries(t *testing.T, enableTaskHistory bool, historyQuery, lastCompletedQuery string) (*sql.DB, sqlmock.Sqlmock) {
 	t.Helper()
 
 	testDB1Name := "mock_db"
@@ -420,7 +472,7 @@ func createMockDB(t *testing.T, enableTaskHistory bool) (*sql.DB, sqlmock.Sqlmoc
 		val31 := "1"
 		val32 := "3"
 
-		mock.ExpectQuery(taskHistoryMetricQuery).
+		mock.ExpectQuery(historyQuery).
 			WillReturnRows(
 				newRows(t, [][]*string{
 					{
@@ -433,7 +485,7 @@ func createMockDB(t *testing.T, enableTaskHistory bool) (*sql.DB, sqlmock.Sqlmoc
 
 		testLastCompleted := "2024-01-01T00:00:00Z"
 
-		mock.ExpectQuery(taskLastCompletedMetricQuery).
+		mock.ExpectQuery(lastCompletedQuery).
 			WillReturnRows(
 				newRows(t, [][]*string{
 					{
