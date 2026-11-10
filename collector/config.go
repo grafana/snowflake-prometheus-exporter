@@ -126,7 +126,7 @@ func (c Config) snowflakeConnectionString() (string, error) {
 		Role:      c.Role,
 		Warehouse: c.Warehouse,
 		Database:  "SNOWFLAKE",
-		// gosnowflake <2.4 defaulted to OCSP fail-open; v2.4+ leaves OCSP off unless set.
+		// gosnowflake <2.3 defaulted to OCSP fail-open; v2.3+ leaves OCSP off unless set.
 		// Pin the mode explicitly so behaviour is independent of the library default.
 		OCSPFailOpen: gosnowflake.OCSPFailOpenTrue,
 	}
